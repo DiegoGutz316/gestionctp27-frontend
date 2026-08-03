@@ -56,6 +56,7 @@ export function InsumosTable() {
             aria-label="Buscar insumo por nombre"
             placeholder="Buscar por nombre…"
             className="pl-8"
+            maxLength={120}
             value={nombre}
             onChange={(evento) => setNombre(evento.target.value)}
           />
