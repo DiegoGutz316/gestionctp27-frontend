@@ -3,6 +3,7 @@ import type {
   CategoriaInsumoRespuesta,
   CrearCategoriaInsumo,
   CrearInsumo,
+  FiltrarInsumos,
   InsumoRespuesta,
 } from "@/schemas";
 
@@ -12,6 +13,17 @@ export function obtenerCategorias() {
 
 export function crearCategoria(datos: CrearCategoriaInsumo) {
   return api.post<CategoriaInsumoRespuesta>("/inventario/categorias", datos);
+}
+
+export function obtenerInsumos(filtros: FiltrarInsumos = {}) {
+  const params = new URLSearchParams();
+  if (filtros.nombre) params.set("nombre", filtros.nombre);
+  if (filtros.categoriaId) params.set("categoriaId", String(filtros.categoriaId));
+
+  const query = params.toString();
+  return api.get<InsumoRespuesta[]>(
+    `/inventario/insumos${query ? `?${query}` : ""}`,
+  );
 }
 
 export function crearInsumo(datos: CrearInsumo) {
