@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -180,19 +181,21 @@ export function AppSidebar() {
                 align="start"
                 sideOffset={4}
               >
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1 text-left text-sm">
-                    <Avatar className="size-8 rounded-lg">
-                      <AvatarFallback className="rounded-lg">AD</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 leading-tight">
-                      <span className="truncate font-medium">Administrador</span>
-                      <span className="truncate text-xs text-muted-foreground">
-                        admin@ctp27.ed.cr
-                      </span>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex items-center gap-2 px-1 py-1 text-left text-sm">
+                      <Avatar className="size-8 rounded-lg">
+                        <AvatarFallback className="rounded-lg">AD</AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 leading-tight">
+                        <span className="truncate font-medium">Administrador</span>
+                        <span className="truncate text-xs text-muted-foreground">
+                          admin@ctp27.ed.cr
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </DropdownMenuLabel>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <CircleUserRound />
