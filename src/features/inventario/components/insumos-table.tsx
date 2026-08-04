@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { SearchIcon } from "lucide-react";
+import Link from "next/link";
+import { PencilIcon, SearchIcon } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -93,6 +95,9 @@ export function InsumosTable() {
               <TableHead>Categoría</TableHead>
               <TableHead>Unidad</TableHead>
               <TableHead className="text-right">Cantidad</TableHead>
+              <TableHead className="w-0">
+                <span className="sr-only">Acciones</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -102,6 +107,21 @@ export function InsumosTable() {
                 <TableCell>{insumo.categoria.nombre}</TableCell>
                 <TableCell>{insumo.unidadMedida}</TableCell>
                 <TableCell className="text-right">{insumo.cantidad}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    nativeButton={false}
+                    render={
+                      <Link
+                        href={`/inventario/insumos/${insumo.id}/editar`}
+                        aria-label={`Editar ${insumo.nombre}`}
+                      />
+                    }
+                  >
+                    <PencilIcon />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
