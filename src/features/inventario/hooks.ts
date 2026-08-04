@@ -1,11 +1,13 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { FiltrarInsumos } from "@/schemas";
+import type { EditarInsumo, FiltrarInsumos } from "@/schemas";
 import {
   crearCategoria,
   crearInsumo,
+  editarInsumo,
   obtenerCategorias,
+  obtenerInsumo,
   obtenerInsumos,
 } from "./api";
 
@@ -42,6 +44,22 @@ export function useCrearInsumo() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: crearInsumo,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: insumosQueryKey }),
+  });
+}
+
+export function useInsumo(id: number) {
+  return useQuery({
+    queryKey: [...insumosQueryKey, id],
+    queryFn: () => obtenerInsumo(id),
+  });
+}
+
+export function useEditarInsumo(id: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (datos: EditarInsumo) => editarInsumo(id, datos),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: insumosQueryKey }),
   });

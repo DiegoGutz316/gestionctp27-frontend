@@ -3,6 +3,7 @@ import type {
   CategoriaInsumoRespuesta,
   CrearCategoriaInsumo,
   CrearInsumo,
+  EditarInsumo,
   FiltrarInsumos,
   InsumoRespuesta,
 } from "@/schemas";
@@ -28,6 +29,14 @@ export function obtenerInsumos(filtros: FiltrarInsumos = {}) {
 
 export function crearInsumo(datos: CrearInsumo) {
   return api.post<InsumoRespuesta>("/inventario/insumos", datos);
+}
+
+export function obtenerInsumo(id: number) {
+  return api.get<InsumoRespuesta>(`/inventario/insumos/${id}`);
+}
+
+export function editarInsumo(id: number, datos: EditarInsumo) {
+  return api.patch<InsumoRespuesta>(`/inventario/insumos/${id}`, datos);
 }
 
 /**
