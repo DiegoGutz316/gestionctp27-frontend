@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { MoreHorizontalIcon, PlusIcon, SearchIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ListFilterIcon,
+  MoreVerticalIcon,
+  PlusIcon,
+  SearchIcon,
+} from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -105,7 +112,7 @@ export function UsuariosGestion() {
   }, [totalPages]);
 
   return (
-    <section className="flex flex-1 flex-col gap-6">
+    <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -120,36 +127,35 @@ export function UsuariosGestion() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Gestión de Usuarios
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {usuarios.isLoading
-              ? "Cargando usuarios…"
-              : `${total} usuario${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}`}
-          </p>
-        </div>
-        <Button
-          size="lg"
-          className="w-full sm:w-auto"
-          nativeButton={false}
-          render={<Link href="/dashboard/usuarios/nuevo" />}
-        >
-          <PlusIcon data-icon="inline-start" />
-          Crear usuario
-        </Button>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Gestión de Usuarios
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {usuarios.isLoading
+            ? "Cargando usuarios…"
+            : `${total} usuario${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}`}
+        </p>
       </div>
 
+      <Button
+        size="lg"
+        className="h-10 w-full justify-center"
+        nativeButton={false}
+        render={<Link href="/dashboard/usuarios/nuevo" />}
+      >
+        <PlusIcon data-icon="inline-start" />
+        Crear usuario
+      </Button>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
+        <div className="relative min-w-0 flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={busqueda}
             onChange={(event) => setBusqueda(event.target.value)}
             placeholder="Buscar por nombre o correo…"
-            className="pl-8"
+            className="h-10 pl-8"
             aria-label="Buscar usuarios"
           />
         </div>
@@ -161,8 +167,9 @@ export function UsuariosGestion() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-full sm:w-56">
-            <SelectValue placeholder="Filtrar por rol" />
+          <SelectTrigger className="h-10 w-full sm:w-40">
+            <ListFilterIcon className="size-4 text-muted-foreground" />
+            <SelectValue placeholder="Filtros" />
           </SelectTrigger>
           <SelectContent>
             {filtroRolItems.map((item) => (
@@ -177,11 +184,17 @@ export function UsuariosGestion() {
       <div className="overflow-hidden rounded-xl border bg-card">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Usuario</TableHead>
-              <TableHead>Rol</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead className="w-12 text-right">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                Usuario
+              </TableHead>
+              <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                Rol
+              </TableHead>
+              <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                Estado
+              </TableHead>
+              <TableHead className="w-12">
                 <span className="sr-only">Acciones</span>
               </TableHead>
             </TableRow>
@@ -241,12 +254,14 @@ export function UsuariosGestion() {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="size-9">
-                      <AvatarFallback className="text-xs font-medium">
+                      <AvatarFallback className="bg-muted text-xs font-medium">
                         {iniciales(usuario.nombre)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <p className="truncate font-medium">{usuario.nombre}</p>
+                      <p className="truncate font-medium text-foreground">
+                        {usuario.nombre}
+                      </p>
                       <p className="truncate text-xs text-muted-foreground">
                         {usuario.correo}
                       </p>
@@ -254,15 +269,17 @@ export function UsuariosGestion() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{ETIQUETA_ROL[usuario.rol]}</Badge>
+                  <span className="text-sm text-foreground">
+                    {ETIQUETA_ROL[usuario.rol]}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={usuario.activo ? "default" : "outline"}
+                    variant="secondary"
                     className={
                       usuario.activo
-                        ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-200"
-                        : "text-muted-foreground"
+                        ? "rounded-full border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200"
+                        : "rounded-full border-transparent bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200"
                     }
                   >
                     {usuario.activo ? "Activo" : "Inactivo"}
@@ -275,11 +292,12 @@ export function UsuariosGestion() {
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="text-muted-foreground"
                           aria-label={`Acciones de ${usuario.nombre}`}
                         />
                       }
                     >
-                      <MoreHorizontalIcon />
+                      <MoreVerticalIcon />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
@@ -310,6 +328,7 @@ export function UsuariosGestion() {
                 disabled={paginaActual <= 1}
                 onClick={() => setPage((actual) => Math.max(1, actual - 1))}
               >
+                <ChevronLeftIcon data-icon="inline-start" />
                 Anterior
               </Button>
             </PaginationItem>
@@ -318,6 +337,11 @@ export function UsuariosGestion() {
                 <Button
                   variant={numero === paginaActual ? "outline" : "ghost"}
                   size="icon"
+                  className={
+                    numero === paginaActual
+                      ? "border-foreground/20 bg-background"
+                      : undefined
+                  }
                   onClick={() => setPage(numero)}
                   aria-current={numero === paginaActual ? "page" : undefined}
                 >
@@ -335,6 +359,7 @@ export function UsuariosGestion() {
                 }
               >
                 Siguiente
+                <ChevronRightIcon data-icon="inline-end" />
               </Button>
             </PaginationItem>
           </PaginationContent>

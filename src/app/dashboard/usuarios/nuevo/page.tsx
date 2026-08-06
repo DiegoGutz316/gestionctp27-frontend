@@ -9,7 +9,9 @@ export default function NuevoUsuarioPage() {
   return (
     <main className="mx-auto w-full max-w-lg">
       <header className="mb-6">
-        <h1 className="text-2xl font-semibold">Registrar usuario</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Registrar usuario
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Cree una cuenta con rol y estado de acceso al sistema.
         </p>

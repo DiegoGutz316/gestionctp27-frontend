@@ -13,7 +13,9 @@ export default async function EditarUsuarioPage({
   return (
     <main className="mx-auto w-full max-w-lg">
       <header className="mb-6">
-        <h1 className="text-2xl font-semibold">Editar usuario</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Editar usuario
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Actualice los datos, el rol o el estado del usuario.
         </p>
