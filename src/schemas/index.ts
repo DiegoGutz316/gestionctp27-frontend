@@ -100,3 +100,20 @@ export const insumoSchema = z.object({
 });
 
 export type InsumoRespuesta = z.infer<typeof insumoSchema>;
+
+// Reexporta modelos de usuarios (fuente: features/usuarios/models).
+export {
+  ROLES_USUARIO,
+  ETIQUETA_ROL,
+  crearUsuarioSchema,
+  editarUsuarioSchema,
+  usuarioSchema,
+  filtrarUsuariosSchema,
+  type RolUsuario,
+  type CrearUsuario,
+  type CrearUsuarioInput,
+  type EditarUsuario,
+  type EditarUsuarioInput,
+  type UsuarioRespuesta,
+  type FiltrarUsuarios,
+} from "@/features/usuarios/models/usuario.model";

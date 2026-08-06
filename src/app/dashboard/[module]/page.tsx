@@ -5,7 +5,6 @@ import {
   Boxes,
   Leaf,
   Sprout,
-  Users,
   type LucideIcon,
 } from "lucide-react"
 
@@ -49,12 +48,6 @@ const modules: Record<string, ModuleDetails> = {
     description:
       "Visualice indicadores y genere reportes de las diferentes áreas del colegio.",
     icon: BarChart3,
-  },
-  usuarios: {
-    title: "Usuarios",
-    description:
-      "Administre los usuarios, roles y permisos de acceso al sistema.",
-    icon: Users,
   },
 }
 

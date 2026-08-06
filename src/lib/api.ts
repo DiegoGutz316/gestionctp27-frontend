@@ -15,6 +15,24 @@ export class ApiError extends Error {
   }
 }
 
+export type ApiQueryParams = Record<
+  string,
+  string | number | boolean | undefined | null
+>;
+
+function buildUrl(path: string, params?: ApiQueryParams): string {
+  if (!params) return path;
+
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === "") continue;
+    search.set(key, String(value));
+  }
+
+  const query = search.toString();
+  return query ? `${path}?${query}` : path;
+}
+
 export async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
@@ -39,7 +57,8 @@ export async function apiFetch<T>(
 }
 
 export const api = {
-  get: <T>(path: string) => apiFetch<T>(path),
+  get: <T>(path: string, params?: ApiQueryParams) =>
+    apiFetch<T>(buildUrl(path, params)),
   post: <T>(path: string, body: unknown) =>
     apiFetch<T>(path, { method: "POST", body: JSON.stringify(body) }),
   put: <T>(path: string, body: unknown) =>
