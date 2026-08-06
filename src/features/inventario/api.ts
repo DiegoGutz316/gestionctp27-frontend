@@ -17,14 +17,12 @@ export function crearCategoria(datos: CrearCategoriaInsumo) {
 }
 
 export function obtenerInsumos(filtros: FiltrarInsumos = {}) {
-  const params = new URLSearchParams();
-  if (filtros.nombre) params.set("nombre", filtros.nombre);
-  if (filtros.categoriaId) params.set("categoriaId", String(filtros.categoriaId));
-
-  const query = params.toString();
-  return api.get<InsumoRespuesta[]>(
-    `/inventario/insumos${query ? `?${query}` : ""}`,
-  );
+  return api.get<InsumoRespuesta[]>("/inventario/insumos", {
+    params: {
+      nombre: filtros.nombre || undefined,
+      categoriaId: filtros.categoriaId || undefined,
+    },
+  });
 }
 
 export function crearInsumo(datos: CrearInsumo) {
@@ -42,17 +40,20 @@ export function editarInsumo(id: number, datos: EditarInsumo) {
 /**
  * Extrae un mensaje legible de los errores de la API.
  *
- * ApiError.message contiene el body de texto que devolvió NestJS:
+ * ApiError.data es el body que devolvió NestJS:
  * - 400 de nestjs-zod: {statusCode, message: "Validation failed", errors: [{path, message}]}
  * - 404/409 de Nest:   {statusCode, message, error}
  */
 export function getMensajeDeError(error: unknown): string {
   if (error instanceof ApiError) {
-    try {
-      const body = JSON.parse(error.message) as {
-        message?: string;
-        errors?: Array<{ message?: string }>;
-      };
+    const body = (typeof error.data === "object" && error.data !== null
+      ? error.data
+      : null) as {
+      message?: string;
+      errors?: Array<{ message?: string }>;
+    } | null;
+
+    if (body) {
       if (Array.isArray(body.errors) && body.errors[0]?.message) {
         return body.errors[0].message;
       }
@@ -62,9 +63,12 @@ export function getMensajeDeError(error: unknown): string {
       ) {
         return body.message;
       }
-    } catch {
-      // El body no era JSON; se usa el mensaje genérico.
     }
+
+    if (error.status === 0) {
+      return error.message || "Error de conexión con el servidor.";
+    }
+
     return "No se pudo completar la operación. Intente de nuevo.";
   }
   return "Error de conexión con el servidor.";
