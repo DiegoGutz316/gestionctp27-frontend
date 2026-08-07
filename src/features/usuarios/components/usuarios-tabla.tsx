@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MoreVerticalIcon } from "lucide-react";
+import { MoreVerticalIcon, PencilIcon, UserXIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -182,6 +182,7 @@ export function UsuariosTabla({
                         />
                       }
                     >
+                      <PencilIcon />
                       Editar
                     </DropdownMenuItem>
                     {usuario.activo ? (
@@ -189,6 +190,7 @@ export function UsuariosTabla({
                         variant="destructive"
                         onClick={() => setUsuarioADesactivar(usuario)}
                       >
+                        <UserXIcon />
                         Desactivar
                       </DropdownMenuItem>
                     ) : null}
