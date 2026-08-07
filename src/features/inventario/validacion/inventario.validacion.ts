@@ -1,37 +1,5 @@
 import { z } from "zod";
-
-/**
- * Esquemas Zod de validación del frontend.
- *
- * IMPORTANTE: estos esquemas deben mantenerse sincronizados manualmente con
- * los del repositorio del backend (gestionctp27-backend, src/schemas/).
- * Regla práctica: cualquier cambio a un esquema se hace en ambos repos en el
- * mismo día/PR.
- */
-
-// Esquema placeholder — reemplazar/ampliar cuando se implementen las features.
-export const healthCheckSchema = z.object({
-  status: z.literal("ok"),
-  timestamp: z.string(),
-});
-
-export type HealthCheck = z.infer<typeof healthCheckSchema>;
-
-// ---------------------------------------------------------------------------
-// Inventario e insumos (Feature 4)
-// ---------------------------------------------------------------------------
-
-export const UNIDADES_MEDIDA = [
-  "kg",
-  "g",
-  "L",
-  "mL",
-  "unidad",
-  "saco",
-  "caja",
-] as const;
-
-export type UnidadMedida = (typeof UNIDADES_MEDIDA)[number];
+import { UNIDADES_MEDIDA } from "../models/inventario.model";
 
 // Los formularios envían los campos numéricos como string; z.coerce los
 // convierte a number y el genérico <number | string> mantiene z.input tipado.
@@ -86,13 +54,9 @@ export const crearInsumoSchema = z.object({
   ),
 });
 
-// Salida (números ya coercionados) y entrada (acepta string en los numéricos,
-// útil para tipar formularios con react-hook-form).
 export type CrearInsumo = z.output<typeof crearInsumoSchema>;
 export type CrearInsumoInput = z.input<typeof crearInsumoSchema>;
 
-// Esquemas de respuesta de la API (fechas serializadas como string ISO).
-// Sufijo "Respuesta" para no chocar con las clases de entidad del backend.
 export const categoriaInsumoSchema = z.object({
   id: z.number(),
   nombre: z.string(),

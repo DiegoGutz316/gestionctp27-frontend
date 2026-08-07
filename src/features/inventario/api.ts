@@ -6,7 +6,7 @@ import type {
   EditarInsumo,
   FiltrarInsumos,
   InsumoRespuesta,
-} from "@/schemas";
+} from "./models/inventario.model";
 
 export function obtenerCategorias() {
   return api.get<CategoriaInsumoRespuesta[]>("/inventario/categorias");

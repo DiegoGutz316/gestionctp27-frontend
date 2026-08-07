@@ -1,22 +1,30 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   BarChart3,
   Boxes,
+  ChevronRight,
   ChevronsUpDown,
   CircleUserRound,
   LayoutDashboard,
   Leaf,
   LogOut,
   Settings,
-  ShieldCheck,
   Sprout,
   Users,
 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useAuth } from "@/features/auth/context/auth-context"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,7 +50,7 @@ import {
 
 const navigation = [
   {
-    label: "Principal",
+    label: "General",
     items: [
       {
         title: "Dashboard",
@@ -101,25 +109,89 @@ function isRouteActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
+function iniciales(nombre: string) {
+  return nombre
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((parte) => parte[0]?.toUpperCase() ?? "")
+    .join("")
+}
+
 export function AppSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { usuario, logout } = useAuth()
+
+  const nombre = usuario?.nombre ?? "Usuario"
+  const correo = usuario?.correo ?? ""
+  const avatar = iniciales(nombre)
+
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(
+    () =>
+      Object.fromEntries(
+        navigation.map((section) => [
+          section.label,
+          section.label === "General" ||
+            section.items.some((item) => isRouteActive(pathname, item.href)),
+        ]),
+      ),
+  )
+
+  useEffect(() => {
+    setOpenSections((prev) => {
+      let changed = false
+      const next = { ...prev }
+
+      for (const section of navigation) {
+        const active = section.items.some((item) =>
+          isRouteActive(pathname, item.href),
+        )
+        if (active && !next[section.label]) {
+          next[section.label] = true
+          changed = true
+        }
+      }
+
+      return changed ? next : prev
+    })
+  }, [pathname])
+
+  async function handleLogout() {
+    try {
+      await logout()
+      router.replace("/login")
+    } catch {
+      toast.error("No se pudo cerrar la sesión.")
+    }
+  }
 
   return (
-    <Sidebar collapsible="icon" variant="inset">
-      <SidebarHeader>
+    <Sidebar
+      collapsible="icon"
+      className="font-[family-name:var(--font-roboto)]"
+    >
+      <SidebarHeader className="px-2 pt-3 pb-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
               render={<Link href="/dashboard" />}
-              className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+              className="h-11 px-1 hover:bg-transparent data-open:bg-transparent"
             >
-              <span className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <ShieldCheck className="size-4" />
+              <span className="relative flex aspect-square size-9 shrink-0 overflow-visible">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/escudo-ctp27.png"
+                  alt="Logo Colegio Técnico Profesional 27 de Abril"
+                  className="size-full object-contain"
+                />
               </span>
-              <span className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Gestión CTP 27</span>
-                <span className="truncate text-xs text-muted-foreground">
+              <span className="grid flex-1 text-left leading-tight">
+                <span className="truncate text-[13px] font-medium">
+                  Gestión CTP 27
+                </span>
+                <span className="truncate text-[10px] text-muted-foreground">
                   Panel administrativo
                 </span>
               </span>
@@ -129,30 +201,53 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {navigation.map((section) => (
-          <SidebarGroup key={section.label}>
-            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {section.items.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      render={<Link href={item.href} />}
-                      isActive={isRouteActive(pathname, item.href)}
-                      tooltip={item.title}
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {navigation.map((section) => {
+          return (
+            <Collapsible
+              key={section.label}
+              open={openSections[section.label] ?? false}
+              onOpenChange={(open) =>
+                setOpenSections((prev) => ({
+                  ...prev,
+                  [section.label]: open,
+                }))
+              }
+              className="group/collapsible"
+            >
+              <SidebarGroup className="py-0">
+                <SidebarGroupLabel
+                  render={<CollapsibleTrigger />}
+                  className="h-8 w-full cursor-pointer px-2 text-[11px] font-normal text-sidebar-foreground hover:bg-transparent"
+                >
+                  <span>{section.label}</span>
+                  <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-open/collapsible:rotate-90" />
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu className="gap-0.5">
+                      {section.items.map((item) => (
+                        <SidebarMenuItem key={item.href}>
+                          <SidebarMenuButton
+                            render={<Link href={item.href} />}
+                            isActive={isRouteActive(pathname, item.href)}
+                            tooltip={item.title}
+                            className="h-8 rounded-md px-2 text-[12px] font-normal data-active:font-normal"
+                          >
+                            <item.icon strokeWidth={1.75} />
+                            <span>{item.title}</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </SidebarGroup>
+            </Collapsible>
+          )
+        })}
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -160,17 +255,17 @@ export function AppSidebar() {
                 render={
                   <SidebarMenuButton
                     size="lg"
-                    className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+                    className="h-11 text-[12px] data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
                   />
                 }
               >
                 <Avatar className="size-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">AD</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{avatar}</AvatarFallback>
                 </Avatar>
-                <span className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Administrador</span>
+                <span className="grid flex-1 text-left text-[12px] leading-tight">
+                  <span className="truncate font-medium">{nombre}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    admin@ctp27.ed.cr
+                    {correo}
                   </span>
                 </span>
                 <ChevronsUpDown className="ml-auto size-4" />
@@ -185,12 +280,14 @@ export function AppSidebar() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex items-center gap-2 px-1 py-1 text-left text-sm">
                       <Avatar className="size-8 rounded-lg">
-                        <AvatarFallback className="rounded-lg">AD</AvatarFallback>
+                        <AvatarFallback className="rounded-lg">
+                          {avatar}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 leading-tight">
-                        <span className="truncate font-medium">Administrador</span>
+                        <span className="truncate font-medium">{nombre}</span>
                         <span className="truncate text-xs text-muted-foreground">
-                          admin@ctp27.ed.cr
+                          {correo}
                         </span>
                       </div>
                     </div>
@@ -206,7 +303,7 @@ export function AppSidebar() {
                   Configuración
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
+                <DropdownMenuItem variant="destructive" onClick={handleLogout}>
                   <LogOut />
                   Cerrar sesión
                 </DropdownMenuItem>

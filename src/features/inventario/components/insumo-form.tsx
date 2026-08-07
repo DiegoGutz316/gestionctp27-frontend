@@ -4,11 +4,11 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
-  crearInsumoSchema,
   UNIDADES_MEDIDA,
   type CrearInsumo,
   type CrearInsumoInput,
-} from "@/schemas";
+} from "../models/inventario.model";
+import { crearInsumoSchema } from "../validacion/inventario.validacion";
 import { Button } from "@/components/ui/button";
 import {
   Field,

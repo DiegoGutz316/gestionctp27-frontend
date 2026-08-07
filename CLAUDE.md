@@ -16,8 +16,8 @@ independiente del backend (`gestionctp27-backend`).
 - Datos remotos con TanStack Query (provider en `src/app/providers.tsx`);
   llamadas HTTP a través de `src/lib/api.ts` (usa `NEXT_PUBLIC_API_URL`).
 - Formularios con React Hook Form + `@hookform/resolvers` + Zod.
-- Los esquemas Zod viven en `src/schemas/` y deben mantenerse **sincronizados
-  manualmente** con los de `gestionctp27-backend/src/schemas/` (mismo día/PR).
+- Los esquemas Zod viven en `src/features/<modulo>/models/` (junto a su feature).
+- Paginación compartida en `src/lib/paginacion.ts` (+ `ControlesPaginacion`).
 - Componentes UI con shadcn/ui (`pnpm dlx shadcn@latest add <componente>`).
 
 ## Comandos

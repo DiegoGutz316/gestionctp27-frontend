@@ -5,11 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { PlusIcon } from "lucide-react";
-import {
-  crearCategoriaInsumoSchema,
-  type CategoriaInsumoRespuesta,
-  type CrearCategoriaInsumo,
-} from "@/schemas";
+import type {
+  CategoriaInsumoRespuesta,
+  CrearCategoriaInsumo,
+} from "../models/inventario.model";
+import { crearCategoriaInsumoSchema } from "../validacion/inventario.validacion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
