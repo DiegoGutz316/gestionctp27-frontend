@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
@@ -84,6 +85,7 @@ export function UsuarioEditarForm({
         void form.handleSubmit();
       }}
       noValidate
+      className="space-y-6"
     >
       <FieldGroup>
         <form.Field name="nombre">
@@ -190,19 +192,32 @@ export function UsuarioEditarForm({
             );
           }}
         </form.Field>
+      </FieldGroup>
 
-        <form.Subscribe
-          selector={(state) =>
-            state.isSubmitting || editarUsuario.isPending
-          }
-        >
-          {(guardando) => (
+      <p className="text-xs text-muted-foreground">
+        La contraseña no se puede cambiar desde esta pantalla.
+      </p>
+
+      <form.Subscribe
+        selector={(state) => state.isSubmitting || editarUsuario.isPending}
+      >
+        {(guardando) => (
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={guardando}
+              nativeButton={false}
+              render={<Link href="/dashboard/usuarios" />}
+            >
+              Cancelar
+            </Button>
             <Button type="submit" disabled={guardando}>
               {guardando ? "Guardando…" : "Guardar cambios"}
             </Button>
-          )}
-        </form.Subscribe>
-      </FieldGroup>
+          </div>
+        )}
+      </form.Subscribe>
     </form>
   );
 }

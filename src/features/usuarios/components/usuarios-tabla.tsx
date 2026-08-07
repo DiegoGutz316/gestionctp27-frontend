@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { MoreVerticalIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -22,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { ETIQUETA_ROL } from "../models/usuario.model";
 import type { UsuarioRespuesta } from "../validacion/usuario.validacion";
+import { UsuarioDesactivarDialog } from "./usuario-desactivar-dialog";
 
 function iniciales(nombre: string) {
   return nombre
@@ -43,8 +45,18 @@ export function UsuariosTabla({
   error,
   usuarios,
 }: UsuariosTablaProps) {
+  const [usuarioADesactivar, setUsuarioADesactivar] =
+    useState<UsuarioRespuesta | null>(null);
+
   return (
     <div className="overflow-hidden rounded-xl border bg-card">
+      <UsuarioDesactivarDialog
+        usuario={usuarioADesactivar}
+        open={usuarioADesactivar !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) setUsuarioADesactivar(null);
+        }}
+      />
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -172,6 +184,14 @@ export function UsuariosTabla({
                     >
                       Editar
                     </DropdownMenuItem>
+                    {usuario.activo ? (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => setUsuarioADesactivar(usuario)}
+                      >
+                        Desactivar
+                      </DropdownMenuItem>
+                    ) : null}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

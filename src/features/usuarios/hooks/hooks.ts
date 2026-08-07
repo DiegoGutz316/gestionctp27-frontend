@@ -7,6 +7,7 @@ import type {
 } from "../validacion/usuario.validacion";
 import {
   crearUsuario,
+  desactivarUsuario,
   editarUsuario,
   listarUsuarios,
   obtenerUsuario,
@@ -42,6 +43,15 @@ export function useEditarUsuario(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (datos: EditarUsuario) => editarUsuario(id, datos),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: usuariosQueryKey }),
+  });
+}
+
+export function useDesactivarUsuario() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => desactivarUsuario(id),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: usuariosQueryKey }),
   });

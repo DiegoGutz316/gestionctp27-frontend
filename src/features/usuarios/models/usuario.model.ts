@@ -21,6 +21,8 @@ export type {
   CrearUsuarioInput,
   EditarUsuario,
   EditarUsuarioInput,
+  DesactivarUsuario,
+  DesactivarUsuarioInput,
   UsuarioRespuesta,
   PaginarUsuarios,
   ResultadoPaginadoUsuarios,

@@ -30,6 +30,11 @@ export function editarUsuario(id: string, datos: EditarUsuario) {
   return api.patch<UsuarioRespuesta>(`/usuarios/${id}`, datos);
 }
 
+/** Desactivación lógica: PATCH /usuarios/:id/desactivar */
+export function desactivarUsuario(id: string) {
+  return api.patch<UsuarioRespuesta>(`/usuarios/${id}/desactivar`);
+}
+
 /**
  * Extrae un mensaje legible de los errores de la API.
  *
