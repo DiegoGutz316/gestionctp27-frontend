@@ -50,20 +50,20 @@ export const editarUsuarioSchema = z.object({
 export type EditarUsuario = z.output<typeof editarUsuarioSchema>;
 export type EditarUsuarioInput = z.input<typeof editarUsuarioSchema>;
 
-export const usuarioSchema = z.object({
-  id: z.string().uuid(),
+const usuarioSchema = z.object({
+  id: z.uuid(),
   nombre: z.string(),
   correo: z.string(),
   rol: z.enum(ROLES_USUARIO),
   activo: z.boolean(),
-  creadoPor: z.string().uuid().nullable(),
+  creadoPor: z.uuid().nullable(),
   creadoEn: z.string(),
   actualizadoEn: z.string(),
 });
 
 export type UsuarioRespuesta = z.infer<typeof usuarioSchema>;
 
-export const paginarUsuariosSchema = paginarSchema.extend({
+const paginarUsuariosSchema = paginarSchema.extend({
   rol: z.enum(ROLES_USUARIO).optional(),
   activo: z.boolean().optional(),
   order: z.enum(["ASC", "DESC"]).optional(),

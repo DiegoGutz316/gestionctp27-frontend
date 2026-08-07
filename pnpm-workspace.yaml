@@ -3,3 +3,7 @@
 allowBuilds:
   sharp: true
   unrs-resolver: true
+
+# Endurecimiento de la cadena de suministro (React Doctor / pnpm).
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade

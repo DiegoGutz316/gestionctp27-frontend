@@ -67,7 +67,7 @@ export const categoriaInsumoSchema = z.object({
 
 export type CategoriaInsumoRespuesta = z.infer<typeof categoriaInsumoSchema>;
 
-export const insumoSchema = z.object({
+const insumoSchema = z.object({
   id: z.number(),
   nombre: z.string(),
   categoria: categoriaInsumoSchema,
@@ -84,7 +84,7 @@ export type InsumoRespuesta = z.infer<typeof insumoSchema>;
 
 // Filtros de búsqueda del listado de insumos (backlog 4.2). Todos opcionales:
 // ausentes en la query string, llegan como undefined y no filtran.
-export const filtrarInsumosSchema = z.object({
+const filtrarInsumosSchema = z.object({
   nombre: z
     .string()
     .trim()

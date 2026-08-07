@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
@@ -180,10 +181,11 @@ export function AppSidebar() {
               className="h-11 px-1 hover:bg-transparent data-open:bg-transparent"
             >
               <span className="relative flex aspect-square size-9 shrink-0 overflow-visible">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="/escudo-ctp27.png"
                   alt="Logo Colegio Técnico Profesional 27 de Abril"
+                  width={36}
+                  height={36}
                   className="size-full object-contain"
                 />
               </span>

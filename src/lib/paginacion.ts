@@ -28,9 +28,6 @@ export type ResultadoPaginado<T> = {
   meta: MetaPaginacion;
 };
 
-export const LIMITE_PAGINACION_POR_DEFECTO = 10;
-export const PAGINA_POR_DEFECTO = 1;
-
 /** Números de página a mostrar en la barra (1-based, inclusive). */
 export function numerosDePagina(totalPaginas: number): number[] {
   const total = Math.max(0, Math.trunc(totalPaginas));

@@ -1,19 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "../context/auth-context";
 
-/** Protege rutas privadas: sin sesión redirige a /login. */
+/** Protege rutas privadas: sin sesión válida muestra acceso a login. */
 export function RequerirAuth({ children }: { children: React.ReactNode }) {
   const { usuario, cargando } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!cargando && !usuario) {
-      router.replace("/login");
-    }
-  }, [cargando, usuario, router]);
 
   if (cargando) {
     return (
@@ -24,7 +16,17 @@ export function RequerirAuth({ children }: { children: React.ReactNode }) {
   }
 
   if (!usuario) {
-    return null;
+    return (
+      <div className="flex min-h-svh flex-col items-center justify-center gap-3 px-4 text-center text-sm text-muted-foreground">
+        <p>Su sesión no es válida o ha expirado.</p>
+        <Link
+          href="/login"
+          className="text-primary underline-offset-4 hover:underline"
+        >
+          Iniciar sesión
+        </Link>
+      </div>
+    );
   }
 
   return <>{children}</>;
