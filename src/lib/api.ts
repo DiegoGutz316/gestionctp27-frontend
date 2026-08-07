@@ -1,6 +1,7 @@
 /**
  * Cliente HTTP base para consumir la API (gestionctp27-backend).
  * La URL del backend se lee de la variable de entorno NEXT_PUBLIC_API_URL.
+ * credentials: "include" envía/recibe la cookie httpOnly de sesión.
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -39,6 +40,7 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...options.headers,
@@ -53,14 +55,26 @@ export async function apiFetch<T>(
     );
   }
 
-  return (await response.json()) as T;
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  const text = await response.text();
+  if (!text) {
+    return undefined as T;
+  }
+
+  return JSON.parse(text) as T;
 }
 
 export const api = {
   get: <T>(path: string, params?: ApiQueryParams) =>
     apiFetch<T>(buildUrl(path, params)),
-  post: <T>(path: string, body: unknown) =>
-    apiFetch<T>(path, { method: "POST", body: JSON.stringify(body) }),
+  post: <T>(path: string, body?: unknown) =>
+    apiFetch<T>(path, {
+      method: "POST",
+      body: body === undefined ? undefined : JSON.stringify(body),
+    }),
   put: <T>(path: string, body: unknown) =>
     apiFetch<T>(path, { method: "PUT", body: JSON.stringify(body) }),
   patch: <T>(path: string, body: unknown) =>
