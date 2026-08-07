@@ -11,7 +11,6 @@ import {
   LayoutDashboard,
   Leaf,
   LogOut,
-  School,
   Settings,
   Sprout,
   Users,
@@ -123,8 +122,13 @@ export function AppSidebar() {
               render={<Link href="/dashboard" />}
               className="h-11 px-1 hover:bg-transparent data-open:bg-transparent"
             >
-              <span className="flex aspect-square size-7 items-center justify-center rounded-md border border-emerald-600/20 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
-                <School className="size-3.5" strokeWidth={1.75} />
+              <span className="relative flex aspect-square size-9 shrink-0 overflow-visible">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/escudo-ctp27.png"
+                  alt="Logo Colegio Técnico Profesional 27 de Abril"
+                  className="size-full object-contain"
+                />
               </span>
               <span className="grid flex-1 text-left leading-tight">
                 <span className="truncate text-[13px] font-medium">
