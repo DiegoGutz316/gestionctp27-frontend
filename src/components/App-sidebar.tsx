@@ -1,7 +1,8 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   BarChart3,
   Boxes,
@@ -15,8 +16,10 @@ import {
   Sprout,
   Users,
 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useAuth } from "@/features/auth/context/auth-context"
 import {
   Collapsible,
   CollapsibleContent,
@@ -106,8 +109,62 @@ function isRouteActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
+function iniciales(nombre: string) {
+  return nombre
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((parte) => parte[0]?.toUpperCase() ?? "")
+    .join("")
+}
+
 export function AppSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { usuario, logout } = useAuth()
+
+  const nombre = usuario?.nombre ?? "Usuario"
+  const correo = usuario?.correo ?? ""
+  const avatar = iniciales(nombre)
+
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(
+    () =>
+      Object.fromEntries(
+        navigation.map((section) => [
+          section.label,
+          section.label === "General" ||
+            section.items.some((item) => isRouteActive(pathname, item.href)),
+        ]),
+      ),
+  )
+
+  useEffect(() => {
+    setOpenSections((prev) => {
+      let changed = false
+      const next = { ...prev }
+
+      for (const section of navigation) {
+        const active = section.items.some((item) =>
+          isRouteActive(pathname, item.href),
+        )
+        if (active && !next[section.label]) {
+          next[section.label] = true
+          changed = true
+        }
+      }
+
+      return changed ? next : prev
+    })
+  }, [pathname])
+
+  async function handleLogout() {
+    try {
+      await logout()
+      router.replace("/login")
+    } catch {
+      toast.error("No se pudo cerrar la sesión.")
+    }
+  }
 
   return (
     <Sidebar
@@ -145,14 +202,16 @@ export function AppSidebar() {
 
       <SidebarContent>
         {navigation.map((section) => {
-          const sectionIsActive = section.items.some((item) =>
-            isRouteActive(pathname, item.href)
-          )
-
           return (
             <Collapsible
               key={section.label}
-              defaultOpen={section.label === "General" || sectionIsActive}
+              open={openSections[section.label] ?? false}
+              onOpenChange={(open) =>
+                setOpenSections((prev) => ({
+                  ...prev,
+                  [section.label]: open,
+                }))
+              }
               className="group/collapsible"
             >
               <SidebarGroup className="py-0">
@@ -201,12 +260,12 @@ export function AppSidebar() {
                 }
               >
                 <Avatar className="size-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">AD</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{avatar}</AvatarFallback>
                 </Avatar>
                 <span className="grid flex-1 text-left text-[12px] leading-tight">
-                  <span className="truncate font-medium">Administrador</span>
+                  <span className="truncate font-medium">{nombre}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    admin@ctp27.ed.cr
+                    {correo}
                   </span>
                 </span>
                 <ChevronsUpDown className="ml-auto size-4" />
@@ -221,12 +280,14 @@ export function AppSidebar() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex items-center gap-2 px-1 py-1 text-left text-sm">
                       <Avatar className="size-8 rounded-lg">
-                        <AvatarFallback className="rounded-lg">AD</AvatarFallback>
+                        <AvatarFallback className="rounded-lg">
+                          {avatar}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 leading-tight">
-                        <span className="truncate font-medium">Administrador</span>
+                        <span className="truncate font-medium">{nombre}</span>
                         <span className="truncate text-xs text-muted-foreground">
-                          admin@ctp27.ed.cr
+                          {correo}
                         </span>
                       </div>
                     </div>
@@ -242,7 +303,7 @@ export function AppSidebar() {
                   Configuración
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
+                <DropdownMenuItem variant="destructive" onClick={handleLogout}>
                   <LogOut />
                   Cerrar sesión
                 </DropdownMenuItem>
