@@ -4,7 +4,7 @@ import type {
   CrearCategoriaInsumo,
   CrearInsumo,
   InsumoRespuesta,
-} from "@/schemas";
+} from "./models/inventario.model";
 
 export function obtenerCategorias() {
   return api.get<CategoriaInsumoRespuesta[]>("/inventario/categorias");

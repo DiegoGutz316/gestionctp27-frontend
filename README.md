@@ -26,13 +26,13 @@ src/
 │   ├── inventario/  reportes/  dashboard/
 ├── lib/
 │   ├── api.ts           cliente HTTP base (NEXT_PUBLIC_API_URL)
+│   ├── paginacion.ts    tipos/helpers de paginación compartida
 │   └── utils.ts         utilidades de shadcn/ui
-├── schemas/             esquemas Zod — mantener sincronizados con el backend
 └── components/          componentes compartidos (ui/ de shadcn)
 ```
 
-> **Nota:** los esquemas de `src/schemas/` deben mantenerse sincronizados
-> manualmente con los del repositorio `gestionctp27-backend`.
+> **Nota:** los esquemas Zod viven en `src/features/<modulo>/models/` junto a
+> cada feature (p. ej. `usuarios/models`, `inventario/models`).
 
 ## Requisitos
 

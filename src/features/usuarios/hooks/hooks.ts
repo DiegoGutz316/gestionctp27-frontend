@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { EditarUsuario, FiltrarUsuarios } from "../models/usuario.model";
+import type { EditarUsuario, PaginarUsuarios } from "../models/usuario.model";
 import {
   crearUsuario,
   editarUsuario,
@@ -11,7 +11,7 @@ import {
 
 export const usuariosQueryKey = ["usuarios"] as const;
 
-export function useUsuarios(filtros: FiltrarUsuarios = {}) {
+export function useUsuarios(filtros: PaginarUsuarios = {}) {
   return useQuery({
     queryKey: [...usuariosQueryKey, "lista", filtros],
     queryFn: () => listarUsuarios(filtros),

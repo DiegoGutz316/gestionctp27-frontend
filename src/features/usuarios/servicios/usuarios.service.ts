@@ -2,15 +2,19 @@ import { api, ApiError } from "@/lib/api";
 import type {
   CrearUsuario,
   EditarUsuario,
-  FiltrarUsuarios,
+  PaginarUsuarios,
+  ResultadoPaginadoUsuarios,
   UsuarioRespuesta,
 } from "../models/usuario.model";
 
-export function listarUsuarios(filtros: FiltrarUsuarios = {}) {
-  return api.get<UsuarioRespuesta[]>("/usuarios", {
-    busqueda: filtros.busqueda,
+export function listarUsuarios(filtros: PaginarUsuarios = {}) {
+  return api.get<ResultadoPaginadoUsuarios>("/usuarios", {
+    pagina: filtros.pagina,
+    limite: filtros.limite,
+    q: filtros.q,
     rol: filtros.rol,
     activo: filtros.activo,
+    order: filtros.order,
   });
 }
 

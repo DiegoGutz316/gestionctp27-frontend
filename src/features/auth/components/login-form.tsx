@@ -13,12 +13,9 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "../context/auth-context";
-import {
-  loginSchema,
-  type LoginDatos,
-  type LoginInput,
-} from "../models/auth.model";
+import type { LoginDatos, LoginInput } from "../models/auth.model";
 import { getMensajeDeErrorAuth } from "../servicios/auth.service";
+import { loginSchema } from "../validacion/auth.validacion";
 
 export function LoginForm() {
   const router = useRouter();

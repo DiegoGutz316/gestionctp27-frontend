@@ -3,13 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
   ListFilterIcon,
   MoreVerticalIcon,
   PlusIcon,
   SearchIcon,
 } from "lucide-react";
+import { ControlesPaginacion } from "@/components/controles-paginacion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -27,12 +26,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -40,6 +35,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -52,7 +57,7 @@ import {
 import {
   ETIQUETA_ROL,
   ROLES_USUARIO,
-  type FiltrarUsuarios,
+  type PaginarUsuarios,
   type RolUsuario,
 } from "../models/usuario.model";
 import { useUsuarios } from "../hooks/hooks";
@@ -65,6 +70,17 @@ const filtroRolItems = [
     value: rol,
     label: ETIQUETA_ROL[rol],
   })),
+];
+
+const filtroActivoItems = [
+  { value: "todos", label: "Todos" },
+  { value: "true", label: "Activos" },
+  { value: "false", label: "Inactivos" },
+];
+
+const filtroOrdenItems = [
+  { value: "ASC", label: "Nombre A–Z" },
+  { value: "DESC", label: "Nombre Z–A" },
 ];
 
 function iniciales(nombre: string) {
@@ -80,7 +96,10 @@ export function UsuariosGestion() {
   const [busqueda, setBusqueda] = useState("");
   const [busquedaDebounced, setBusquedaDebounced] = useState("");
   const [rol, setRol] = useState<RolUsuario | "todos">("todos");
+  const [activo, setActivo] = useState<"todos" | "true" | "false">("todos");
+  const [order, setOrder] = useState<"ASC" | "DESC">("ASC");
   const [page, setPage] = useState(1);
+  const [sheetAbierto, setSheetAbierto] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -90,26 +109,37 @@ export function UsuariosGestion() {
     return () => window.clearTimeout(timer);
   }, [busqueda]);
 
-  const filtros = useMemo<FiltrarUsuarios>(() => {
-    const resultado: FiltrarUsuarios = {};
-    if (busquedaDebounced) resultado.busqueda = busquedaDebounced;
+  const filtrosActivos = useMemo(() => {
+    let cantidad = 0;
+    if (rol !== "todos") cantidad += 1;
+    if (activo !== "todos") cantidad += 1;
+    if (order !== "ASC") cantidad += 1;
+    return cantidad;
+  }, [rol, activo, order]);
+
+  const filtros = useMemo<PaginarUsuarios>(() => {
+    const resultado: PaginarUsuarios = {
+      pagina: page,
+      limite: PAGE_SIZE,
+      order,
+    };
+    if (busquedaDebounced) resultado.q = busquedaDebounced;
     if (rol !== "todos") resultado.rol = rol;
+    if (activo !== "todos") resultado.activo = activo === "true";
     return resultado;
-  }, [busquedaDebounced, rol]);
+  }, [busquedaDebounced, rol, activo, order, page]);
 
   const usuarios = useUsuarios(filtros);
-  const total = usuarios.data?.length ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const paginaActual = Math.min(page, totalPages);
+  const total = usuarios.data?.meta.total ?? 0;
+  const paginaUsuarios = usuarios.data?.datos ?? [];
+  const meta = usuarios.data?.meta;
 
-  const paginaUsuarios = useMemo(() => {
-    const inicio = (paginaActual - 1) * PAGE_SIZE;
-    return (usuarios.data ?? []).slice(inicio, inicio + PAGE_SIZE);
-  }, [usuarios.data, paginaActual]);
-
-  const pageNumbers = useMemo(() => {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }, [totalPages]);
+  function limpiarFiltros() {
+    setRol("todos");
+    setActivo("todos");
+    setOrder("ASC");
+    setPage(1);
+  }
 
   return (
     <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-5">
@@ -148,7 +178,7 @@ export function UsuariosGestion() {
         Crear usuario
       </Button>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -159,26 +189,124 @@ export function UsuariosGestion() {
             aria-label="Buscar usuarios"
           />
         </div>
-        <Select
-          items={filtroRolItems}
-          value={rol}
-          onValueChange={(valor) => {
-            setRol((valor as RolUsuario | "todos") ?? "todos");
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="h-10 w-full sm:w-40">
-            <ListFilterIcon className="size-4 text-muted-foreground" />
-            <SelectValue placeholder="Filtros" />
-          </SelectTrigger>
-          <SelectContent>
-            {filtroRolItems.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+
+        <Sheet open={sheetAbierto} onOpenChange={setSheetAbierto}>
+          <SheetTrigger
+            render={
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 shrink-0 gap-2"
+              />
+            }
+          >
+            <ListFilterIcon className="size-4" />
+            Filtros
+            {filtrosActivos > 0 ? (
+              <Badge
+                variant="secondary"
+                className="h-5 min-w-5 justify-center rounded-full px-1.5"
+              >
+                {filtrosActivos}
+              </Badge>
+            ) : null}
+          </SheetTrigger>
+          <SheetContent side="right" className="gap-0">
+            <SheetHeader>
+              <SheetTitle>Filtros</SheetTitle>
+              <SheetDescription>
+                Refine el listado por rol, estado u orden.
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="flex flex-1 flex-col gap-4 px-4">
+              <Field>
+                <FieldLabel htmlFor="filtro-rol">Rol</FieldLabel>
+                <Select
+                  items={filtroRolItems}
+                  value={rol}
+                  onValueChange={(valor) => {
+                    setRol((valor as RolUsuario | "todos") ?? "todos");
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger id="filtro-rol" className="w-full">
+                    <SelectValue placeholder="Todos los roles" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filtroRolItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="filtro-activo">Estado</FieldLabel>
+                <Select
+                  items={filtroActivoItems}
+                  value={activo}
+                  onValueChange={(valor) => {
+                    setActivo(
+                      (valor as "todos" | "true" | "false") ?? "todos",
+                    );
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger id="filtro-activo" className="w-full">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filtroActivoItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="filtro-orden">Orden</FieldLabel>
+                <Select
+                  items={filtroOrdenItems}
+                  value={order}
+                  onValueChange={(valor) => {
+                    setOrder((valor as "ASC" | "DESC") ?? "ASC");
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger id="filtro-orden" className="w-full">
+                    <SelectValue placeholder="Nombre A–Z" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filtroOrdenItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+
+            <SheetFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={limpiarFiltros}
+                disabled={filtrosActivos === 0}
+              >
+                Limpiar filtros
+              </Button>
+              <SheetClose render={<Button type="button" />}>
+                Ver resultados
+              </SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
       </div>
 
       <div className="overflow-hidden rounded-xl border bg-card">
@@ -318,53 +446,9 @@ export function UsuariosGestion() {
         </Table>
       </div>
 
-      {total > 0 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <Button
-                variant="ghost"
-                size="default"
-                disabled={paginaActual <= 1}
-                onClick={() => setPage((actual) => Math.max(1, actual - 1))}
-              >
-                <ChevronLeftIcon data-icon="inline-start" />
-                Anterior
-              </Button>
-            </PaginationItem>
-            {pageNumbers.map((numero) => (
-              <PaginationItem key={numero}>
-                <Button
-                  variant={numero === paginaActual ? "outline" : "ghost"}
-                  size="icon"
-                  className={
-                    numero === paginaActual
-                      ? "border-foreground/20 bg-background"
-                      : undefined
-                  }
-                  onClick={() => setPage(numero)}
-                  aria-current={numero === paginaActual ? "page" : undefined}
-                >
-                  {numero}
-                </Button>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <Button
-                variant="ghost"
-                size="default"
-                disabled={paginaActual >= totalPages}
-                onClick={() =>
-                  setPage((actual) => Math.min(totalPages, actual + 1))
-                }
-              >
-                Siguiente
-                <ChevronRightIcon data-icon="inline-end" />
-              </Button>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      {meta ? (
+        <ControlesPaginacion meta={meta} onPaginaChange={setPage} />
+      ) : null}
     </section>
   );
 }

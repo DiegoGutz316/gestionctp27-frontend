@@ -5,13 +5,13 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
-  editarUsuarioSchema,
   ETIQUETA_ROL,
   ROLES_USUARIO,
   type EditarUsuario,
   type EditarUsuarioInput,
   type UsuarioRespuesta,
 } from "../models/usuario.model";
+import { editarUsuarioSchema } from "../validacion/usuario.validacion";
 import { Button } from "@/components/ui/button";
 import {
   Field,
