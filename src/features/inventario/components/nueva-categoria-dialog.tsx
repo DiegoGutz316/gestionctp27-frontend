@@ -1,14 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { PlusIcon } from "lucide-react";
-import type {
-  CategoriaInsumoRespuesta,
-  CrearCategoriaInsumo,
-} from "../models/inventario.model";
+import type { CategoriaInsumoRespuesta } from "../models/inventario.model";
 import { crearCategoriaInsumoSchema } from "../validacion/inventario.validacion";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { fieldErrors } from "@/lib/form-errors";
+import { zodValidator } from "@/lib/zod-form";
 import { getMensajeDeError } from "../api";
 import { useCrearCategoria } from "../hooks";
 
@@ -33,23 +31,24 @@ export function NuevaCategoriaDialog({ onCreated }: NuevaCategoriaDialogProps) {
   const [open, setOpen] = useState(false);
   const crearCategoria = useCrearCategoria();
 
-  const form = useForm<CrearCategoriaInsumo>({
-    resolver: zodResolver(crearCategoriaInsumoSchema),
+  const form = useForm({
     defaultValues: { nombre: "" },
-  });
-
-  const onSubmit = form.handleSubmit((datos) => {
-    crearCategoria.mutate(datos, {
-      onSuccess: (categoria) => {
+    validators: {
+      onSubmit: zodValidator(crearCategoriaInsumoSchema),
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        const categoria = await crearCategoria.mutateAsync(
+          crearCategoriaInsumoSchema.parse(value),
+        );
         toast.success(`Categoría "${categoria.nombre}" creada correctamente.`);
         form.reset();
         setOpen(false);
         onCreated?.(categoria);
-      },
-      onError: (error) => {
+      } catch (error) {
         toast.error(getMensajeDeError(error));
-      },
-    });
+      }
+    },
   });
 
   return (
@@ -77,24 +76,36 @@ export function NuevaCategoriaDialog({ onCreated }: NuevaCategoriaDialogProps) {
         </DialogHeader>
         <form
           onSubmit={(evento) => {
-            // Evita que el submit burbujee al formulario de insumo.
+            evento.preventDefault();
             evento.stopPropagation();
-            void onSubmit(evento);
+            void form.handleSubmit();
           }}
           noValidate
         >
-          <Field data-invalid={!!form.formState.errors.nombre}>
-            <FieldLabel htmlFor="nombre-categoria">
-              Nombre de la categoría
-            </FieldLabel>
-            <Input
-              id="nombre-categoria"
-              placeholder="Ej: Semillas"
-              aria-invalid={!!form.formState.errors.nombre}
-              {...form.register("nombre")}
-            />
-            <FieldError errors={[form.formState.errors.nombre]} />
-          </Field>
+          <form.Field name="nombre">
+            {(field) => {
+              const errors = fieldErrors(field.state.meta.errors);
+              const invalid = errors.length > 0;
+              return (
+                <Field data-invalid={invalid}>
+                  <FieldLabel htmlFor="nombre-categoria">
+                    Nombre de la categoría
+                  </FieldLabel>
+                  <Input
+                    id="nombre-categoria"
+                    placeholder="Ej: Semillas"
+                    aria-invalid={invalid}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(event) =>
+                      field.handleChange(event.target.value)
+                    }
+                  />
+                  <FieldError errors={errors} />
+                </Field>
+              );
+            }}
+          </form.Field>
           <DialogFooter className="mt-4">
             <Button
               type="button"
@@ -104,9 +115,17 @@ export function NuevaCategoriaDialog({ onCreated }: NuevaCategoriaDialogProps) {
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={crearCategoria.isPending}>
-              {crearCategoria.isPending ? "Guardando…" : "Guardar categoría"}
-            </Button>
+            <form.Subscribe
+              selector={(state) =>
+                state.isSubmitting || crearCategoria.isPending
+              }
+            >
+              {(guardando) => (
+                <Button type="submit" disabled={guardando}>
+                  {guardando ? "Guardando…" : "Guardar categoría"}
+                </Button>
+              )}
+            </form.Subscribe>
           </DialogFooter>
         </form>
       </DialogContent>

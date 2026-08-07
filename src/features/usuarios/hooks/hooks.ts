@@ -1,7 +1,10 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { EditarUsuario, PaginarUsuarios } from "../models/usuario.model";
+import type {
+  EditarUsuario,
+  PaginarUsuarios,
+} from "../validacion/usuario.validacion";
 import {
   crearUsuario,
   editarUsuario,

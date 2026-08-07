@@ -5,7 +5,7 @@ import type {
   PaginarUsuarios,
   ResultadoPaginadoUsuarios,
   UsuarioRespuesta,
-} from "../models/usuario.model";
+} from "../validacion/usuario.validacion";
 
 export function listarUsuarios(filtros: PaginarUsuarios = {}) {
   return api.get<ResultadoPaginadoUsuarios>("/usuarios", {

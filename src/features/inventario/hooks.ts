@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { EditarInsumo, FiltrarInsumos } from "@/schemas";
+import type { EditarInsumo, FiltrarInsumos } from "./models/inventario.model";
 import {
   crearCategoria,
   crearInsumo,

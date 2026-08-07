@@ -57,9 +57,9 @@ import {
 import {
   ETIQUETA_ROL,
   ROLES_USUARIO,
-  type PaginarUsuarios,
   type RolUsuario,
 } from "../models/usuario.model";
+import type { PaginarUsuarios } from "../validacion/usuario.validacion";
 import { useUsuarios } from "../hooks/hooks";
 
 const PAGE_SIZE = 8;

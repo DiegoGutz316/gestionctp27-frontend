@@ -9,7 +9,7 @@ frontend: todavía no hay pantallas ni funcionalidad implementada.
 - [Next.js](https://nextjs.org/) con App Router y TypeScript estricto
 - [TailwindCSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
 - [TanStack Query](https://tanstack.com/query) para datos remotos
-- [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) para formularios y validación
+- [TanStack Form](https://tanstack.com/form) + [Zod](https://zod.dev/) para formularios y validación
 - Gestor de paquetes: **pnpm**
 
 ## Estructura

@@ -16,4 +16,7 @@ export type {
   CrearInsumoInput,
   CategoriaInsumoRespuesta,
   InsumoRespuesta,
+  FiltrarInsumos,
+  EditarInsumo,
+  EditarInsumoInput,
 } from "../validacion/inventario.validacion";
