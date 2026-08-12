@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -49,6 +49,11 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
+/**
+ * Backlog 1.6 - Task: "Ocultar opciones del menu segun el rol del usuario".
+ * Cada entrada declara el modulo que la habilita; el menu se filtra con la
+ * matriz de permisos de la sesion (GET /auth/permisos).
+ */
 const navigation = [
   {
     label: "General",
@@ -57,6 +62,7 @@ const navigation = [
         title: "Dashboard",
         href: "/dashboard",
         icon: LayoutDashboard,
+        modulo: "PANEL" as const,
       },
     ],
   },
@@ -67,16 +73,19 @@ const navigation = [
         title: "Inventario",
         href: "/dashboard/inventario",
         icon: Boxes,
+        modulo: "INVENTARIO" as const,
       },
       {
         title: "Área agrícola",
         href: "/dashboard/agricola",
         icon: Sprout,
+        modulo: "AGRICOLA" as const,
       },
       {
         title: "Área pecuaria",
         href: "/dashboard/pecuaria",
         icon: Leaf,
+        modulo: "PECUARIA" as const,
       },
     ],
   },
@@ -87,6 +96,7 @@ const navigation = [
         title: "Reportes",
         href: "/dashboard/reportes",
         icon: BarChart3,
+        modulo: "REPORTES" as const,
       },
     ],
   },
@@ -97,6 +107,7 @@ const navigation = [
         title: "Usuarios",
         href: "/dashboard/usuarios",
         icon: Users,
+        modulo: "USUARIOS" as const,
       },
     ],
   },
@@ -122,11 +133,24 @@ function iniciales(nombre: string) {
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { usuario, logout } = useAuth()
+  const { usuario, logout, puede } = useAuth()
 
   const nombre = usuario?.nombre ?? "Usuario"
   const correo = usuario?.correo ?? ""
   const avatar = iniciales(nombre)
+
+  // Backlog 1.6: solo quedan las opciones permitidas por el rol; las secciones
+  // que se vacian dejan de renderizarse.
+  const navegacionPermitida = useMemo(
+    () =>
+      navigation
+        .map((section) => ({
+          ...section,
+          items: section.items.filter((item) => puede(item.modulo)),
+        }))
+        .filter((section) => section.items.length > 0),
+    [puede],
+  )
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     () =>
@@ -203,7 +227,7 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {navigation.map((section) => {
+        {navegacionPermitida.map((section) => {
           return (
             <Collapsible
               key={section.label}

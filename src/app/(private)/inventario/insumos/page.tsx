@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { PlusIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { BotonRegistrarInsumo } from "@/features/inventario/components/boton-registrar-insumo";
 import { InsumosTable } from "@/features/inventario/components/insumos-table";
 
 export const metadata: Metadata = {
@@ -19,15 +17,7 @@ export default function InsumosPage() {
             inventario.
           </p>
         </div>
-        {/* Link renderiza un <a>, no un <button>; nativeButton={false} evita
-        que Base UI asuma semántica de botón nativo sobre ese elemento. */}
-        <Button
-          nativeButton={false}
-          render={<Link href="/inventario/insumos/nuevo" />}
-        >
-          <PlusIcon />
-          Registrar insumo
-        </Button>
+        <BotonRegistrarInsumo />
       </header>
       <InsumosTable />
     </main>
