@@ -19,4 +19,7 @@ export type {
   FiltrarInsumos,
   EditarInsumo,
   EditarInsumoInput,
+  RegistrarEntrada,
+  RegistrarEntradaInput,
+  MovimientoRespuesta,
 } from "../validacion/inventario.validacion";

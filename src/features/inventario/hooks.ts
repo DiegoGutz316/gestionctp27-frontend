@@ -9,6 +9,7 @@ import {
   obtenerCategorias,
   obtenerInsumo,
   obtenerInsumos,
+  registrarEntrada,
 } from "./api";
 
 export const categoriasQueryKey = ["inventario", "categorias"] as const;
@@ -60,6 +61,20 @@ export function useEditarInsumo(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (datos: EditarInsumo) => editarInsumo(id, datos),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: insumosQueryKey }),
+  });
+}
+
+/**
+ * Backlog 4.4. Al invalidar la clave base de insumos se cumple además el
+ * criterio pendiente del backlog 4.2: "la información se actualiza después de
+ * registrar entradas o salidas".
+ */
+export function useRegistrarEntrada() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: registrarEntrada,
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: insumosQueryKey }),
   });

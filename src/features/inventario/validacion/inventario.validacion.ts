@@ -125,3 +125,45 @@ export const editarInsumoSchema = z.object({
 
 export type EditarInsumo = z.output<typeof editarInsumoSchema>;
 export type EditarInsumoInput = z.input<typeof editarInsumoSchema>;
+
+// Registro de entradas de inventario (backlog 4.4). El responsable no se pide:
+// lo toma el backend del usuario autenticado.
+export const registrarEntradaSchema = z.object({
+  insumoId: sinVacios(
+    numeroDesdeInput("Seleccione un insumo")
+      .int("Seleccione un insumo")
+      .positive("Seleccione un insumo"),
+  ),
+  cantidad: sinVacios(
+    numeroDesdeInput("La cantidad es obligatoria").positive(
+      "La cantidad debe ser mayor que 0",
+    ),
+  ),
+  fecha: z
+    .string({ error: "La fecha es obligatoria" })
+    .min(1, "La fecha es obligatoria")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Ingrese una fecha válida"),
+  origen: z
+    .string()
+    .trim()
+    .max(150, "El origen no puede superar 150 caracteres")
+    .optional(),
+});
+
+export type RegistrarEntrada = z.output<typeof registrarEntradaSchema>;
+export type RegistrarEntradaInput = z.input<typeof registrarEntradaSchema>;
+
+// Respuesta del historial de movimientos (la reutilizará el backlog 4.5).
+const movimientoSchema = z.object({
+  id: z.number(),
+  insumo: insumoSchema,
+  tipo: z.enum(["ENTRADA", "SALIDA"]),
+  cantidad: z.number(),
+  fecha: z.string(),
+  origen: z.string().nullable(),
+  motivo: z.string().nullable(),
+  responsableId: z.string(),
+  creadoEn: z.string(),
+});
+
+export type MovimientoRespuesta = z.infer<typeof movimientoSchema>;

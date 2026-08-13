@@ -94,7 +94,13 @@ export default async function DashboardModulePage({
 
         {details.action ? (
           <div>
-            <Button render={<Link href={details.action.href} />}>
+            {/* Link renderiza un <a>, no un <button>; nativeButton={false}
+            evita que Base UI asuma semántica de botón nativo sobre ese
+            elemento. */}
+            <Button
+              nativeButton={false}
+              render={<Link href={details.action.href} />}
+            >
               {details.action.label}
             </Button>
           </div>

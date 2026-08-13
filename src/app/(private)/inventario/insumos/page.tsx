@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BotonRegistrarInsumo } from "@/features/inventario/components/boton-registrar-insumo";
+import { AccionesInventario } from "@/features/inventario/components/acciones-inventario";
 import { InsumosTable } from "@/features/inventario/components/insumos-table";
 
 export const metadata: Metadata = {
@@ -17,7 +17,7 @@ export default function InsumosPage() {
             inventario.
           </p>
         </div>
-        <BotonRegistrarInsumo />
+        <AccionesInventario />
       </header>
       <InsumosTable />
     </main>
