@@ -59,7 +59,7 @@ export function InsumoEditarForm({ insumo }: { insumo: InsumoRespuesta }) {
         toast.success(
           `Insumo "${actualizado.nombre}" actualizado correctamente.`,
         );
-        router.push("/inventario/insumos");
+        router.push("/dashboard/inventario");
       } catch (error) {
         toast.error(getMensajeDeError(error));
       }

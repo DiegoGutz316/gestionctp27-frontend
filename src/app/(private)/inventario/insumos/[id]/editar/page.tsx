@@ -23,11 +23,11 @@ export default async function EditarInsumoPage({
   return (
     <main className="mx-auto w-full max-w-lg p-6">
       <Link
-        href="/inventario/insumos"
+        href="/dashboard/inventario"
         className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeftIcon className="size-4" />
-        Volver al listado de insumos
+        Volver al inventario
       </Link>
       <header className="mb-6">
         <h1 className="text-2xl font-semibold">Editar insumo</h1>
