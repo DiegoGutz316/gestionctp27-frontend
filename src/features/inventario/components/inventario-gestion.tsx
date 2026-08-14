@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { HistoryIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon } from "lucide-react";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -24,6 +24,7 @@ import {
   TODAS_LAS_CATEGORIAS,
 } from "./insumos-filtros-sheet";
 import { InsumosTabla } from "./insumos-tabla";
+import { InventarioVistaSwitch } from "./inventario-vista-switch";
 
 const PAGE_SIZE = 8;
 
@@ -111,29 +112,19 @@ export function InventarioGestion() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <InventarioVistaSwitch />
+
+      <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
         <Button
           size="lg"
-          variant="outline"
-          className="h-10 w-full justify-center sm:flex-1"
+          className="h-10 w-full justify-center"
           nativeButton={false}
-          render={<Link href="/dashboard/inventario/entradas" />}
+          render={<Link href="/dashboard/inventario/nuevo" />}
         >
-          <HistoryIcon data-icon="inline-start" />
-          Entradas
+          <PlusIcon data-icon="inline-start" />
+          Registrar insumo
         </Button>
-        <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
-          <Button
-            size="lg"
-            className="h-10 w-full justify-center sm:flex-1"
-            nativeButton={false}
-            render={<Link href="/dashboard/inventario/nuevo" />}
-          >
-            <PlusIcon data-icon="inline-start" />
-            Registrar insumo
-          </Button>
-        </MostrarSiPuede>
-      </div>
+      </MostrarSiPuede>
 
       <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
