@@ -2,7 +2,6 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import {
   BarChart3,
-  Boxes,
   Leaf,
   Sprout,
   type LucideIcon,
@@ -26,17 +25,6 @@ type ModuleDetails = {
 }
 
 const modules: Record<string, ModuleDetails> = {
-  inventario: {
-    title: "Inventario",
-    description:
-      "Administre los insumos agrícolas y pecuarios disponibles en el colegio.",
-    icon: Boxes,
-    modulo: "INVENTARIO",
-    action: {
-      label: "Registrar insumo",
-      href: "/inventario/insumos/nuevo",
-    },
-  },
   agricola: {
     title: "Área agrícola",
     description:
