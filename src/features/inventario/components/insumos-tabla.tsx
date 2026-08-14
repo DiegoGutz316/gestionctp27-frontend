@@ -174,7 +174,7 @@ export function InsumosTabla({
                     <DropdownMenuItem
                       render={
                         <Link
-                          href={`/inventario/insumos/${insumo.id}/editar`}
+                          href={`/dashboard/inventario/${insumo.id}/editar`}
                         />
                       }
                     >
