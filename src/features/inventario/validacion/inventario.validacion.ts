@@ -17,6 +17,30 @@ const sinVacios = <T extends z.ZodTypeAny>(schema: T) =>
     schema,
   );
 
+/**
+ * Límites de las columnas numeric(12,2) del inventario (deben coincidir con
+ * `dto/limites-numericos.ts` del backend). Si no se validan aquí, Postgres
+ * redondea o desborda el valor y la API responde con un error genérico.
+ */
+export const VALOR_MAXIMO = 9999999999.99;
+const VALOR_MAXIMO_TEXTO = VALOR_MAXIMO.toLocaleString("es-CR", {
+  minimumFractionDigits: 2,
+});
+
+/**
+ * Aplica a un número los límites de la columna: tope máximo y como mucho dos
+ * decimales (más decimales los redondearía la base de datos en silencio).
+ */
+const acotarADecimal = (
+  etiqueta: string,
+  base: ReturnType<typeof numeroDesdeInput>,
+) =>
+  base
+    .max(VALOR_MAXIMO, `${etiqueta} no puede superar ${VALOR_MAXIMO_TEXTO}`)
+    .refine((valor) => Math.abs(valor * 100 - Math.round(valor * 100)) < 1e-9, {
+      error: `${etiqueta} admite como máximo 2 decimales`,
+    });
+
 export const crearCategoriaInsumoSchema = z.object({
   nombre: z
     .string({ error: "El nombre de la categoría es obligatorio" })
@@ -42,14 +66,20 @@ export const crearInsumoSchema = z.object({
     error: "Seleccione una unidad de medida válida",
   }),
   cantidad: sinVacios(
-    numeroDesdeInput("La cantidad inicial es obligatoria").positive(
-      "La cantidad inicial debe ser mayor que 0",
+    acotarADecimal(
+      "La cantidad inicial",
+      numeroDesdeInput("La cantidad inicial es obligatoria").positive(
+        "La cantidad inicial debe ser mayor que 0",
+      ),
     ),
   ),
   nivelMinimo: sinVacios(
-    numeroDesdeInput("El nivel mínimo es obligatorio").min(
-      0,
-      "El nivel mínimo debe ser 0 o mayor",
+    acotarADecimal(
+      "El nivel mínimo",
+      numeroDesdeInput("El nivel mínimo es obligatorio").min(
+        0,
+        "El nivel mínimo debe ser 0 o mayor",
+      ),
     ),
   ),
 });
@@ -116,9 +146,12 @@ export const editarInsumoSchema = z.object({
     error: "Seleccione una unidad de medida válida",
   }),
   nivelMinimo: sinVacios(
-    numeroDesdeInput("El nivel mínimo es obligatorio").min(
-      0,
-      "El nivel mínimo debe ser 0 o mayor",
+    acotarADecimal(
+      "El nivel mínimo",
+      numeroDesdeInput("El nivel mínimo es obligatorio").min(
+        0,
+        "El nivel mínimo debe ser 0 o mayor",
+      ),
     ),
   ),
 });
@@ -135,8 +168,11 @@ export const registrarEntradaSchema = z.object({
       .positive("Seleccione un insumo"),
   ),
   cantidad: sinVacios(
-    numeroDesdeInput("La cantidad es obligatoria").positive(
-      "La cantidad debe ser mayor que 0",
+    acotarADecimal(
+      "La cantidad",
+      numeroDesdeInput("La cantidad es obligatoria").positive(
+        "La cantidad debe ser mayor que 0",
+      ),
     ),
   ),
   fecha: z
