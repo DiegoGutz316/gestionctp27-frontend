@@ -28,6 +28,21 @@ const VALOR_MAXIMO_TEXTO = VALOR_MAXIMO.toLocaleString("es-CR", {
 });
 
 /**
+ * true si el número tiene como mucho dos decimales.
+ *
+ * Se compara contra su representación decimal (`toFixed`) y no con
+ * `valor * 100`: multiplicar amplifica el error de coma flotante en proporción
+ * a la magnitud, así que un margen fijo rechazaba valores perfectamente
+ * válidos. Por ejemplo `536455.05 * 100` da `53645505.00000001`, que se desvía
+ * ~7e-9 del entero; con un margen de 1e-9 ese importe se rechazaba por
+ * "demasiados decimales". `toFixed` trabaja sobre la representación decimal, no
+ * sobre el producto, así que se comporta igual con cualquier magnitud y también
+ * descarta la notación exponencial (1e-7 → "0.00").
+ */
+const tieneDosDecimalesComoMucho = (valor: number) =>
+  Number(valor.toFixed(2)) === valor;
+
+/**
  * Aplica a un número los límites de la columna: tope máximo y como mucho dos
  * decimales (más decimales los redondearía la base de datos en silencio).
  */
@@ -37,7 +52,7 @@ const acotarADecimal = (
 ) =>
   base
     .max(VALOR_MAXIMO, `${etiqueta} no puede superar ${VALOR_MAXIMO_TEXTO}`)
-    .refine((valor) => Math.abs(valor * 100 - Math.round(valor * 100)) < 1e-9, {
+    .refine(tieneDosDecimalesComoMucho, {
       error: `${etiqueta} admite como máximo 2 decimales`,
     });
 
