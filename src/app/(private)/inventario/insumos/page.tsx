@@ -23,7 +23,7 @@ export default function InsumosPage() {
         que Base UI asuma semántica de botón nativo sobre ese elemento. */}
         <Button
           nativeButton={false}
-          render={<Link href="/inventario/insumos/nuevo" />}
+          render={<Link href="/dashboard/inventario/nuevo" />}
         >
           <PlusIcon />
           Registrar insumo

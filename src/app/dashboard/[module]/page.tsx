@@ -28,7 +28,7 @@ const modules: Record<string, ModuleDetails> = {
     icon: Boxes,
     action: {
       label: "Registrar insumo",
-      href: "/inventario/insumos/nuevo",
+      href: "/dashboard/inventario/nuevo",
     },
   },
   agricola: {
