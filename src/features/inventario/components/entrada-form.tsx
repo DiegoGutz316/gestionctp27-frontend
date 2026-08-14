@@ -55,7 +55,7 @@ export function EntradaForm() {
         toast.success(
           `Entrada registrada. "${movimiento.insumo.nombre}" quedó en ${movimiento.insumo.cantidad} ${movimiento.insumo.unidadMedida}.`,
         );
-        router.push("/inventario/insumos");
+        router.push("/dashboard/inventario/entradas");
       } catch (error) {
         toast.error(getMensajeDeError(error));
       }

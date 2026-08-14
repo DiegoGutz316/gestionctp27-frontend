@@ -22,7 +22,7 @@ export function AccionesInventario() {
       <Button
         variant="outline"
         nativeButton={false}
-        render={<Link href="/inventario/entradas" />}
+        render={<Link href="/dashboard/inventario/entradas" />}
       >
         <HistoryIcon />
         Entradas

@@ -117,7 +117,7 @@ export function InventarioGestion() {
           variant="outline"
           className="h-10 w-full justify-center sm:flex-1"
           nativeButton={false}
-          render={<Link href="/inventario/entradas" />}
+          render={<Link href="/dashboard/inventario/entradas" />}
         >
           <HistoryIcon data-icon="inline-start" />
           Entradas
