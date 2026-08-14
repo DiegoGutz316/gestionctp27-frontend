@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuth } from "@/features/auth/context/auth-context";
 import { getMensajeDeError } from "../api";
 import { useCategorias, useInsumos } from "../hooks";
 
@@ -30,6 +31,10 @@ export function InsumosTable() {
   const [nombre, setNombre] = useState("");
   const [categoriaId, setCategoriaId] = useState(TODAS_LAS_CATEGORIAS);
   const nombreDebounced = useDebouncedValue(nombre, 300);
+
+  // Backlog 1.6: la columna de acciones solo se muestra a quien puede editar.
+  const { puede } = useAuth();
+  const puedeEditar = puede("INVENTARIO", "COMPLETO");
 
   const categorias = useCategorias();
   const hayFiltrosActivos =
@@ -95,9 +100,11 @@ export function InsumosTable() {
               <TableHead>Categoría</TableHead>
               <TableHead>Unidad</TableHead>
               <TableHead className="text-right">Cantidad</TableHead>
-              <TableHead className="w-0">
-                <span className="sr-only">Acciones</span>
-              </TableHead>
+              {puedeEditar && (
+                <TableHead className="w-0">
+                  <span className="sr-only">Acciones</span>
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -107,21 +114,23 @@ export function InsumosTable() {
                 <TableCell>{insumo.categoria.nombre}</TableCell>
                 <TableCell>{insumo.unidadMedida}</TableCell>
                 <TableCell className="text-right">{insumo.cantidad}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    nativeButton={false}
-                    render={
-                      <Link
-                        href={`/inventario/insumos/${insumo.id}/editar`}
-                        aria-label={`Editar ${insumo.nombre}`}
-                      />
-                    }
-                  >
-                    <PencilIcon />
-                  </Button>
-                </TableCell>
+                {puedeEditar && (
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href={`/inventario/insumos/${insumo.id}/editar`}
+                          aria-label={`Editar ${insumo.nombre}`}
+                        />
+                      }
+                    >
+                      <PencilIcon />
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

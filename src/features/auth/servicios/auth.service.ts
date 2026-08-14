@@ -4,6 +4,7 @@ import type {
   RespuestaLogin,
   UsuarioSesion,
 } from "../models/auth.model";
+import type { RespuestaPermisos } from "../models/permisos.model";
 
 export function iniciarSesion(datos: LoginDatos) {
   return api.post<RespuestaLogin>("/auth/login", datos);
@@ -15,6 +16,11 @@ export function cerrarSesion() {
 
 export function obtenerPerfil() {
   return api.get<UsuarioSesion>("/auth/perfil");
+}
+
+/** Backlog 1.6: matriz de permisos del rol de la sesión actual. */
+export function obtenerPermisos() {
+  return api.get<RespuestaPermisos>("/auth/permisos");
 }
 
 export function getMensajeDeErrorAuth(error: unknown): string {

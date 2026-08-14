@@ -6,6 +6,8 @@ import type {
   EditarInsumo,
   FiltrarInsumos,
   InsumoRespuesta,
+  MovimientoRespuesta,
+  RegistrarEntrada,
 } from "./models/inventario.model";
 
 export function obtenerCategorias() {
@@ -33,6 +35,11 @@ export function obtenerInsumo(id: number) {
 
 export function editarInsumo(id: number, datos: EditarInsumo) {
   return api.patch<InsumoRespuesta>(`/inventario/insumos/${id}`, datos);
+}
+
+/** Backlog 4.4: registra una entrada; el backend suma la cantidad al stock. */
+export function registrarEntrada(datos: RegistrarEntrada) {
+  return api.post<MovimientoRespuesta>("/inventario/entradas", datos);
 }
 
 /**
