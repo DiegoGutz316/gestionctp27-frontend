@@ -1,12 +1,17 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { EditarInsumo, FiltrarInsumos } from "./models/inventario.model";
+import type {
+  ConsultarEntradas,
+  EditarInsumo,
+  FiltrarInsumos,
+} from "./models/inventario.model";
 import {
   crearCategoria,
   crearInsumo,
   editarInsumo,
   obtenerCategorias,
+  obtenerEntradas,
   obtenerInsumo,
   obtenerInsumos,
   registrarEntrada,
@@ -71,11 +76,27 @@ export function useEditarInsumo(id: number) {
  * criterio pendiente del backlog 4.2: "la información se actualiza después de
  * registrar entradas o salidas".
  */
+// Clave base del historial de entradas (backlog 4.5).
+export const entradasQueryKey = ["inventario", "entradas"] as const;
+
 export function useRegistrarEntrada() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: registrarEntrada,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: insumosQueryKey }),
+    onSuccess: () => {
+      // Cambian tanto las existencias como el historial.
+      void queryClient.invalidateQueries({ queryKey: insumosQueryKey });
+      void queryClient.invalidateQueries({ queryKey: entradasQueryKey });
+    },
+  });
+}
+
+export function useEntradas(filtros: ConsultarEntradas = {}) {
+  return useQuery({
+    queryKey: [...entradasQueryKey, filtros],
+    queryFn: () => obtenerEntradas(filtros),
+    // Al cambiar de página o filtro se conservan los datos previos, para que la
+    // tabla no parpadee entre consultas.
+    placeholderData: (anterior) => anterior,
   });
 }

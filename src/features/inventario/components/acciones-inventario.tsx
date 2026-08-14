@@ -1,23 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowDownToLineIcon, PlusIcon } from "lucide-react";
+import { HistoryIcon, PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/features/auth/context/auth-context";
+import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
 /**
- * Acciones de escritura del listado de insumos.
+ * Acciones del listado de insumos.
  *
- * Backlog 1.6: solo aparecen si el rol puede escribir en inventario. Los roles
- * de solo lectura (directora, estudiante) ven la pantalla sin las acciones, en
- * vez de encontrarse un "acceso denegado" después de hacer clic.
+ * El historial de entradas (backlog 4.5) es una consulta, así que se ofrece a
+ * cualquiera que pueda ver esta pantalla. Registrar un insumo escribe, así que
+ * se condiciona a COMPLETO (backlog 1.6): los roles de solo lectura no ven una
+ * acción que terminaría en un rechazo.
  */
 export function AccionesInventario() {
-  const { puede } = useAuth();
-
-  if (!puede("INVENTARIO", "COMPLETO")) return null;
-
   return (
     <div className="flex items-center gap-2">
       {/* Link renderiza un <a>, no un <button>; nativeButton={false} evita que
@@ -25,18 +22,20 @@ export function AccionesInventario() {
       <Button
         variant="outline"
         nativeButton={false}
-        render={<Link href="/inventario/entradas/nueva" />}
+        render={<Link href="/inventario/entradas" />}
       >
-        <ArrowDownToLineIcon />
-        Registrar entrada
+        <HistoryIcon />
+        Entradas
       </Button>
-      <Button
-        nativeButton={false}
-        render={<Link href="/inventario/insumos/nuevo" />}
-      >
-        <PlusIcon />
-        Registrar insumo
-      </Button>
+      <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
+        <Button
+          nativeButton={false}
+          render={<Link href="/inventario/insumos/nuevo" />}
+        >
+          <PlusIcon />
+          Registrar insumo
+        </Button>
+      </MostrarSiPuede>
     </div>
   );
 }

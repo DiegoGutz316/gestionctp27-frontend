@@ -1,9 +1,12 @@
 import { api, ApiError } from "@/lib/api";
+import type { ResultadoPaginado } from "@/lib/paginacion";
 import type {
   CategoriaInsumoRespuesta,
+  ConsultarEntradas,
   CrearCategoriaInsumo,
   CrearInsumo,
   EditarInsumo,
+  EntradaRespuesta,
   FiltrarInsumos,
   InsumoRespuesta,
   MovimientoRespuesta,
@@ -40,6 +43,17 @@ export function editarInsumo(id: number, datos: EditarInsumo) {
 /** Backlog 4.4: registra una entrada; el backend suma la cantidad al stock. */
 export function registrarEntrada(datos: RegistrarEntrada) {
   return api.post<MovimientoRespuesta>("/inventario/entradas", datos);
+}
+
+/** Backlog 4.5: historial de entradas, paginado y filtrable. */
+export function obtenerEntradas(filtros: ConsultarEntradas = {}) {
+  return api.get<ResultadoPaginado<EntradaRespuesta>>("/inventario/entradas", {
+    pagina: filtros.pagina,
+    limite: filtros.limite,
+    insumoId: filtros.insumoId,
+    desde: filtros.desde,
+    hasta: filtros.hasta,
+  });
 }
 
 /**

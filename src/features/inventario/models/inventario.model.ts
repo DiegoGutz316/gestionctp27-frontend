@@ -22,4 +22,6 @@ export type {
   RegistrarEntrada,
   RegistrarEntradaInput,
   MovimientoRespuesta,
+  EntradaRespuesta,
+  ConsultarEntradas,
 } from "../validacion/inventario.validacion";

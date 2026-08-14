@@ -203,3 +203,31 @@ const movimientoSchema = z.object({
 });
 
 export type MovimientoRespuesta = z.infer<typeof movimientoSchema>;
+
+// Consulta del historial de entradas (backlog 4.5).
+const entradaSchema = z.object({
+  id: z.number(),
+  cantidad: z.number(),
+  fecha: z.string(),
+  origen: z.string().nullable(),
+  creadoEn: z.string(),
+  insumo: z.object({
+    id: z.number(),
+    nombre: z.string(),
+    unidadMedida: z.enum(UNIDADES_MEDIDA),
+  }),
+  responsable: z.object({ id: z.string(), nombre: z.string() }),
+});
+
+export type EntradaRespuesta = z.infer<typeof entradaSchema>;
+
+/** Filtros del historial; se envían como query string y todos son opcionales. */
+export const consultarEntradasSchema = z.object({
+  pagina: z.number().int().min(1).optional(),
+  limite: z.number().int().min(1).max(100).optional(),
+  insumoId: z.number().int().positive().optional(),
+  desde: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
+  hasta: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
+});
+
+export type ConsultarEntradas = z.output<typeof consultarEntradasSchema>;
