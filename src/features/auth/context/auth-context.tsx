@@ -46,47 +46,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [permisos, setPermisos] = useState<MatrizPermisos>(matrizVacia);
   const [cargando, setCargando] = useState(true);
 
-  const refrescar = useCallback(async () => {
-    try {
-      const [perfil, respuestaPermisos] = await Promise.all([
-        obtenerPerfil(),
-        obtenerPermisos(),
-      ]);
-      setUsuario(perfil);
-      setPermisos(respuestaPermisos.permisos);
-    } catch {
-      setUsuario(null);
-      setPermisos(matrizVacia());
+  /**
+   * Carga perfil y permisos en paralelo, pero los resuelve por separado.
+   *
+   * Solo el perfil decide si hay sesión: los permisos son complementarios. Con
+   * `Promise.all` un fallo aislado de /auth/permisos (un backend desplegado sin
+   * ese endpoint todavía, por ejemplo) tumbaba también al usuario y las
+   * pantallas privadas mostraban "sesión expirada" con una cookie válida.
+   * `allSettled` mantiene el paralelismo sin acoplar los dos fallos, y deja el
+   * mismo criterio que ya usaba `login()`.
+   */
+  const cargarSesion = useCallback(async () => {
+    const [resultadoPerfil, resultadoPermisos] = await Promise.allSettled([
+      obtenerPerfil(),
+      obtenerPermisos(),
+    ]);
+
+    if (resultadoPerfil.status === "rejected") {
+      return { usuario: null, permisos: matrizVacia() };
     }
+
+    return {
+      usuario: resultadoPerfil.value,
+      // Sin permisos se cae a "ninguno": la interfaz oculta las opciones en vez
+      // de mostrar acciones que el backend rechazaría igual.
+      permisos:
+        resultadoPermisos.status === "fulfilled"
+          ? resultadoPermisos.value.permisos
+          : matrizVacia(),
+    };
   }, []);
+
+  const refrescar = useCallback(async () => {
+    const sesion = await cargarSesion();
+    setUsuario(sesion.usuario);
+    setPermisos(sesion.permisos);
+  }, [cargarSesion]);
 
   useEffect(() => {
     let activo = true;
 
     (async () => {
-      try {
-        const [perfil, respuestaPermisos] = await Promise.all([
-          obtenerPerfil(),
-          obtenerPermisos(),
-        ]);
-        if (activo) {
-          setUsuario(perfil);
-          setPermisos(respuestaPermisos.permisos);
-        }
-      } catch {
-        if (activo) {
-          setUsuario(null);
-          setPermisos(matrizVacia());
-        }
-      } finally {
-        if (activo) setCargando(false);
+      const sesion = await cargarSesion();
+      if (activo) {
+        setUsuario(sesion.usuario);
+        setPermisos(sesion.permisos);
+        setCargando(false);
       }
     })();
 
     return () => {
       activo = false;
     };
-  }, []);
+  }, [cargarSesion]);
 
   const login = useCallback(async (datos: LoginDatos) => {
     const respuesta = await iniciarSesion(datos);

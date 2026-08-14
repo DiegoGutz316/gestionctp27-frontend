@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede"
 import { RequerirPermiso } from "@/features/auth/components/requerir-permiso"
 import type { ModuloSistema } from "@/features/auth/models/permisos.model"
 
@@ -93,17 +94,22 @@ export default async function DashboardModulePage({
         </div>
 
         {details.action ? (
-          <div>
-            {/* Link renderiza un <a>, no un <button>; nativeButton={false}
-            evita que Base UI asuma semántica de botón nativo sobre ese
-            elemento. */}
-            <Button
-              nativeButton={false}
-              render={<Link href={details.action.href} />}
-            >
-              {details.action.label}
-            </Button>
-          </div>
+          // El guard de la página solo exige LECTURA; la acción escribe, así
+          // que se condiciona aparte a COMPLETO. Sin esto, un rol de solo
+          // lectura veía el botón y caía en "acceso denegado" al pulsarlo.
+          <MostrarSiPuede modulo={details.modulo} nivel="COMPLETO">
+            <div>
+              {/* Link renderiza un <a>, no un <button>; nativeButton={false}
+              evita que Base UI asuma semántica de botón nativo sobre ese
+              elemento. */}
+              <Button
+                nativeButton={false}
+                render={<Link href={details.action.href} />}
+              >
+                {details.action.label}
+              </Button>
+            </div>
+          </MostrarSiPuede>
         ) : (
           <div className="rounded-lg border border-dashed bg-muted/30 p-6 text-sm text-muted-foreground">
             El módulo está listo para recibir su contenido funcional.
