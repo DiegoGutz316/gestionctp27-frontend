@@ -87,9 +87,9 @@ export function UsuarioDesactivarDialog({
         </DialogHeader>
 
         <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
+          onSubmit={(evento) => {
+            evento.preventDefault();
+            evento.stopPropagation();
             void form.handleSubmit();
           }}
           noValidate

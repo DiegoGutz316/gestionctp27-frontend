@@ -53,7 +53,7 @@ export type EditarUsuarioInput = z.input<typeof editarUsuarioSchema>;
 /** Confirmación del diálogo de desactivación lógica (activo → false). */
 export const desactivarUsuarioSchema = z.object({
   confirmar: z.boolean().refine((valor) => valor === true, {
-    message: "Debe confirmar que desea desactivar al usuario",
+    error: "Debe confirmar que desea desactivar al usuario",
   }),
 });
 

@@ -193,7 +193,7 @@ export const registrarEntradaSchema = z.object({
   fecha: z
     .string({ error: "La fecha es obligatoria" })
     .min(1, "La fecha es obligatoria")
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Ingrese una fecha válida"),
+    .pipe(z.iso.date({ error: "Ingrese una fecha válida" })),
   origen: z
     .string()
     .trim()
@@ -237,12 +237,10 @@ const entradaSchema = z.object({
 export type EntradaRespuesta = z.infer<typeof entradaSchema>;
 
 /** Filtros del historial; se envían como query string y todos son opcionales. */
-export const consultarEntradasSchema = z.object({
-  pagina: z.number().int().min(1).optional(),
-  limite: z.number().int().min(1).max(100).optional(),
-  insumoId: z.number().int().positive().optional(),
-  desde: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
-  hasta: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
-});
-
-export type ConsultarEntradas = z.output<typeof consultarEntradasSchema>;
+export type ConsultarEntradas = {
+  pagina?: number;
+  limite?: number;
+  insumoId?: number;
+  desde?: string;
+  hasta?: string;
+};

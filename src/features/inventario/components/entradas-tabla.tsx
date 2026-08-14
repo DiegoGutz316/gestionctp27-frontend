@@ -53,13 +53,6 @@ export function EntradasTabla() {
   const hayFiltrosActivos =
     insumoId !== TODOS_LOS_INSUMOS || desde !== "" || hasta !== "";
 
-  // Cualquier cambio de filtro vuelve a la primera página: la página 5 del
-  // resultado anterior no tiene por qué existir en el nuevo.
-  function cambiarFiltro(aplicar: () => void) {
-    aplicar();
-    setPagina(1);
-  }
-
   function limpiarFiltros() {
     setInsumoId(TODOS_LOS_INSUMOS);
     setDesde("");
@@ -83,9 +76,10 @@ export function EntradasTabla() {
           <Select
             items={insumosItems}
             value={insumoId}
-            onValueChange={(valor) =>
-              cambiarFiltro(() => setInsumoId(valor ?? TODOS_LOS_INSUMOS))
-            }
+            onValueChange={(valor) => {
+              setInsumoId(valor ?? TODOS_LOS_INSUMOS);
+              setPagina(1);
+            }}
           >
             <SelectTrigger id="filtro-insumo" className="w-full">
               <SelectValue />
@@ -107,9 +101,10 @@ export function EntradasTabla() {
             type="date"
             value={desde}
             max={hasta || undefined}
-            onChange={(evento) =>
-              cambiarFiltro(() => setDesde(evento.target.value))
-            }
+            onChange={(evento) => {
+              setDesde(evento.target.value);
+              setPagina(1);
+            }}
           />
         </div>
 
@@ -120,9 +115,10 @@ export function EntradasTabla() {
             type="date"
             value={hasta}
             min={desde || undefined}
-            onChange={(evento) =>
-              cambiarFiltro(() => setHasta(evento.target.value))
-            }
+            onChange={(evento) => {
+              setHasta(evento.target.value);
+              setPagina(1);
+            }}
           />
         </div>
 

@@ -47,16 +47,16 @@ export function InventarioGestion() {
   const hayFiltros =
     busquedaDebounced !== "" || categoriaId !== TODAS_LAS_CATEGORIAS;
 
-  const lista = insumos.data ?? [];
-  const total = lista.length;
+  const total = insumos.data?.length ?? 0;
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE) || 1);
   const paginaActual = Math.min(page, totalPaginas);
 
   // La API aún no pagina; se pagina en cliente para igualar Usuarios.
   const paginaInsumos = useMemo(() => {
+    const items = insumos.data ?? [];
     const inicio = (paginaActual - 1) * PAGE_SIZE;
-    return lista.slice(inicio, inicio + PAGE_SIZE);
-  }, [lista, paginaActual]);
+    return items.slice(inicio, inicio + PAGE_SIZE);
+  }, [insumos.data, paginaActual]);
 
   const meta = useMemo<MetaPaginacion | null>(() => {
     if (insumos.isLoading || insumos.isError) return null;

@@ -141,16 +141,22 @@ export function AppSidebar() {
 
   // Backlog 1.6: solo quedan las opciones permitidas por el rol; las secciones
   // que se vacian dejan de renderizarse.
-  const navegacionPermitida = useMemo(
-    () =>
-      navigation
-        .map((section) => ({
-          ...section,
-          items: section.items.filter((item) => puede(item.modulo)),
-        }))
-        .filter((section) => section.items.length > 0),
-    [puede],
-  )
+  const navegacionPermitida = useMemo(() => {
+    type ItemNavegacion = (typeof navigation)[number]["items"][number]
+    const secciones: { label: string; items: ItemNavegacion[] }[] = []
+
+    for (const section of navigation) {
+      const items: ItemNavegacion[] = []
+      for (const item of section.items) {
+        if (puede(item.modulo)) items.push(item)
+      }
+      if (items.length > 0) {
+        secciones.push({ ...section, items })
+      }
+    }
+
+    return secciones
+  }, [puede])
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     () =>
