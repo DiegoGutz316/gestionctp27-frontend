@@ -17,6 +17,45 @@ const sinVacios = <T extends z.ZodTypeAny>(schema: T) =>
     schema,
   );
 
+/**
+ * Límites de las columnas numeric(12,2) del inventario (deben coincidir con
+ * `dto/limites-numericos.ts` del backend). Si no se validan aquí, Postgres
+ * redondea o desborda el valor y la API responde con un error genérico.
+ */
+export const VALOR_MAXIMO = 9999999999.99;
+const VALOR_MAXIMO_TEXTO = VALOR_MAXIMO.toLocaleString("es-CR", {
+  minimumFractionDigits: 2,
+});
+
+/**
+ * true si el número tiene como mucho dos decimales.
+ *
+ * Se compara contra su representación decimal (`toFixed`) y no con
+ * `valor * 100`: multiplicar amplifica el error de coma flotante en proporción
+ * a la magnitud, así que un margen fijo rechazaba valores perfectamente
+ * válidos. Por ejemplo `536455.05 * 100` da `53645505.00000001`, que se desvía
+ * ~7e-9 del entero; con un margen de 1e-9 ese importe se rechazaba por
+ * "demasiados decimales". `toFixed` trabaja sobre la representación decimal, no
+ * sobre el producto, así que se comporta igual con cualquier magnitud y también
+ * descarta la notación exponencial (1e-7 → "0.00").
+ */
+const tieneDosDecimalesComoMucho = (valor: number) =>
+  Number(valor.toFixed(2)) === valor;
+
+/**
+ * Aplica a un número los límites de la columna: tope máximo y como mucho dos
+ * decimales (más decimales los redondearía la base de datos en silencio).
+ */
+const acotarADecimal = (
+  etiqueta: string,
+  base: ReturnType<typeof numeroDesdeInput>,
+) =>
+  base
+    .max(VALOR_MAXIMO, `${etiqueta} no puede superar ${VALOR_MAXIMO_TEXTO}`)
+    .refine(tieneDosDecimalesComoMucho, {
+      error: `${etiqueta} admite como máximo 2 decimales`,
+    });
+
 export const crearCategoriaInsumoSchema = z.object({
   nombre: z
     .string({ error: "El nombre de la categoría es obligatorio" })
@@ -42,14 +81,20 @@ export const crearInsumoSchema = z.object({
     error: "Seleccione una unidad de medida válida",
   }),
   cantidad: sinVacios(
-    numeroDesdeInput("La cantidad inicial es obligatoria").positive(
-      "La cantidad inicial debe ser mayor que 0",
+    acotarADecimal(
+      "La cantidad inicial",
+      numeroDesdeInput("La cantidad inicial es obligatoria").positive(
+        "La cantidad inicial debe ser mayor que 0",
+      ),
     ),
   ),
   nivelMinimo: sinVacios(
-    numeroDesdeInput("El nivel mínimo es obligatorio").min(
-      0,
-      "El nivel mínimo debe ser 0 o mayor",
+    acotarADecimal(
+      "El nivel mínimo",
+      numeroDesdeInput("El nivel mínimo es obligatorio").min(
+        0,
+        "El nivel mínimo debe ser 0 o mayor",
+      ),
     ),
   ),
 });
@@ -116,9 +161,12 @@ export const editarInsumoSchema = z.object({
     error: "Seleccione una unidad de medida válida",
   }),
   nivelMinimo: sinVacios(
-    numeroDesdeInput("El nivel mínimo es obligatorio").min(
-      0,
-      "El nivel mínimo debe ser 0 o mayor",
+    acotarADecimal(
+      "El nivel mínimo",
+      numeroDesdeInput("El nivel mínimo es obligatorio").min(
+        0,
+        "El nivel mínimo debe ser 0 o mayor",
+      ),
     ),
   ),
 });
@@ -135,8 +183,11 @@ export const registrarEntradaSchema = z.object({
       .positive("Seleccione un insumo"),
   ),
   cantidad: sinVacios(
-    numeroDesdeInput("La cantidad es obligatoria").positive(
-      "La cantidad debe ser mayor que 0",
+    acotarADecimal(
+      "La cantidad",
+      numeroDesdeInput("La cantidad es obligatoria").positive(
+        "La cantidad debe ser mayor que 0",
+      ),
     ),
   ),
   fecha: z
@@ -167,3 +218,31 @@ const movimientoSchema = z.object({
 });
 
 export type MovimientoRespuesta = z.infer<typeof movimientoSchema>;
+
+// Consulta del historial de entradas (backlog 4.5).
+const entradaSchema = z.object({
+  id: z.number(),
+  cantidad: z.number(),
+  fecha: z.string(),
+  origen: z.string().nullable(),
+  creadoEn: z.string(),
+  insumo: z.object({
+    id: z.number(),
+    nombre: z.string(),
+    unidadMedida: z.enum(UNIDADES_MEDIDA),
+  }),
+  responsable: z.object({ id: z.string(), nombre: z.string() }),
+});
+
+export type EntradaRespuesta = z.infer<typeof entradaSchema>;
+
+/** Filtros del historial; se envían como query string y todos son opcionales. */
+export const consultarEntradasSchema = z.object({
+  pagina: z.number().int().min(1).optional(),
+  limite: z.number().int().min(1).max(100).optional(),
+  insumoId: z.number().int().positive().optional(),
+  desde: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
+  hasta: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
+});
+
+export type ConsultarEntradas = z.output<typeof consultarEntradasSchema>;
