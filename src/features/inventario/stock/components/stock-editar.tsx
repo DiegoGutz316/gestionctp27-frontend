@@ -1,23 +1,27 @@
 "use client";
 
 import { getMensajeDeError } from "../servicios/stock.service";
-import { useStockItem } from "../hooks/hooks";
+import { useConfiguracionStock } from "../hooks/hooks";
 import { StockEditarForm } from "./stock-editar-form";
 
 export function StockEditar({ id }: { id: number }) {
-  const stock = useStockItem(id);
+  const configuracion = useConfiguracionStock(id);
 
-  if (stock.isLoading) {
-    return <p className="text-sm text-muted-foreground">Cargando stock…</p>;
-  }
-
-  if (stock.isError || !stock.data) {
+  if (configuracion.isLoading) {
     return (
-      <p className="text-sm text-destructive">
-        {getMensajeDeError(stock.error)}
+      <p className="text-sm text-muted-foreground">
+        Cargando configuración de stock…
       </p>
     );
   }
 
-  return <StockEditarForm stock={stock.data} />;
+  if (configuracion.isError || !configuracion.data) {
+    return (
+      <p className="text-sm text-destructive">
+        {getMensajeDeError(configuracion.error)}
+      </p>
+    );
+  }
+
+  return <StockEditarForm configuracion={configuracion.data} />;
 }

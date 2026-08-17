@@ -1,9 +1,14 @@
 "use client";
 
+import { useRef } from "react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { crearSalidaSchema, type StockRespuesta } from "../validacion/stock.validacion";
+import {
+  crearSalidaSchema,
+  fechaLocalHoy,
+} from "../validacion/stock.validacion";
 import type { UnidadMedida } from "../../producto/models/producto.model";
+import type { Inventario } from "../models/stock.model";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,43 +31,50 @@ import { zodValidator } from "@/lib/zod-form";
 import { useRegistrarSalida } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/stock.service";
 
-/** Fecha de hoy en formato AAAA-MM-DD, en la zona horaria del navegador. */
-function hoy(): string {
-  const ahora = new Date();
-  const desfase = ahora.getTimezoneOffset() * 60_000;
-  return new Date(ahora.getTime() - desfase).toISOString().slice(0, 10);
-}
-
 type StockSalidaDialogProps = {
-  stock: StockRespuesta | null;
+  inventario: Inventario | null;
+  productoNombre: string;
   unidadMedida: UnidadMedida;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
 export function StockSalidaDialog({
-  stock,
+  inventario,
+  productoNombre,
   unidadMedida,
   open,
   onOpenChange,
 }: StockSalidaDialogProps) {
-  const registrarSalida = useRegistrarSalida(stock?.id ?? 0);
+  const registrarSalida = useRegistrarSalida(inventario?.id ?? 0);
   const schema = crearSalidaSchema(unidadMedida);
   const step = unidadMedida === "UNIDAD" ? "1" : "0.01";
+  const idempotencyKey = useRef<string | null>(null);
+
+  function rotarClave() {
+    idempotencyKey.current = globalThis.crypto.randomUUID();
+  }
 
   const form = useForm({
-    defaultValues: { cantidad: "" as string | number, fecha: hoy(), motivo: "" },
+    defaultValues: {
+      cantidad: "" as string | number,
+      fecha: fechaLocalHoy(),
+      motivo: "",
+    },
     validators: { onSubmit: zodValidator(schema) },
     onSubmit: async ({ value }) => {
-      if (!stock) return;
+      if (!inventario) return;
 
       try {
-        const movimiento = await registrarSalida.mutateAsync(
-          schema.parse(value),
-        );
+        idempotencyKey.current ??= globalThis.crypto.randomUUID();
+        const movimiento = await registrarSalida.mutateAsync({
+          datos: schema.parse(value),
+          idempotencyKey: idempotencyKey.current,
+        });
         toast.success(
-          `Salida registrada. Existencia actual: ${movimiento.inventario.cantidad}.`,
+          `Salida registrada. Existencia actual: ${movimiento.inventario.cantidadActual}.`,
         );
+        rotarClave();
         form.reset();
         onOpenChange(false);
       } catch (error) {
@@ -76,16 +88,19 @@ export function StockSalidaDialog({
       open={open}
       onOpenChange={(abierto) => {
         onOpenChange(abierto);
-        if (!abierto) form.reset();
+        if (!abierto) {
+          rotarClave();
+          form.reset();
+        }
       }}
     >
-      <DialogContent>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Registrar salida</DialogTitle>
+          <DialogTitle>Registrar salida de existencias</DialogTitle>
           <DialogDescription>
-            {stock
-              ? `Resta existencia al stock de "${stock.producto.nombre}". Existencia actual: ${stock.cantidad}.`
-              : "Seleccione un registro de stock."}
+            {inventario
+              ? `Resta existencias de "${productoNombre}". Existencia actual: ${inventario.cantidadActual}.`
+              : "Seleccione un registro de existencias."}
           </DialogDescription>
         </DialogHeader>
 
@@ -111,13 +126,14 @@ export function StockSalidaDialog({
                       id={field.name}
                       type="number"
                       step={step}
-                      min={0}
+                      min={step}
                       aria-invalid={invalid}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(event) =>
-                        field.handleChange(event.target.value)
-                      }
+                      onChange={(event) => {
+                        rotarClave();
+                        field.handleChange(event.target.value);
+                      }}
                     />
                     <FieldError errors={errors} />
                   </Field>
@@ -137,12 +153,14 @@ export function StockSalidaDialog({
                     <Input
                       id={field.name}
                       type="date"
+                      max={fechaLocalHoy()}
                       aria-invalid={invalid}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(event) =>
-                        field.handleChange(event.target.value)
-                      }
+                      onChange={(event) => {
+                        rotarClave();
+                        field.handleChange(event.target.value);
+                      }}
                     />
                     <FieldError errors={errors} />
                   </Field>
@@ -156,7 +174,9 @@ export function StockSalidaDialog({
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={field.name}>Motivo</FieldLabel>
+                    <FieldLabel htmlFor={field.name} required>
+                      Motivo
+                    </FieldLabel>
                     <Input
                       id={field.name}
                       placeholder="Ej: Consumo, merma, traslado…"
@@ -164,12 +184,13 @@ export function StockSalidaDialog({
                       aria-invalid={invalid}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(event) =>
-                        field.handleChange(event.target.value)
-                      }
+                      onChange={(event) => {
+                        rotarClave();
+                        field.handleChange(event.target.value);
+                      }}
                     />
                     <FieldDescription>
-                      Por qué sale el stock. Queda en el historial.
+                      Por qué salen las existencias. Queda en el historial.
                     </FieldDescription>
                     <FieldError errors={errors} />
                   </Field>
@@ -182,7 +203,11 @@ export function StockSalidaDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                rotarClave();
+                form.reset();
+                onOpenChange(false);
+              }}
               disabled={registrarSalida.isPending}
             >
               Cancelar
@@ -191,7 +216,11 @@ export function StockSalidaDialog({
               selector={(state) => state.isSubmitting || registrarSalida.isPending}
             >
               {(guardando) => (
-                <Button type="submit" variant="destructive" disabled={guardando || !stock}>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={guardando || !inventario}
+                >
                   {guardando ? "Guardando…" : "Registrar salida"}
                 </Button>
               )}

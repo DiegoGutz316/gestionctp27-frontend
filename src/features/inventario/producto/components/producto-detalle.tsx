@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { Home, PencilIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/features/auth/context/auth-context";
 import { MovimientosTabla } from "../../stock/components/movimientos-tabla";
 import { StockDeProducto } from "../../stock/components/stock-de-producto";
-import { stockDeProducto } from "../../stock/models/stock.model";
 import {
   ETIQUETA_DEPARTAMENTO,
   ETIQUETA_TIPO_PRODUCTO,
@@ -25,6 +25,7 @@ import { useProducto } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/producto.service";
 
 export function ProductoDetalle({ id }: { id: number }) {
+  const { usuario } = useAuth();
   const producto = useProducto(id);
 
   if (producto.isLoading) {
@@ -47,7 +48,6 @@ export function ProductoDetalle({ id }: { id: number }) {
   }
 
   const datos = producto.data;
-  const stock = stockDeProducto(datos);
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
@@ -75,7 +75,7 @@ export function ProductoDetalle({ id }: { id: number }) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
             {datos.nombre}
@@ -85,14 +85,19 @@ export function ProductoDetalle({ id }: { id: number }) {
             {ETIQUETA_UNIDAD_MEDIDA[datos.unidadMedida]}
           </p>
         </div>
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href={`/dashboard/inventario/${id}/editar`} />}
-        >
-          Editar producto
-        </Button>
+        {usuario?.rol === "ADMINISTRADOR" ? (
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href={`/dashboard/inventario/${id}/editar`} />}
+          >
+            <PencilIcon data-icon="inline-start" />
+            Editar producto
+          </Button>
+        ) : null}
       </div>
+
+      <StockDeProducto producto={datos} />
 
       <div className="grid grid-cols-1 gap-4 rounded-xl border bg-card p-4 shadow-xs sm:grid-cols-3">
         <div>
@@ -121,9 +126,9 @@ export function ProductoDetalle({ id }: { id: number }) {
         </div>
       </div>
 
-      <StockDeProducto producto={datos} />
-
-      {stock ? <MovimientosTabla inventarioId={stock.id} /> : null}
+      {datos.inventario ? (
+        <MovimientosTabla inventarioId={datos.inventario.id} />
+      ) : null}
     </section>
   );
 }

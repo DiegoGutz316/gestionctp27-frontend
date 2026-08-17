@@ -17,7 +17,10 @@ export function DashboardInicio() {
   const mostrarInventario = puede("INVENTARIO");
   const mostrarUsuarios = puede("USUARIOS");
 
-  const productos = useProductos({}, { enabled: mostrarInventario });
+  const productos = useProductos(
+    { pagina: 1, limite: 100 },
+    { enabled: mostrarInventario },
+  );
   const usuarios = useUsuarios(
     { pagina: 1, limite: 1 },
     { enabled: mostrarUsuarios },
@@ -33,7 +36,10 @@ export function DashboardInicio() {
 
   const actualizando = productos.isFetching || usuarios.isFetching;
 
-  const catalogo = useMemo(() => productos.data ?? [], [productos.data]);
+  const catalogo = useMemo(
+    () => productos.data?.datos ?? [],
+    [productos.data],
+  );
 
   const metricas = useMemo(() => {
     let agricola = 0;
@@ -46,8 +52,12 @@ export function DashboardInicio() {
       else if (producto.departamento === "PECUARIO") pecuario += 1;
       else general += 1;
 
-      const stock = producto.stock;
-      if (stock && stock.cantidad <= stock.stockMinimo) {
+      const { configuracionStock, inventario } = producto;
+      if (
+        configuracionStock &&
+        inventario &&
+        inventario.cantidadActual <= configuracionStock.stockMinimo
+      ) {
         stockBajo.push(producto);
       }
     }
@@ -124,7 +134,7 @@ export function DashboardInicio() {
       </div>
 
       <DashboardMetricas
-        productos={catalogo.length}
+        productos={productos.data?.meta.total ?? 0}
         usuarios={usuarios.data?.meta.total ?? 0}
         stockBajo={metricas.cantidadStockBajo}
         mostrarUsuarios={mostrarUsuarios}

@@ -15,9 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+import { useAuth } from "@/features/auth/context/auth-context";
 import { StockEntradaDialog } from "../../stock/components/stock-entrada-dialog";
 import { StockSalidaDialog } from "../../stock/components/stock-salida-dialog";
-import { stockDeProducto } from "../../stock/models/stock.model";
 import {
   ETIQUETA_DEPARTAMENTO,
   ETIQUETA_TIPO_PRODUCTO,
@@ -36,22 +36,26 @@ function iniciales(nombre: string) {
 }
 
 export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
+  const { usuario } = useAuth();
+  const esAdministrador = usuario?.rol === "ADMINISTRADOR";
   const [entradaAbierta, setEntradaAbierta] = useState(false);
   const [salidaAbierta, setSalidaAbierta] = useState(false);
-  const stock = stockDeProducto(producto);
+  const { configuracionStock, inventario } = producto;
 
   return (
-    <TableRow className="transition-colors hover:bg-muted/30">
-      {stock ? (
+    <>
+      {inventario && configuracionStock?.activo ? (
         <>
           <StockEntradaDialog
-            stock={stock}
+            inventario={inventario}
+            productoNombre={producto.nombre}
             unidadMedida={producto.unidadMedida}
             open={entradaAbierta}
             onOpenChange={setEntradaAbierta}
           />
           <StockSalidaDialog
-            stock={stock}
+            inventario={inventario}
+            productoNombre={producto.nombre}
             unidadMedida={producto.unidadMedida}
             open={salidaAbierta}
             onOpenChange={setSalidaAbierta}
@@ -59,95 +63,112 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
         </>
       ) : null}
 
-      <TableCell>
-        <Link
-          href={`/dashboard/inventario/${producto.id}`}
-          className="flex items-center gap-3"
-        >
-          <Avatar className="size-9">
-            <AvatarFallback className="bg-muted text-xs font-medium">
-              {iniciales(producto.nombre)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0">
-            <p className="truncate font-medium text-foreground hover:underline">
-              {producto.nombre}
-            </p>
-            <p className="truncate text-xs text-muted-foreground">
-              {ETIQUETA_TIPO_PRODUCTO[producto.tipoProducto]}
-            </p>
-          </div>
-        </Link>
-      </TableCell>
-      <TableCell>
-        <span className="text-sm text-foreground">
-          {ETIQUETA_UNIDAD_MEDIDA[producto.unidadMedida]}
-        </span>
-      </TableCell>
-      <TableCell>
-        <span className="text-sm text-foreground">
-          {ETIQUETA_DEPARTAMENTO[producto.departamento]}
-        </span>
-      </TableCell>
-      <TableCell>
-        <span className="text-sm text-foreground">
-          {ETIQUETA_UBICACION[producto.ubicacion]}
-        </span>
-      </TableCell>
-      <TableCell className="text-right">
-        {stock ? (
-          <span className="text-sm font-medium tabular-nums text-foreground">
-            {stock.cantidad}
+      <TableRow className="transition-colors hover:bg-muted/30">
+        <TableCell>
+          <Link
+            href={`/dashboard/inventario/${producto.id}`}
+            className="flex items-center gap-3"
+          >
+            <Avatar className="size-9">
+              <AvatarFallback className="bg-muted text-xs font-medium">
+                {iniciales(producto.nombre)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="truncate font-medium text-foreground hover:underline">
+                {producto.nombre}
+              </p>
+              <p className="truncate text-xs text-muted-foreground">
+                {ETIQUETA_TIPO_PRODUCTO[producto.tipoProducto]}
+              </p>
+            </div>
+          </Link>
+        </TableCell>
+        <TableCell>
+          <span className="text-sm text-foreground">
+            {ETIQUETA_UNIDAD_MEDIDA[producto.unidadMedida]}
           </span>
-        ) : (
-          <Badge variant="secondary">Sin configurar</Badge>
-        )}
-      </TableCell>
-      <TableCell className="text-right">
-        <AccionesMenu aria-label={`Acciones de ${producto.nombre}`}>
-          <DropdownMenuItem
-            render={<Link href={`/dashboard/inventario/${producto.id}`} />}
-          >
-            <EyeIcon />
-            Ver stock
-          </DropdownMenuItem>
+        </TableCell>
+        <TableCell>
+          <span className="text-sm text-foreground">
+            {ETIQUETA_DEPARTAMENTO[producto.departamento]}
+          </span>
+        </TableCell>
+        <TableCell>
+          <span className="text-sm text-foreground">
+            {ETIQUETA_UBICACION[producto.ubicacion]}
+          </span>
+        </TableCell>
+        <TableCell className="text-right">
+          {inventario ? (
+            <span className="text-sm font-medium tabular-nums text-foreground">
+              {inventario.cantidadActual}
+            </span>
+          ) : (
+            <Badge variant="secondary">Sin existencias</Badge>
+          )}
+        </TableCell>
+        <TableCell className="text-right">
+          <AccionesMenu aria-label={`Acciones de ${producto.nombre}`}>
+            <DropdownMenuItem
+              render={<Link href={`/dashboard/inventario/${producto.id}`} />}
+            >
+              <EyeIcon />
+              Ver detalle
+            </DropdownMenuItem>
 
-          <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
-            {stock ? (
-              <>
-                <DropdownMenuItem onClick={() => setEntradaAbierta(true)}>
-                  <ArrowDownIcon />
-                  Registrar entrada
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSalidaAbierta(true)}>
-                  <ArrowUpIcon />
-                  Registrar salida
-                </DropdownMenuItem>
-              </>
-            ) : (
-              <DropdownMenuItem
-                render={
-                  <Link
-                    href={`/dashboard/inventario/${producto.id}/stock/nuevo`}
-                  />
-                }
-              >
-                <PlusIcon />
-                Configurar stock
-              </DropdownMenuItem>
-            )}
-          </MostrarSiPuede>
-
-          <DropdownMenuItem
-            render={
-              <Link href={`/dashboard/inventario/${producto.id}/editar`} />
-            }
-          >
-            <PencilIcon />
-            Editar
-          </DropdownMenuItem>
-        </AccionesMenu>
-      </TableCell>
-    </TableRow>
+            <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
+              {inventario && configuracionStock?.activo ? (
+                <>
+                  <DropdownMenuItem onClick={() => setEntradaAbierta(true)}>
+                    <ArrowDownIcon />
+                    Registrar entrada
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSalidaAbierta(true)}>
+                    <ArrowUpIcon />
+                    Registrar salida
+                  </DropdownMenuItem>
+                </>
+              ) : null}
+              {esAdministrador ? (
+                <>
+                  {!configuracionStock ? (
+                    <DropdownMenuItem
+                      render={
+                        <Link
+                          href={`/dashboard/inventario/${producto.id}/stock/nuevo`}
+                        />
+                      }
+                    >
+                      <PlusIcon />
+                      Configuración de stock
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      render={
+                        <Link
+                          href={`/dashboard/inventario/stock/${configuracionStock.id}/editar`}
+                        />
+                      }
+                    >
+                      <PencilIcon />
+                      Editar configuración
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem
+                    render={
+                      <Link href={`/dashboard/inventario/${producto.id}/editar`} />
+                    }
+                  >
+                    <PencilIcon />
+                    Editar producto
+                  </DropdownMenuItem>
+                </>
+              ) : null}
+            </MostrarSiPuede>
+          </AccionesMenu>
+        </TableCell>
+      </TableRow>
+    </>
   );
 }

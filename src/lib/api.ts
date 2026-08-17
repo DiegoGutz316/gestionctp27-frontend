@@ -16,6 +16,8 @@ export class ApiError extends Error {
   }
 }
 
+export type ApiRequestOptions = Omit<RequestInit, "body" | "method">;
+
 export type ApiQueryParams = Record<
   string,
   string | number | boolean | undefined | null
@@ -38,13 +40,15 @@ export async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
+  const headers = new Headers(options.headers);
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {
@@ -67,20 +71,85 @@ export async function apiFetch<T>(
   return JSON.parse(text) as T;
 }
 
+/** Los errores de cliente no se resuelven repitiendo la misma consulta. */
+export function reintentarConsulta(fallos: number, error: unknown): boolean {
+  if (error instanceof ApiError) {
+    const recuperable =
+      error.status === 408 || error.status === 429 || error.status >= 500;
+    return recuperable && fallos < 2;
+  }
+
+  return error instanceof TypeError && fallos < 2;
+}
+
+/** Extrae mensajes de NestJS y conserva una explicación útil por código HTTP. */
+export function getMensajeDeError(
+  error: unknown,
+  mensajesPersonalizados: Partial<Record<number, string>> = {},
+): string {
+  if (!(error instanceof ApiError)) {
+    return error instanceof Error && !(error instanceof TypeError)
+      ? error.message
+      : "Error de conexión con el servidor.";
+  }
+
+  try {
+    const body = JSON.parse(error.message) as {
+      message?: string | string[];
+      errors?: Array<{ message?: string }>;
+    };
+    const mensaje = Array.isArray(body.errors)
+      ? body.errors.find((item) => item.message)?.message
+      : Array.isArray(body.message)
+        ? body.message[0]
+        : body.message;
+
+    if (mensaje && mensaje !== "Validation failed") return mensaje;
+  } catch {
+    if (error.message && !error.message.startsWith("Error ")) {
+      return error.message;
+    }
+  }
+
+  const mensajes: Partial<Record<number, string>> = {
+    400: "Los datos enviados no son válidos.",
+    401: "La sesión expiró. Inicie sesión nuevamente.",
+    403: "No tiene permisos para completar esta operación.",
+    404: "El recurso solicitado no existe.",
+    409: "La operación entra en conflicto con los datos existentes.",
+  };
+
+  return (
+    mensajesPersonalizados[error.status] ??
+    mensajes[error.status] ??
+    "No se pudo completar la operación. Intente de nuevo."
+  );
+}
+
 export const api = {
-  get: <T>(path: string, params?: ApiQueryParams) =>
-    apiFetch<T>(buildUrl(path, params)),
-  post: <T>(path: string, body?: unknown) =>
+  get: <T>(
+    path: string,
+    params?: ApiQueryParams,
+    options?: ApiRequestOptions,
+  ) => apiFetch<T>(buildUrl(path, params), options),
+  post: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
     apiFetch<T>(path, {
+      ...options,
       method: "POST",
       body: body === undefined ? undefined : JSON.stringify(body),
     }),
-  put: <T>(path: string, body: unknown) =>
-    apiFetch<T>(path, { method: "PUT", body: JSON.stringify(body) }),
-  patch: <T>(path: string, body?: unknown) =>
+  put: <T>(path: string, body: unknown, options?: ApiRequestOptions) =>
     apiFetch<T>(path, {
+      ...options,
+      method: "PUT",
+      body: JSON.stringify(body),
+    }),
+  patch: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
+    apiFetch<T>(path, {
+      ...options,
       method: "PATCH",
       body: body === undefined ? undefined : JSON.stringify(body),
     }),
-  delete: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
+  delete: <T>(path: string, options?: ApiRequestOptions) =>
+    apiFetch<T>(path, { ...options, method: "DELETE" }),
 };

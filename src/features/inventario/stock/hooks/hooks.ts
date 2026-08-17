@@ -1,50 +1,76 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { reintentarConsulta } from "@/lib/api";
+import { productosQueryKey } from "../../producto/hooks/hooks";
 import type {
   CrearEntrada,
   CrearSalida,
-  EditarInventario,
+  EditarConfiguracionStock,
   FiltrarMovimientos,
 } from "../validacion/stock.validacion";
 import {
-  crearStock,
-  editarStock,
+  crearConfiguracionStock,
+  editarConfiguracionStock,
   listarMovimientos,
-  obtenerStock,
+  obtenerConfiguracionStock,
+  obtenerExistencias,
   registrarEntrada,
   registrarSalida,
 } from "../servicios/stock.service";
 
-export const stockQueryKey = ["inventario", "stock"] as const;
+export const configuracionStockQueryKey = [
+  "inventario",
+  "configuracion-stock",
+] as const;
+export const existenciasQueryKey = ["inventario", "existencias"] as const;
 
-export function useStockItem(id: number) {
+export function useConfiguracionStock(configuracionId: number) {
   return useQuery({
-    queryKey: [...stockQueryKey, id],
-    queryFn: () => obtenerStock(id),
-    enabled: Number.isInteger(id) && id > 0,
+    queryKey: [...configuracionStockQueryKey, configuracionId],
+    queryFn: () => obtenerConfiguracionStock(configuracionId),
+    enabled: Number.isInteger(configuracionId) && configuracionId > 0,
   });
 }
 
-export function useCrearStock() {
+export function useExistencias(inventarioId: number) {
+  return useQuery({
+    queryKey: [...existenciasQueryKey, inventarioId],
+    queryFn: () => obtenerExistencias(inventarioId),
+    enabled: Number.isInteger(inventarioId) && inventarioId > 0,
+  });
+}
+
+export function useCrearConfiguracionStock() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: crearStock,
+    mutationFn: crearConfiguracionStock,
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["inventario"] }),
+      queryClient.invalidateQueries({ queryKey: productosQueryKey }),
   });
 }
 
-export function useEditarStock(id: number) {
+export function useEditarConfiguracionStock(configuracionId: number) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (datos: EditarInventario) => editarStock(id, datos),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["inventario"] }),
+    mutationFn: (datos: EditarConfiguracionStock) =>
+      editarConfiguracionStock(configuracionId, datos),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: productosQueryKey }),
+        queryClient.invalidateQueries({
+          queryKey: [...configuracionStockQueryKey, configuracionId],
+        }),
+      ]);
+    },
   });
 }
 
-export const movimientosQueryKey = ["inventario", "movimientos"] as const;
+export const movimientosQueryKey = [
+  "inventario",
+  "existencias",
+  "movimientos",
+] as const;
 
 export function useMovimientos(filtros: FiltrarMovimientos = {}) {
   return useQuery({
@@ -58,24 +84,48 @@ export function useMovimientos(filtros: FiltrarMovimientos = {}) {
 
 /**
  * Una entrada/salida cambia la existencia incluida tanto en consultas de
- * productos como de stock, además del historial. Se invalida el prefijo del
- * módulo y se devuelve la promesa para que `mutateAsync` espere el refetch.
+ * productos como en la consulta de existencias, además del historial. Las
+ * invalidaciones conservan separada la configuración de stock.
  */
 export function useRegistrarEntrada(inventarioId: number) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (datos: CrearEntrada) =>
-      registrarEntrada(inventarioId, datos),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["inventario"] }),
+    mutationFn: ({
+      datos,
+      idempotencyKey,
+    }: {
+      datos: CrearEntrada;
+      idempotencyKey: string;
+    }) => registrarEntrada(inventarioId, datos, idempotencyKey),
+    retry: reintentarConsulta,
+    onSuccess: () => invalidarExistencias(queryClient, inventarioId),
   });
 }
 
 export function useRegistrarSalida(inventarioId: number) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (datos: CrearSalida) => registrarSalida(inventarioId, datos),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["inventario"] }),
+    mutationFn: ({
+      datos,
+      idempotencyKey,
+    }: {
+      datos: CrearSalida;
+      idempotencyKey: string;
+    }) => registrarSalida(inventarioId, datos, idempotencyKey),
+    retry: reintentarConsulta,
+    onSuccess: () => invalidarExistencias(queryClient, inventarioId),
   });
+}
+
+function invalidarExistencias(
+  queryClient: ReturnType<typeof useQueryClient>,
+  inventarioId: number,
+) {
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: productosQueryKey }),
+    queryClient.invalidateQueries({
+      queryKey: [...existenciasQueryKey, inventarioId],
+    }),
+    queryClient.invalidateQueries({ queryKey: movimientosQueryKey }),
+  ]);
 }

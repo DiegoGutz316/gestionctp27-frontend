@@ -1,18 +1,22 @@
-export type {
-  CrearInventario,
-  CrearInventarioInput,
-  EditarInventario,
-  EditarInventarioInput,
-  StockRespuesta,
-} from "../validacion/stock.validacion";
+import { z } from "zod";
 
-import type { ProductoRespuesta } from "../../producto/validacion/producto.validacion";
-import type { StockRespuesta } from "../validacion/stock.validacion";
+export const configuracionStockSchema = z.object({
+  id: z.number(),
+  stockMinimo: z.number(),
+  precio: z.number(),
+  activo: z.boolean(),
+  creadoEn: z.string(),
+  actualizadoEn: z.string(),
+});
 
-/** Convierte el stock incluido en Producto al contrato completo de stock. */
-export function stockDeProducto(
-  producto: ProductoRespuesta,
-): StockRespuesta | null {
-  const { stock, ...productoBase } = producto;
-  return stock ? { ...stock, producto: productoBase } : null;
-}
+export type ConfiguracionStock = z.infer<typeof configuracionStockSchema>;
+
+export const inventarioSchema = z.object({
+  id: z.number(),
+  cantidadActual: z.number(),
+  activo: z.boolean(),
+  creadoEn: z.string(),
+  actualizadoEn: z.string(),
+});
+
+export type Inventario = z.infer<typeof inventarioSchema>;

@@ -5,6 +5,11 @@ import {
   UBICACIONES,
   UNIDADES_MEDIDA,
 } from "../models/producto.model";
+import {
+  configuracionStockSchema,
+  inventarioSchema,
+} from "../../stock/models/stock.model";
+import { paginarSchema, type ResultadoPaginado } from "@/lib/paginacion";
 
 export const crearProductoSchema = z.object({
   nombre: z
@@ -64,25 +69,36 @@ const productoSchema = z.object({
   actualizadoEn: z.string(),
 });
 
-const stockDeProductoSchema = z.object({
-  id: z.number(),
-  cantidad: z.number(),
-  stockMinimo: z.number(),
-  precio: z.number(),
-  activo: z.boolean(),
-  creadoEn: z.string(),
-  actualizadoEn: z.string(),
-});
-
 export const productoRespuestaSchema = productoSchema.extend({
-  // Al crear un producto la propiedad puede venir omitida; en consultas
-  // viene como null hasta que se configure su único registro de stock.
-  stock: stockDeProductoSchema.nullable().optional(),
+  configuracionStock: configuracionStockSchema.nullable(),
+  inventario: inventarioSchema.nullable(),
 });
 
 export type ProductoRespuesta = z.infer<typeof productoRespuestaSchema>;
 
-export const filtrarProductosSchema = z.object({
+const listadoProductosSchema = z.object({
+  datos: z.array(productoRespuestaSchema),
+  meta: z.object({
+    pagina: z.number(),
+    limite: z.number(),
+    total: z.number(),
+    totalPaginas: z.number(),
+    tieneAnterior: z.boolean(),
+    tieneSiguiente: z.boolean(),
+  }),
+});
+
+export function parsearProductos(
+  respuesta: unknown,
+): ResultadoPaginado<ProductoRespuesta> {
+  const parseo = listadoProductosSchema.safeParse(respuesta);
+  if (!parseo.success) {
+    throw new Error("El servidor devolvió un listado de productos inválido.");
+  }
+  return parseo.data;
+}
+
+export const filtrarProductosSchema = paginarSchema.omit({ q: true }).extend({
   nombre: z
     .string()
     .trim()

@@ -4,7 +4,7 @@ import { RequerirPermiso } from "@/features/auth/components/requerir-permiso";
 import { StockNuevo } from "@/features/inventario/stock/components/stock-nuevo";
 
 export const metadata: Metadata = {
-  title: "Configurar stock | GestiónCTP27",
+  title: "Configuración de stock | GestiónCTP27",
 };
 
 // Backlog 1.6: registrar es escritura, exige COMPLETO sobre INVENTARIO.
@@ -25,11 +25,11 @@ export default async function NuevoStockPage({
       <main className="mx-auto w-full max-w-lg">
         <header className="mb-6">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Configurar stock
+            Configuración de stock
           </h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            Defina el stock mínimo y el precio. La existencia inicia en cero y
-            cambia únicamente mediante entradas y salidas.
+            Defina el stock mínimo y el precio del producto. Las existencias se
+            administran por separado mediante entradas y salidas.
           </p>
         </header>
         <StockNuevo productoId={productoId} />

@@ -105,7 +105,7 @@ export function DashboardResumen({
               <ShieldAlert
                 className={`size-5 ${stockBajo > 0 ? "text-amber-600" : "text-color-company"}`}
               />
-              Alertas de stock
+              Alertas de existencias
             </CardTitle>
             {stockBajo > 0 ? (
               <Badge variant="destructive">{stockBajo}</Badge>

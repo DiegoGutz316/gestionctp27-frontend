@@ -38,7 +38,7 @@ export function useCrearProducto() {
   return useMutation({
     mutationFn: crearProducto,
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["inventario"] }),
+      queryClient.invalidateQueries({ queryKey: productosQueryKey }),
   });
 }
 
@@ -47,6 +47,6 @@ export function useEditarProducto(id: number) {
   return useMutation({
     mutationFn: (datos: EditarProducto) => editarProducto(id, datos),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["inventario"] }),
+      queryClient.invalidateQueries({ queryKey: productosQueryKey }),
   });
 }

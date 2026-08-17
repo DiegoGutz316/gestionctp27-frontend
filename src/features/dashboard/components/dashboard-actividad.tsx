@@ -181,8 +181,8 @@ export function DashboardActividad({
                 </TableHeader>
                 <TableBody>
                   {stockBajo.map((producto) => {
-                    const cantidad = producto.stock?.cantidad ?? 0;
-                    const minimo = producto.stock?.stockMinimo ?? 0;
+                    const cantidad = producto.inventario?.cantidadActual;
+                    const minimo = producto.configuracionStock?.stockMinimo;
                     return (
                       <TableRow
                         key={producto.id}
@@ -197,7 +197,7 @@ export function DashboardActividad({
                           </Link>
                         </TableCell>
                         <TableCell className="px-4 py-3 text-xs tabular-nums text-muted-foreground">
-                          {cantidad} / {minimo}
+                          {cantidad ?? "—"} / {minimo ?? "—"}
                         </TableCell>
                         <TableCell className="px-4 py-3">
                           <Badge

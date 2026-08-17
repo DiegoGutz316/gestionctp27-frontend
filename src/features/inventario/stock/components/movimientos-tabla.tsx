@@ -17,6 +17,13 @@ import { getMensajeDeError } from "../servicios/stock.service";
 
 const PAGE_SIZE = 8;
 
+const ETIQUETA_TIPO = {
+  APERTURA: "Apertura",
+  AJUSTE: "Ajuste",
+  ENTRADA: "Entrada",
+  SALIDA: "Salida",
+} as const;
+
 export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
   const [pagina, setPagina] = useState(1);
   const movimientos = useMovimientos({
@@ -31,11 +38,11 @@ export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
   return (
     <div className="flex flex-col gap-3">
       <h2 className="text-lg font-semibold tracking-tight">
-        Historial de movimientos
+        Movimientos de existencias
       </h2>
 
-      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-        <Table>
+      <div className="overflow-x-auto rounded-xl border bg-card shadow-sm">
+        <Table className="min-w-[760px]">
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
               <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -109,10 +116,12 @@ export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
                     className={
                       movimiento.tipo === "ENTRADA"
                         ? "rounded-full border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200"
-                        : "rounded-full border-transparent bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200"
+                        : movimiento.tipo === "SALIDA"
+                          ? "rounded-full border-transparent bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200"
+                          : "rounded-full border-transparent bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200"
                     }
                   >
-                    {movimiento.tipo === "ENTRADA" ? "Entrada" : "Salida"}
+                    {ETIQUETA_TIPO[movimiento.tipo]}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -132,7 +141,7 @@ export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
                 </TableCell>
                 <TableCell>
                   <span className="text-sm text-foreground">
-                    {movimiento.responsable.nombre}
+                    {movimiento.responsable?.nombre ?? "Migración del sistema"}
                   </span>
                 </TableCell>
               </TableRow>

@@ -60,7 +60,7 @@ export const desactivarUsuarioSchema = z.object({
 export type DesactivarUsuario = z.output<typeof desactivarUsuarioSchema>;
 export type DesactivarUsuarioInput = z.input<typeof desactivarUsuarioSchema>;
 
-const usuarioSchema = z.object({
+export const usuarioSchema = z.object({
   id: z.uuid(),
   nombre: z.string(),
   correo: z.string(),
@@ -73,7 +73,7 @@ const usuarioSchema = z.object({
 
 export type UsuarioRespuesta = z.infer<typeof usuarioSchema>;
 
-const paginarUsuariosSchema = paginarSchema.extend({
+export const paginarUsuariosSchema = paginarSchema.extend({
   rol: z.enum(ROLES_USUARIO).optional(),
   activo: z.boolean().optional(),
   order: z.enum(["ASC", "DESC"]).optional(),

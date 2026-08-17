@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { crearInventarioSchema } from "../validacion/stock.validacion";
+import { crearConfiguracionStockSchema } from "../validacion/stock.validacion";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
-import { useCrearStock } from "../hooks/hooks";
+import { useCrearConfiguracionStock } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/stock.service";
 
 type StockFormProps = {
@@ -25,7 +25,7 @@ type StockFormProps = {
 
 export function StockForm({ productoId, productoNombre }: StockFormProps) {
   const router = useRouter();
-  const crearStock = useCrearStock();
+  const crearConfiguracion = useCrearConfiguracionStock();
 
   const form = useForm({
     defaultValues: {
@@ -34,15 +34,15 @@ export function StockForm({ productoId, productoNombre }: StockFormProps) {
       precio: "" as string | number,
     },
     validators: {
-      onSubmit: zodValidator(crearInventarioSchema),
+      onSubmit: zodValidator(crearConfiguracionStockSchema),
     },
     onSubmit: async ({ value }) => {
       try {
-        const stock = await crearStock.mutateAsync(
-          crearInventarioSchema.parse(value),
+        await crearConfiguracion.mutateAsync(
+          crearConfiguracionStockSchema.parse(value),
         );
         toast.success(
-          `Stock de "${stock.producto.nombre}" creado. Registre una entrada para agregar existencia.`,
+          `Configuración de stock de "${productoNombre}" creada correctamente.`,
         );
         router.push(`/dashboard/inventario/${productoId}`);
       } catch (error) {
@@ -122,11 +122,13 @@ export function StockForm({ productoId, productoNombre }: StockFormProps) {
         </form.Field>
 
         <form.Subscribe
-          selector={(state) => state.isSubmitting || crearStock.isPending}
+          selector={(state) =>
+            state.isSubmitting || crearConfiguracion.isPending
+          }
         >
           {(guardando) => (
             <Button type="submit" disabled={guardando}>
-              {guardando ? "Guardando…" : "Registrar stock"}
+              {guardando ? "Guardando…" : "Guardar configuración"}
             </Button>
           )}
         </form.Subscribe>

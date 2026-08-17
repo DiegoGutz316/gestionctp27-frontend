@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -169,25 +169,6 @@ export function AppSidebar() {
       ),
   )
 
-  useEffect(() => {
-    setOpenSections((prev) => {
-      let changed = false
-      const next = { ...prev }
-
-      for (const section of navigation) {
-        const active = section.items.some((item) =>
-          isRouteActive(pathname, item.href),
-        )
-        if (active && !next[section.label]) {
-          next[section.label] = true
-          changed = true
-        }
-      }
-
-      return changed ? next : prev
-    })
-  }, [pathname])
-
   async function handleLogout() {
     try {
       await logout()
@@ -235,7 +216,12 @@ export function AppSidebar() {
           return (
             <Collapsible
               key={section.label}
-              open={openSections[section.label] ?? false}
+              open={
+                (openSections[section.label] ?? false) ||
+                section.items.some((item) =>
+                  isRouteActive(pathname, item.href),
+                )
+              }
               onOpenChange={(open) =>
                 setOpenSections((prev) => ({
                   ...prev,

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import {
-  editarInventarioSchema,
-  type StockRespuesta,
+  editarConfiguracionStockSchema,
+  type ConfiguracionStockRespuesta,
 } from "../validacion/stock.validacion";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,30 +19,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
-import { useEditarStock } from "../hooks/hooks";
+import { useEditarConfiguracionStock } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/stock.service";
 
-export function StockEditarForm({ stock }: { stock: StockRespuesta }) {
+export function StockEditarForm({
+  configuracion,
+}: {
+  configuracion: ConfiguracionStockRespuesta;
+}) {
   const router = useRouter();
-  const editarStock = useEditarStock(stock.id);
+  const editarConfiguracion = useEditarConfiguracionStock(configuracion.id);
 
   const form = useForm({
     defaultValues: {
-      stockMinimo: String(stock.stockMinimo) as string | number,
-      precio: String(stock.precio) as string | number,
+      stockMinimo: String(configuracion.stockMinimo) as string | number,
+      precio: String(configuracion.precio) as string | number,
     },
     validators: {
-      onSubmit: zodValidator(editarInventarioSchema),
+      onSubmit: zodValidator(editarConfiguracionStockSchema),
     },
     onSubmit: async ({ value }) => {
       try {
-        const actualizado = await editarStock.mutateAsync(
-          editarInventarioSchema.parse(value),
+        await editarConfiguracion.mutateAsync(
+          editarConfiguracionStockSchema.parse(value),
         );
-        toast.success(
-          `Stock de "${actualizado.producto.nombre}" actualizado correctamente.`,
-        );
-        router.push(`/dashboard/inventario/${stock.producto.id}`);
+        toast.success("Configuración de stock actualizada correctamente.");
+        router.push("/dashboard/inventario");
       } catch (error) {
         toast.error(getMensajeDeError(error));
       }
@@ -60,23 +62,6 @@ export function StockEditarForm({ stock }: { stock: StockRespuesta }) {
       className="space-y-6"
     >
       <FieldGroup>
-        <Field>
-          <FieldLabel>Producto</FieldLabel>
-          <Input value={stock.producto.nombre} disabled readOnly />
-          <FieldDescription>
-            El producto no se puede cambiar desde esta pantalla.
-          </FieldDescription>
-        </Field>
-
-        <Field>
-          <FieldLabel>Cantidad actual</FieldLabel>
-          <Input value={stock.cantidad} disabled readOnly />
-          <FieldDescription>
-            La cantidad no se edita directo: registre una entrada o una
-            salida desde la página del producto.
-          </FieldDescription>
-        </Field>
-
         <form.Field name="stockMinimo">
           {(field) => {
             const errors = fieldErrors(field.state.meta.errors);
@@ -134,7 +119,9 @@ export function StockEditarForm({ stock }: { stock: StockRespuesta }) {
       </FieldGroup>
 
       <form.Subscribe
-        selector={(state) => state.isSubmitting || editarStock.isPending}
+        selector={(state) =>
+          state.isSubmitting || editarConfiguracion.isPending
+        }
       >
         {(guardando) => (
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
@@ -143,7 +130,7 @@ export function StockEditarForm({ stock }: { stock: StockRespuesta }) {
               variant="outline"
               disabled={guardando}
               nativeButton={false}
-              render={<Link href={`/dashboard/inventario/${stock.producto.id}`} />}
+              render={<Link href="/dashboard/inventario" />}
             >
               Cancelar
             </Button>

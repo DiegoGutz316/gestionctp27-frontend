@@ -1,7 +1,10 @@
 import { z } from "zod";
 import { paginarSchema, type ResultadoPaginado } from "@/lib/paginacion";
 import { UNIDADES_MEDIDA, type UnidadMedida } from "../../producto/models/producto.model";
-import { productoSchema } from "../../producto/validacion/producto.validacion";
+import {
+  configuracionStockSchema,
+  inventarioSchema,
+} from "../models/stock.model";
 
 // Los formularios envían los campos numéricos como string; z.coerce los
 // convierte a number y el genérico <number | string> mantiene z.input tipado.
@@ -20,7 +23,7 @@ const sinVacios = <T extends z.ZodTypeAny>(schema: T) =>
   );
 
 /**
- * Límites de las columnas numeric(12,2) del stock (deben coincidir con
+ * Límites de las columnas numeric(12,2) del inventario (deben coincidir con
  * `dto/limites-numericos.ts` del backend). Si no se validan aquí, Postgres
  * redondea o desborda el valor y la API responde con un error genérico.
  */
@@ -42,9 +45,9 @@ const acotarADecimal = (
       error: `${etiqueta} admite como máximo 2 decimales`,
     });
 
-// El stock nace en cantidad 0 (default del backend); solo cambia registrando
-// entradas/salidas (ver crearEntradaSchema/crearSalidaSchema).
-export const crearInventarioSchema = z.object({
+// La configuración solo define mínimo y precio; la cantidad pertenece al
+// registro separado de existencias.
+export const crearConfiguracionStockSchema = z.object({
   productoId: sinVacios(
     numeroDesdeInput("Seleccione un producto")
       .int("Seleccione un producto")
@@ -70,12 +73,15 @@ export const crearInventarioSchema = z.object({
   ),
 });
 
-export type CrearInventario = z.output<typeof crearInventarioSchema>;
-export type CrearInventarioInput = z.input<typeof crearInventarioSchema>;
+export type CrearConfiguracionStock = z.output<
+  typeof crearConfiguracionStockSchema
+>;
+export type CrearConfiguracionStockInput = z.input<
+  typeof crearConfiguracionStockSchema
+>;
 
-// La cantidad no se edita directo: solo cambia registrando entradas/salidas
-// (ver crearEntradaSchema/crearSalidaSchema), que quedan en el historial.
-export const editarInventarioSchema = z.object({
+// Editar la configuración nunca modifica las existencias.
+export const editarConfiguracionStockSchema = z.object({
   stockMinimo: sinVacios(
     acotarADecimal(
       "El stock mínimo",
@@ -96,26 +102,40 @@ export const editarInventarioSchema = z.object({
   ),
 });
 
-export type EditarInventario = z.output<typeof editarInventarioSchema>;
-export type EditarInventarioInput = z.input<typeof editarInventarioSchema>;
+export type EditarConfiguracionStock = z.output<
+  typeof editarConfiguracionStockSchema
+>;
+export type EditarConfiguracionStockInput = z.input<
+  typeof editarConfiguracionStockSchema
+>;
 
-const stockSchema = z.object({
-  id: z.number(),
-  producto: productoSchema,
-  cantidad: z.number(),
-  stockMinimo: z.number(),
-  precio: z.number(),
-  activo: z.boolean(),
-  creadoEn: z.string(),
-  actualizadoEn: z.string(),
-});
+export const configuracionStockRespuestaSchema = configuracionStockSchema;
 
-export type StockRespuesta = z.infer<typeof stockSchema>;
+export type ConfiguracionStockRespuesta = z.infer<
+  typeof configuracionStockRespuestaSchema
+>;
+
+export type InventarioRespuesta = z.infer<typeof inventarioSchema>;
+
+export function fechaLocalHoy(): string {
+  const partes = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Costa_Rica",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const valor = (tipo: Intl.DateTimeFormatPartTypes) =>
+    partes.find((parte) => parte.type === tipo)?.value ?? "";
+  return `${valor("year")}-${valor("month")}-${valor("day")}`;
+}
 
 const fechaMovimiento = z
   .string({ error: "La fecha es obligatoria" })
   .min(1, "La fecha es obligatoria")
-  .pipe(z.iso.date({ error: "Ingrese una fecha válida" }));
+  .pipe(z.iso.date({ error: "Ingrese una fecha válida" }))
+  .refine((fecha) => fecha <= fechaLocalHoy(), {
+    error: "La fecha no puede ser futura",
+  });
 
 /**
  * El campo `cantidad` de un movimiento admite decimales cuando el producto
@@ -146,10 +166,10 @@ export function crearEntradaSchema(unidadMedida: UnidadMedida) {
     cantidad: campoCantidadMovimiento(unidadMedida),
     fecha: fechaMovimiento,
     origen: z
-      .string()
+      .string({ error: "El origen es obligatorio" })
       .trim()
-      .max(150, "El origen no puede superar 150 caracteres")
-      .optional(),
+      .min(1, "El origen es obligatorio")
+      .max(150, "El origen no puede superar 150 caracteres"),
   });
 }
 
@@ -161,10 +181,10 @@ export function crearSalidaSchema(unidadMedida: UnidadMedida) {
     cantidad: campoCantidadMovimiento(unidadMedida),
     fecha: fechaMovimiento,
     motivo: z
-      .string()
+      .string({ error: "El motivo es obligatorio" })
       .trim()
-      .max(200, "El motivo no puede superar 200 caracteres")
-      .optional(),
+      .min(1, "El motivo es obligatorio")
+      .max(200, "El motivo no puede superar 200 caracteres"),
   });
 }
 
@@ -172,7 +192,7 @@ export type CrearSalida = z.output<ReturnType<typeof crearSalidaSchema>>;
 export type CrearSalidaInput = z.input<ReturnType<typeof crearSalidaSchema>>;
 
 /**
- * Respuesta de `POST /inventario/stock/:id/entradas` y `/salidas`: el
+ * Respuesta de `POST /inventario/existencias/:id/entradas` y `/salidas`: el
  * backend devuelve el movimiento con el registro de inventario ya
  * actualizado (`inventario` completo, no la forma curada del historial).
  */
@@ -183,16 +203,16 @@ export const movimientoCreadoSchema = z.object({
   fecha: z.string(),
   origen: z.string().nullable(),
   motivo: z.string().nullable(),
-  responsableId: z.string(),
+  responsable: z.object({ id: z.string(), nombre: z.string() }).nullable(),
   creadoEn: z.string(),
-  inventario: stockSchema,
+  inventario: inventarioSchema,
 });
 
 export type MovimientoCreadoRespuesta = z.infer<typeof movimientoCreadoSchema>;
 
 export const movimientoSchema = z.object({
   id: z.number(),
-  tipo: z.enum(["ENTRADA", "SALIDA"]),
+  tipo: z.enum(["APERTURA", "AJUSTE", "ENTRADA", "SALIDA"]),
   cantidad: z.number(),
   fecha: z.string(),
   origen: z.string().nullable(),
@@ -206,7 +226,7 @@ export const movimientoSchema = z.object({
       unidadMedida: z.enum(UNIDADES_MEDIDA),
     }),
   }),
-  responsable: z.object({ id: z.string(), nombre: z.string() }),
+  responsable: z.object({ id: z.string(), nombre: z.string() }).nullable(),
 });
 
 export type MovimientoRespuesta = z.infer<typeof movimientoSchema>;

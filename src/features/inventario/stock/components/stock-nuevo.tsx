@@ -6,7 +6,7 @@ import { useProducto } from "../../producto/hooks/hooks";
 import { getMensajeDeError } from "../../producto/servicios/producto.service";
 import { StockForm } from "./stock-form";
 
-/** Resuelve el producto por id y muestra el formulario de alta de stock. */
+/** Resuelve el producto y muestra el formulario de configuración de stock. */
 export function StockNuevo({ productoId }: { productoId: number }) {
   const producto = useProducto(productoId);
 
@@ -24,7 +24,7 @@ export function StockNuevo({ productoId }: { productoId: number }) {
     );
   }
 
-  if (producto.data.stock) {
+  if (producto.data.configuracionStock) {
     return (
       <div className="space-y-4 rounded-xl border bg-card p-5">
         <p className="text-sm text-foreground">
@@ -34,7 +34,7 @@ export function StockNuevo({ productoId }: { productoId: number }) {
           nativeButton={false}
           render={
             <Link
-              href={`/dashboard/inventario/stock/${producto.data.stock.id}/editar`}
+              href={`/dashboard/inventario/stock/${producto.data.configuracionStock.id}/editar`}
             />
           }
         >

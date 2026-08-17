@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { PlusIcon, SearchIcon, Home } from "lucide-react";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import type { MetaPaginacion } from "@/lib/paginacion";
+import { useAuth } from "@/features/auth/context/auth-context";
 import type {
   Departamento,
   TipoProducto,
@@ -30,6 +29,7 @@ import { ProductosTabla } from "./productos-tabla";
 const PAGE_SIZE = 8;
 
 export function ProductosGestion() {
+  const { usuario } = useAuth();
   const [busqueda, setBusqueda] = useState("");
   const [tipoProducto, setTipoProducto] = useState<TipoProducto | "todos">(
     TODOS,
@@ -48,6 +48,8 @@ export function ProductosGestion() {
     tipoProducto: tipoProducto === TODOS ? undefined : tipoProducto,
     departamento: departamento === TODOS ? undefined : departamento,
     ubicacion: ubicacion === TODOS ? undefined : ubicacion,
+    pagina: page,
+    limite: PAGE_SIZE,
   });
 
   const filtrosActivos = [tipoProducto, departamento, ubicacion].filter(
@@ -55,28 +57,8 @@ export function ProductosGestion() {
   ).length;
   const hayFiltros = busquedaDebounced !== "" || filtrosActivos > 0;
 
-  const total = productos.data?.length ?? 0;
-  const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE) || 1);
-  const paginaActual = Math.min(page, totalPaginas);
-
-  // La API no pagina; se pagina en cliente para igualar Usuarios.
-  const paginaProductos = useMemo(() => {
-    const items = productos.data ?? [];
-    const inicio = (paginaActual - 1) * PAGE_SIZE;
-    return items.slice(inicio, inicio + PAGE_SIZE);
-  }, [productos.data, paginaActual]);
-
-  const meta = useMemo<MetaPaginacion | null>(() => {
-    if (productos.isLoading || productos.isError) return null;
-    return {
-      total,
-      pagina: paginaActual,
-      limite: PAGE_SIZE,
-      totalPaginas,
-      tieneAnterior: paginaActual > 1,
-      tieneSiguiente: paginaActual < totalPaginas,
-    };
-  }, [productos.isError, productos.isLoading, paginaActual, total, totalPaginas]);
+  const total = productos.data?.meta.total ?? 0;
+  const meta = productos.data?.meta;
 
   function limpiarFiltros() {
     setTipoProducto(TODOS);
@@ -121,7 +103,7 @@ export function ProductosGestion() {
               : `${total} producto${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}`}
           </p>
         </div>
-        <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
+        {usuario?.rol === "ADMINISTRADOR" ? (
           <Button
             className="w-full sm:w-auto"
             nativeButton={false}
@@ -130,7 +112,7 @@ export function ProductosGestion() {
             <PlusIcon data-icon="inline-start" />
             Registrar producto
           </Button>
-        </MostrarSiPuede>
+        ) : null}
       </div>
 
       <div className="flex items-center gap-3">
@@ -172,7 +154,7 @@ export function ProductosGestion() {
       <ProductosTabla
         cargando={productos.isLoading}
         error={productos.isError}
-        productos={paginaProductos}
+        productos={productos.data?.datos ?? []}
         mensajeError={
           productos.isError ? getMensajeDeError(productos.error) : undefined
         }

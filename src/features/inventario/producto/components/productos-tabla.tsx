@@ -28,8 +28,8 @@ export function ProductosTabla({
   vacioConFiltros = false,
 }: ProductosTablaProps) {
   return (
-    <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-      <Table>
+    <div className="overflow-x-auto rounded-xl border bg-card shadow-sm">
+      <Table className="min-w-[900px]">
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -45,7 +45,7 @@ export function ProductosTabla({
               Ubicación
             </TableHead>
             <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              Stock
+              Existencias
             </TableHead>
             <TableHead className="w-[1%] py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Acciones
