@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RequerirPermiso } from "@/features/auth/components/requerir-permiso";
-import { InsumoEditar } from "@/features/inventario/components/insumo-editar";
+import { ProductoEditar } from "@/features/inventario/producto/components/producto-editar";
 
 export const metadata: Metadata = {
-  title: "Editar insumo | GestiónCTP27",
+  title: "Editar producto | GestiónCTP27",
 };
 
 /**
@@ -14,15 +14,15 @@ export const metadata: Metadata = {
  * el resto del módulo y que la edición de usuarios. El enlace de volver lo
  * aporta el propio listado, así que aquí no se repite.
  */
-export default async function EditarInsumoPage({
+export default async function EditarProductoPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const insumoId = Number(id);
+  const productoId = Number(id);
 
-  if (!Number.isInteger(insumoId) || insumoId <= 0) {
+  if (!Number.isInteger(productoId) || productoId <= 0) {
     notFound();
   }
 
@@ -31,13 +31,13 @@ export default async function EditarInsumoPage({
       <main className="mx-auto w-full max-w-lg">
         <header className="mb-6">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Editar insumo
+            Editar producto
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Actualice la información administrativa del insumo.
+            Actualice la información del producto.
           </p>
         </header>
-        <InsumoEditar id={insumoId} />
+        <ProductoEditar id={productoId} />
       </main>
     </RequerirPermiso>
   );
