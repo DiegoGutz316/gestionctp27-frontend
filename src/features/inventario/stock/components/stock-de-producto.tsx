@@ -5,18 +5,13 @@ import Link from "next/link";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  MoreVerticalIcon,
   PencilIcon,
   PlusIcon,
 } from "lucide-react";
+import { AccionesMenu } from "@/components/acciones-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -93,8 +88,8 @@ export function StockDeProducto({
               <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Precio
               </TableHead>
-              <TableHead className="w-12">
-                <span className="sr-only">Acciones</span>
+              <TableHead className="w-[1%] py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                Acciones
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -136,44 +131,28 @@ export function StockDeProducto({
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
+                  <AccionesMenu aria-label="Acciones de stock">
+                    <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
+                      <DropdownMenuItem onClick={() => setEntradaPara(stock)}>
+                        <ArrowDownIcon />
+                        Registrar entrada
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setSalidaPara(stock)}>
+                        <ArrowUpIcon />
+                        Registrar salida
+                      </DropdownMenuItem>
+                    </MostrarSiPuede>
+                    <DropdownMenuItem
                       render={
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-muted-foreground"
-                          aria-label="Acciones de stock"
+                        <Link
+                          href={`/dashboard/inventario/stock/${stock.id}/editar`}
                         />
                       }
                     >
-                      <MoreVerticalIcon />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
-                        <DropdownMenuItem
-                          onClick={() => setEntradaPara(stock)}
-                        >
-                          <ArrowDownIcon />
-                          Registrar entrada
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSalidaPara(stock)}>
-                          <ArrowUpIcon />
-                          Registrar salida
-                        </DropdownMenuItem>
-                      </MostrarSiPuede>
-                      <DropdownMenuItem
-                        render={
-                          <Link
-                            href={`/dashboard/inventario/stock/${stock.id}/editar`}
-                          />
-                        }
-                      >
-                        <PencilIcon />
-                        Editar configuración
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      <PencilIcon />
+                      Editar configuración
+                    </DropdownMenuItem>
+                  </AccionesMenu>
                 </TableCell>
               </TableRow>
             )}

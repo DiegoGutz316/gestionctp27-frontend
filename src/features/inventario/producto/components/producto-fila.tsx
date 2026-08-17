@@ -6,19 +6,13 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   EyeIcon,
-  MoreVerticalIcon,
   PencilIcon,
   PlusIcon,
 } from "lucide-react";
+import { AccionesMenu } from "@/components/acciones-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { StockEntradaDialog } from "../../stock/components/stock-entrada-dialog";
@@ -110,63 +104,49 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
         )}
       </TableCell>
       <TableCell className="text-right">
-        <DropdownMenu>
-          <DropdownMenuTrigger
+        <AccionesMenu aria-label={`Acciones de ${producto.nombre}`}>
+          <DropdownMenuItem
+            render={<Link href={`/dashboard/inventario/${producto.id}`} />}
+          >
+            <EyeIcon />
+            Ver stock
+          </DropdownMenuItem>
+
+          <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
+            {stock ? (
+              <>
+                <DropdownMenuItem onClick={() => setEntradaAbierta(true)}>
+                  <ArrowDownIcon />
+                  Registrar entrada
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSalidaAbierta(true)}>
+                  <ArrowUpIcon />
+                  Registrar salida
+                </DropdownMenuItem>
+              </>
+            ) : (
+              <DropdownMenuItem
+                render={
+                  <Link
+                    href={`/dashboard/inventario/${producto.id}/stock/nuevo`}
+                  />
+                }
+              >
+                <PlusIcon />
+                Configurar stock
+              </DropdownMenuItem>
+            )}
+          </MostrarSiPuede>
+
+          <DropdownMenuItem
             render={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground"
-                aria-label={`Acciones de ${producto.nombre}`}
-              />
+              <Link href={`/dashboard/inventario/${producto.id}/editar`} />
             }
           >
-            <MoreVerticalIcon />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              render={<Link href={`/dashboard/inventario/${producto.id}`} />}
-            >
-              <EyeIcon />
-              Ver stock
-            </DropdownMenuItem>
-
-            <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
-              {stock ? (
-                <>
-                  <DropdownMenuItem onClick={() => setEntradaAbierta(true)}>
-                    <ArrowDownIcon />
-                    Registrar entrada
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSalidaAbierta(true)}>
-                    <ArrowUpIcon />
-                    Registrar salida
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <DropdownMenuItem
-                  render={
-                    <Link
-                      href={`/dashboard/inventario/${producto.id}/stock/nuevo`}
-                    />
-                  }
-                >
-                  <PlusIcon />
-                  Configurar stock
-                </DropdownMenuItem>
-              )}
-            </MostrarSiPuede>
-
-            <DropdownMenuItem
-              render={
-                <Link href={`/dashboard/inventario/${producto.id}/editar`} />
-              }
-            >
-              <PencilIcon />
-              Editar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <PencilIcon />
+            Editar
+          </DropdownMenuItem>
+        </AccionesMenu>
       </TableCell>
     </TableRow>
   );

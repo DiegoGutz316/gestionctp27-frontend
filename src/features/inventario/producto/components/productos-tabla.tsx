@@ -47,8 +47,8 @@ export function ProductosTabla({
             <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Stock
             </TableHead>
-            <TableHead className="w-12">
-              <span className="sr-only">Acciones</span>
+            <TableHead className="w-[1%] py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              Acciones
             </TableHead>
           </TableRow>
         </TableHeader>

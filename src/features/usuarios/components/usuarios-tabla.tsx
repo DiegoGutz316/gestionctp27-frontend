@@ -2,16 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MoreVerticalIcon, PencilIcon, UserXIcon } from "lucide-react";
+import { PencilIcon, UserXIcon } from "lucide-react";
+import { AccionesMenu } from "@/components/acciones-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -69,8 +64,8 @@ export function UsuariosTabla({
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Estado
             </TableHead>
-            <TableHead className="w-12">
-              <span className="sr-only">Acciones</span>
+            <TableHead className="w-[1%] py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              Acciones
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -169,41 +164,25 @@ export function UsuariosTabla({
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger
+                <AccionesMenu aria-label={`Acciones de ${usuario.nombre}`}>
+                  <DropdownMenuItem
                     render={
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-muted-foreground"
-                        aria-label={`Acciones de ${usuario.nombre}`}
-                      />
+                      <Link href={`/dashboard/usuarios/${usuario.id}/editar`} />
                     }
                   >
-                    <MoreVerticalIcon />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                    <PencilIcon />
+                    Editar
+                  </DropdownMenuItem>
+                  {usuario.activo ? (
                     <DropdownMenuItem
-                      render={
-                        <Link
-                          href={`/dashboard/usuarios/${usuario.id}/editar`}
-                        />
-                      }
+                      variant="destructive"
+                      onClick={() => setUsuarioADesactivar(usuario)}
                     >
-                      <PencilIcon />
-                      Editar
+                      <UserXIcon />
+                      Desactivar
                     </DropdownMenuItem>
-                    {usuario.activo ? (
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onClick={() => setUsuarioADesactivar(usuario)}
-                      >
-                        <UserXIcon />
-                        Desactivar
-                      </DropdownMenuItem>
-                    ) : null}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  ) : null}
+                </AccionesMenu>
               </TableCell>
             </TableRow>
           ))}
