@@ -47,7 +47,7 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
   const stock = stockDeProducto(producto);
 
   return (
-    <TableRow>
+    <TableRow className="transition-colors hover:bg-muted/30">
       {stock ? (
         <>
           <StockEntradaDialog

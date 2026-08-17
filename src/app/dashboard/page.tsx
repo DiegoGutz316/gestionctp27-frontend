@@ -1,9 +1,5 @@
-import React from 'react'
+import { DashboardInicio } from "@/features/dashboard/components/dashboard-inicio";
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
+export default function DashboardPage() {
+  return <DashboardInicio />;
 }
-
-export default page

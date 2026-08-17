@@ -33,7 +33,7 @@ export default async function EditarProductoPage({
           <h1 className="text-2xl font-semibold tracking-tight">
             Editar producto
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             Actualice la información del producto.
           </p>
         </header>

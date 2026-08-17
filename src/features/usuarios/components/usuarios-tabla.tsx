@@ -49,7 +49,7 @@ export function UsuariosTabla({
     useState<UsuarioRespuesta | null>(null);
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-card">
+    <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <UsuarioDesactivarDialog
         usuario={usuarioADesactivar}
         open={usuarioADesactivar !== null}
@@ -59,14 +59,14 @@ export function UsuariosTabla({
       />
       <Table>
         <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          <TableRow className="bg-muted/30 hover:bg-muted/30">
+            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Usuario
             </TableHead>
-            <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Rol
             </TableHead>
-            <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Estado
             </TableHead>
             <TableHead className="w-12">
@@ -105,7 +105,7 @@ export function UsuariosTabla({
             <TableRow>
               <TableCell
                 colSpan={4}
-                className="py-10 text-center text-sm text-destructive"
+                className="py-16 text-center text-sm text-destructive"
               >
                 No se pudieron cargar los usuarios. Verifique la conexión con el
                 servidor.
@@ -115,18 +115,26 @@ export function UsuariosTabla({
 
           {!cargando && !error && usuarios.length === 0 && (
             <TableRow>
-              <TableCell
-                colSpan={4}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                No hay usuarios que coincidan con la búsqueda.
+              <TableCell colSpan={4} className="py-16">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex size-14 items-center justify-center rounded-full bg-muted">
+                    <UserXIcon className="size-7 text-muted-foreground/30" />
+                  </div>
+                  <p className="text-sm font-medium">No se encontraron usuarios</p>
+                  <p className="text-xs text-muted-foreground">
+                    Pruebe ajustando los filtros de búsqueda
+                  </p>
+                </div>
               </TableCell>
             </TableRow>
           )}
 
           {usuarios.map((usuario) => (
-            <TableRow key={usuario.id}>
-              <TableCell>
+            <TableRow
+              key={usuario.id}
+              className="transition-colors hover:bg-muted/30"
+            >
+              <TableCell className="py-3">
                 <div className="flex items-center gap-3">
                   <Avatar className="size-9">
                     <AvatarFallback className="bg-muted text-xs font-medium">

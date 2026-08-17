@@ -14,10 +14,14 @@ import {
 
 export const productosQueryKey = ["inventario", "productos"] as const;
 
-export function useProductos(filtros: FiltrarProductos = {}) {
+export function useProductos(
+  filtros: FiltrarProductos = {},
+  opciones: { enabled?: boolean } = {},
+) {
   return useQuery({
     queryKey: [...productosQueryKey, filtros],
     queryFn: () => listarProductos(filtros),
+    enabled: opciones.enabled ?? true,
   });
 }
 

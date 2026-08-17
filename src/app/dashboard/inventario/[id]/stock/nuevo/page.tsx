@@ -27,7 +27,7 @@ export default async function NuevoStockPage({
           <h1 className="text-2xl font-semibold tracking-tight">
             Configurar stock
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             Defina el stock mínimo y el precio. La existencia inicia en cero y
             cambia únicamente mediante entradas y salidas.
           </p>

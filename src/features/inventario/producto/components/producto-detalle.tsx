@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Home } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -28,7 +29,7 @@ export function ProductoDetalle({ id }: { id: number }) {
 
   if (producto.isLoading) {
     return (
-      <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-5">
+      <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
         <Skeleton className="h-6 w-64" />
         <Skeleton className="h-32 w-full" />
       </section>
@@ -37,7 +38,7 @@ export function ProductoDetalle({ id }: { id: number }) {
 
   if (producto.isError || !producto.data) {
     return (
-      <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-5">
+      <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
         <p className="text-sm text-destructive">
           {getMensajeDeError(producto.error)}
         </p>
@@ -49,11 +50,15 @@ export function ProductoDetalle({ id }: { id: number }) {
   const stock = stockDeProducto(datos);
 
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6">
+    <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href="/dashboard" />}>
+            <BreadcrumbLink
+              render={<Link href="/dashboard" />}
+              className="flex items-center gap-1.5"
+            >
+              <Home className="size-3.5" />
               Inicio
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -89,7 +94,7 @@ export function ProductoDetalle({ id }: { id: number }) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 rounded-xl border bg-card p-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 rounded-xl border bg-card p-4 shadow-xs sm:grid-cols-3">
         <div>
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             Departamento

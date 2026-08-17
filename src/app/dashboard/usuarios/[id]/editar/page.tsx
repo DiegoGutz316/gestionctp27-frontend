@@ -10,9 +10,5 @@ export default async function EditarUsuarioPage({
 }: Readonly<{ params: Promise<{ id: string }> }>) {
   const { id } = await params;
 
-  return (
-    <main className="flex flex-1 flex-col p-4 md:p-6">
-      <UsuarioEditar id={id} />
-    </main>
-  );
+  return <UsuarioEditar id={id} />;
 }

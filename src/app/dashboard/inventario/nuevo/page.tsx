@@ -15,7 +15,7 @@ export default function NuevoProductoPage() {
           <h1 className="text-2xl font-semibold tracking-tight">
             Registrar producto
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             Agregue un producto al catálogo de inventario del colegio.
           </p>
         </header>

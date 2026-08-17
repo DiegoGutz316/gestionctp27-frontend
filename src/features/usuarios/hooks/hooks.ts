@@ -15,10 +15,14 @@ import {
 
 export const usuariosQueryKey = ["usuarios"] as const;
 
-export function useUsuarios(filtros: PaginarUsuarios = {}) {
+export function useUsuarios(
+  filtros: PaginarUsuarios = {},
+  opciones: { enabled?: boolean } = {},
+) {
   return useQuery({
     queryKey: [...usuariosQueryKey, "lista", filtros],
     queryFn: () => listarUsuarios(filtros),
+    enabled: opciones.enabled ?? true,
   });
 }
 

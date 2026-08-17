@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Home } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,7 +23,11 @@ export function UsuarioEditar({ id }: { id: string }) {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href="/dashboard" />}>
+            <BreadcrumbLink
+              render={<Link href="/dashboard" />}
+              className="flex items-center gap-1.5"
+            >
+              <Home className="size-3.5" />
               Inicio
             </BreadcrumbLink>
           </BreadcrumbItem>

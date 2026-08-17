@@ -28,23 +28,23 @@ export function ProductosTabla({
   vacioConFiltros = false,
 }: ProductosTablaProps) {
   return (
-    <div className="overflow-hidden rounded-xl border bg-card">
+    <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          <TableRow className="bg-muted/30 hover:bg-muted/30">
+            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Producto
             </TableHead>
-            <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Unidad
             </TableHead>
-            <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Departamento
             </TableHead>
-            <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Ubicación
             </TableHead>
-            <TableHead className="text-right text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Stock
             </TableHead>
             <TableHead className="w-12">
@@ -89,7 +89,7 @@ export function ProductosTabla({
             <TableRow>
               <TableCell
                 colSpan={6}
-                className="py-10 text-center text-sm text-destructive"
+                className="py-16 text-center text-sm text-destructive"
               >
                 {mensajeError ??
                   "No se pudieron cargar los productos. Verifique la conexión con el servidor."}
@@ -101,7 +101,7 @@ export function ProductosTabla({
             <TableRow>
               <TableCell
                 colSpan={6}
-                className="py-10 text-center text-sm text-muted-foreground"
+                className="py-16 text-center text-sm text-muted-foreground"
               >
                 {vacioConFiltros
                   ? "No hay productos que coincidan con la búsqueda."

@@ -34,23 +34,23 @@ export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
         Historial de movimientos
       </h2>
 
-      <div className="overflow-hidden rounded-xl border bg-card">
+      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <TableRow className="bg-muted/30 hover:bg-muted/30">
+              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Tipo
               </TableHead>
-              <TableHead className="text-right text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Cantidad
               </TableHead>
-              <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Fecha
               </TableHead>
-              <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Detalle
               </TableHead>
-              <TableHead className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Responsable
               </TableHead>
             </TableRow>
