@@ -101,7 +101,7 @@ export function UsuarioDesactivarDialog({
               return (
                 <Field orientation="horizontal" data-invalid={invalid}>
                   <FieldContent>
-                    <FieldLabel htmlFor={field.name}>
+                    <FieldLabel htmlFor={field.name} required>
                       Confirmar desactivación
                     </FieldLabel>
                     <FieldDescription>

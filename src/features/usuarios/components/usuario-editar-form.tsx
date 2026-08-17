@@ -94,7 +94,9 @@ export function UsuarioEditarForm({
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Nombre completo</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Nombre completo
+                </FieldLabel>
                 <Input
                   id={field.name}
                   placeholder="Ej: María Fernández"
@@ -116,7 +118,9 @@ export function UsuarioEditarForm({
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Correo electrónico</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Correo electrónico
+                </FieldLabel>
                 <Input
                   id={field.name}
                   type="email"
@@ -139,7 +143,9 @@ export function UsuarioEditarForm({
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Rol</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Rol
+                </FieldLabel>
                 <Select
                   items={rolesItems}
                   value={field.state.value}
@@ -176,7 +182,9 @@ export function UsuarioEditarForm({
             return (
               <Field orientation="horizontal" data-invalid={invalid}>
                 <FieldContent>
-                  <FieldLabel htmlFor={field.name}>Usuario activo</FieldLabel>
+                  <FieldLabel htmlFor={field.name} required>
+                    Usuario activo
+                  </FieldLabel>
                   <FieldDescription>
                     Si está inactivo, no podrá iniciar sesión en el sistema.
                   </FieldDescription>

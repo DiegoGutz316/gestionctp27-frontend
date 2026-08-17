@@ -82,7 +82,9 @@ export function UsuarioForm() {
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Nombre completo</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Nombre completo
+                </FieldLabel>
                 <Input
                   id={field.name}
                   placeholder="Ej: María Fernández"
@@ -104,7 +106,9 @@ export function UsuarioForm() {
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Correo electrónico</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Correo electrónico
+                </FieldLabel>
                 <Input
                   id={field.name}
                   type="email"
@@ -127,7 +131,9 @@ export function UsuarioForm() {
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Contraseña</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Contraseña
+                </FieldLabel>
                 <Input
                   id={field.name}
                   type="password"
@@ -150,7 +156,9 @@ export function UsuarioForm() {
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Rol</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Rol
+                </FieldLabel>
                 <Select
                   items={rolesItems}
                   value={field.state.value === "" ? null : field.state.value}

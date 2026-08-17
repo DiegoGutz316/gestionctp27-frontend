@@ -104,7 +104,7 @@ export function StockSalidaDialog({
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={field.name}>
+                    <FieldLabel htmlFor={field.name} required>
                       Cantidad que sale
                     </FieldLabel>
                     <Input
@@ -131,7 +131,7 @@ export function StockSalidaDialog({
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={field.name}>
+                    <FieldLabel htmlFor={field.name} required>
                       Fecha de la salida
                     </FieldLabel>
                     <Input
@@ -156,9 +156,7 @@ export function StockSalidaDialog({
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Motivo (opcional)
-                    </FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Motivo</FieldLabel>
                     <Input
                       id={field.name}
                       placeholder="Ej: Consumo, merma, traslado…"

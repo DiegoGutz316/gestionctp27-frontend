@@ -60,7 +60,9 @@ export function LoginForm() {
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Correo electrónico</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Correo electrónico
+                </FieldLabel>
                 <div className="relative">
                   <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -87,7 +89,9 @@ export function LoginForm() {
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Contraseña</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Contraseña
+                </FieldLabel>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input

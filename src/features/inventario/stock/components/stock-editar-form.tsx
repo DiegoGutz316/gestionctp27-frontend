@@ -83,7 +83,9 @@ export function StockEditarForm({ stock }: { stock: StockRespuesta }) {
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Stock mínimo</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Stock mínimo
+                </FieldLabel>
                 <Input
                   id={field.name}
                   type="number"
@@ -110,7 +112,9 @@ export function StockEditarForm({ stock }: { stock: StockRespuesta }) {
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Precio unitario</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Precio unitario
+                </FieldLabel>
                 <Input
                   id={field.name}
                   type="number"

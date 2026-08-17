@@ -104,7 +104,7 @@ export function StockEntradaDialog({
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={field.name}>
+                    <FieldLabel htmlFor={field.name} required>
                       Cantidad que ingresa
                     </FieldLabel>
                     <Input
@@ -131,7 +131,7 @@ export function StockEntradaDialog({
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={field.name}>
+                    <FieldLabel htmlFor={field.name} required>
                       Fecha de la entrada
                     </FieldLabel>
                     <Input
@@ -156,9 +156,7 @@ export function StockEntradaDialog({
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Origen (opcional)
-                    </FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Origen</FieldLabel>
                     <Input
                       id={field.name}
                       placeholder="Ej: Compra, donación, proveedor…"

@@ -116,7 +116,9 @@ export function ProductoEditarForm({
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Nombre del producto</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Nombre del producto
+                </FieldLabel>
                 <Input
                   id={field.name}
                   placeholder="Ej: Alimento para cerdos"
@@ -137,7 +139,9 @@ export function ProductoEditarForm({
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Tipo de producto</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Tipo de producto
+                </FieldLabel>
                 <Select
                   items={tiposItems}
                   value={field.state.value}
@@ -173,7 +177,9 @@ export function ProductoEditarForm({
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Unidad de medida</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Unidad de medida
+                </FieldLabel>
                 <Select
                   items={unidadesItems}
                   value={field.state.value}
@@ -209,7 +215,9 @@ export function ProductoEditarForm({
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Departamento</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Departamento
+                </FieldLabel>
                 <Select
                   items={departamentosItems}
                   value={field.state.value}
@@ -245,7 +253,9 @@ export function ProductoEditarForm({
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name}>Ubicación</FieldLabel>
+                <FieldLabel htmlFor={field.name} required>
+                  Ubicación
+                </FieldLabel>
                 <Select
                   items={ubicacionesItems}
                   value={field.state.value}
