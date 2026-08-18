@@ -2,15 +2,16 @@ import { api, ApiError } from "@/lib/api";
 import type { ResultadoPaginado } from "@/lib/paginacion";
 import type {
   CategoriaInsumoRespuesta,
-  ConsultarEntradas,
+  ConsultarMovimientos,
   CrearCategoriaInsumo,
   CrearInsumo,
   EditarInsumo,
-  EntradaRespuesta,
   FiltrarInsumos,
   InsumoRespuesta,
+  MovimientoHistorial,
   MovimientoRespuesta,
   RegistrarEntrada,
+  RegistrarSalida,
 } from "./models/inventario.model";
 
 export function obtenerCategorias() {
@@ -45,15 +46,24 @@ export function registrarEntrada(datos: RegistrarEntrada) {
   return api.post<MovimientoRespuesta>("/inventario/entradas", datos);
 }
 
-/** Backlog 4.5: historial de entradas, paginado y filtrable. */
-export function obtenerEntradas(filtros: ConsultarEntradas = {}) {
-  return api.get<ResultadoPaginado<EntradaRespuesta>>("/inventario/entradas", {
-    pagina: filtros.pagina,
-    limite: filtros.limite,
-    insumoId: filtros.insumoId,
-    desde: filtros.desde,
-    hasta: filtros.hasta,
-  });
+/** Backlog 4.6: registra una salida; el backend resta la cantidad del stock. */
+export function registrarSalida(datos: RegistrarSalida) {
+  return api.post<MovimientoRespuesta>("/inventario/salidas", datos);
+}
+
+/** Backlogs 4.5 y 4.6: historial de movimientos, paginado y filtrable. */
+export function obtenerMovimientos(filtros: ConsultarMovimientos = {}) {
+  return api.get<ResultadoPaginado<MovimientoHistorial>>(
+    "/inventario/movimientos",
+    {
+      pagina: filtros.pagina,
+      limite: filtros.limite,
+      tipo: filtros.tipo,
+      insumoId: filtros.insumoId,
+      desde: filtros.desde,
+      hasta: filtros.hasta,
+    },
+  );
 }
 
 /**

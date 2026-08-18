@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PlusIcon } from "lucide-react";
+import { ArrowDownToLineIcon, ArrowUpFromLineIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
-import { EntradasTabla } from "./entradas-tabla";
+import { MovimientosTabla } from "./movimientos-tabla";
 import { InventarioVistaSwitch } from "./inventario-vista-switch";
 
-export function EntradasGestion() {
+export function MovimientosGestion() {
   return (
     <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-5">
       <Breadcrumb>
@@ -33,7 +33,7 @@ export function EntradasGestion() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Entradas</BreadcrumbPage>
+            <BreadcrumbPage>Movimientos</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -43,25 +43,37 @@ export function EntradasGestion() {
           Gestión de Inventario
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Historial de los ingresos de insumos registrados.
+          Historial de entradas y salidas de insumos registradas.
         </p>
       </div>
 
       <InventarioVistaSwitch />
 
       <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
-        <Button
-          size="lg"
-          className="h-10 w-full justify-center"
-          nativeButton={false}
-          render={<Link href="/dashboard/inventario/entradas/nueva" />}
-        >
-          <PlusIcon data-icon="inline-start" />
-          Registrar entrada
-        </Button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button
+            size="lg"
+            className="h-10 flex-1 justify-center"
+            nativeButton={false}
+            render={<Link href="/dashboard/inventario/movimientos/entrada" />}
+          >
+            <ArrowDownToLineIcon data-icon="inline-start" />
+            Registrar entrada
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="h-10 flex-1 justify-center"
+            nativeButton={false}
+            render={<Link href="/dashboard/inventario/movimientos/salida" />}
+          >
+            <ArrowUpFromLineIcon data-icon="inline-start" />
+            Registrar salida
+          </Button>
+        </div>
       </MostrarSiPuede>
 
-      <EntradasTabla />
+      <MovimientosTabla />
     </section>
   );
 }

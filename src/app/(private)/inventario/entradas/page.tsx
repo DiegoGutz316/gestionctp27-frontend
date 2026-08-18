@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Ruta antigua: redirige al historial bajo el dashboard. */
+/** Ruta antigua: el historial ahora muestra entradas y salidas juntas. */
 export default function EntradasRedirectPage() {
-  redirect("/dashboard/inventario/entradas");
+  redirect("/dashboard/inventario/movimientos");
 }

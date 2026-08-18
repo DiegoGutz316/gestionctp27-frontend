@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
-  ConsultarEntradas,
+  ConsultarMovimientos,
   EditarInsumo,
   FiltrarInsumos,
 } from "./models/inventario.model";
@@ -11,10 +11,11 @@ import {
   crearInsumo,
   editarInsumo,
   obtenerCategorias,
-  obtenerEntradas,
   obtenerInsumo,
   obtenerInsumos,
+  obtenerMovimientos,
   registrarEntrada,
+  registrarSalida,
 } from "./api";
 
 export const categoriasQueryKey = ["inventario", "categorias"] as const;
@@ -71,8 +72,16 @@ export function useEditarInsumo(id: number) {
   });
 }
 
-// Clave base del historial de entradas (backlog 4.5).
-export const entradasQueryKey = ["inventario", "entradas"] as const;
+// Clave base del historial de movimientos (backlogs 4.5 y 4.6).
+export const movimientosQueryKey = ["inventario", "movimientos"] as const;
+
+/** Ambas vistas cambian con cualquier movimiento: existencias e historial. */
+function invalidarInventario(queryClient: ReturnType<typeof useQueryClient>) {
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: insumosQueryKey }),
+    queryClient.invalidateQueries({ queryKey: movimientosQueryKey }),
+  ]);
+}
 
 /**
  * Backlog 4.4. Al invalidar la clave base de insumos se cumple además el
@@ -89,19 +98,23 @@ export function useRegistrarEntrada() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: registrarEntrada,
-    // Cambian tanto las existencias como el historial; se refrescan en paralelo.
-    onSuccess: () =>
-      Promise.all([
-        queryClient.invalidateQueries({ queryKey: insumosQueryKey }),
-        queryClient.invalidateQueries({ queryKey: entradasQueryKey }),
-      ]),
+    onSuccess: () => invalidarInventario(queryClient),
   });
 }
 
-export function useEntradas(filtros: ConsultarEntradas = {}) {
+/** Backlog 4.6. Misma semántica de invalidación que el registro de entradas. */
+export function useRegistrarSalida() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: registrarSalida,
+    onSuccess: () => invalidarInventario(queryClient),
+  });
+}
+
+export function useMovimientos(filtros: ConsultarMovimientos = {}) {
   return useQuery({
-    queryKey: [...entradasQueryKey, filtros],
-    queryFn: () => obtenerEntradas(filtros),
+    queryKey: [...movimientosQueryKey, filtros],
+    queryFn: () => obtenerMovimientos(filtros),
     // Al cambiar de página o filtro se conservan los datos previos, para que la
     // tabla no parpadee entre consultas.
     placeholderData: (anterior) => anterior,

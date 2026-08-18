@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UNIDADES_MEDIDA } from "../models/inventario.model";
+import { TIPOS_MOVIMIENTO, UNIDADES_MEDIDA } from "../models/inventario.model";
 
 // Los formularios envían los campos numéricos como string; z.coerce los
 // convierte a number y el genérico <number | string> mantiene z.input tipado.
@@ -204,6 +204,42 @@ export const registrarEntradaSchema = z.object({
 export type RegistrarEntrada = z.output<typeof registrarEntradaSchema>;
 export type RegistrarEntradaInput = z.input<typeof registrarEntradaSchema>;
 
+/**
+ * Registro de salidas de inventario (backlog 4.6).
+ *
+ * A diferencia del `origen` de las entradas, el `motivo` es obligatorio. El
+ * tope de existencia disponible no se valida aquí porque depende del stock del
+ * momento: el formulario avisa con el dato que tiene cargado y el backend lo
+ * comprueba de verdad dentro de la transacción.
+ */
+export const registrarSalidaSchema = z.object({
+  insumoId: sinVacios(
+    numeroDesdeInput("Seleccione un insumo")
+      .int("Seleccione un insumo")
+      .positive("Seleccione un insumo"),
+  ),
+  cantidad: sinVacios(
+    acotarADecimal(
+      "La cantidad",
+      numeroDesdeInput("La cantidad es obligatoria").positive(
+        "La cantidad debe ser mayor que 0",
+      ),
+    ),
+  ),
+  fecha: z
+    .string({ error: "La fecha es obligatoria" })
+    .min(1, "La fecha es obligatoria")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Ingrese una fecha válida"),
+  motivo: z
+    .string({ error: "El motivo es obligatorio" })
+    .trim()
+    .min(1, "El motivo es obligatorio")
+    .max(200, "El motivo no puede superar 200 caracteres"),
+});
+
+export type RegistrarSalida = z.output<typeof registrarSalidaSchema>;
+export type RegistrarSalidaInput = z.input<typeof registrarSalidaSchema>;
+
 // Respuesta del historial de movimientos (la reutilizará el backlog 4.5).
 const movimientoSchema = z.object({
   id: z.number(),
@@ -219,12 +255,16 @@ const movimientoSchema = z.object({
 
 export type MovimientoRespuesta = z.infer<typeof movimientoSchema>;
 
-// Consulta del historial de entradas (backlog 4.5).
-const entradaSchema = z.object({
+// Fila del historial de movimientos (backlogs 4.5 y 4.6).
+const movimientoHistorialSchema = z.object({
   id: z.number(),
+  tipo: z.enum(TIPOS_MOVIMIENTO),
   cantidad: z.number(),
   fecha: z.string(),
+  /** Solo en entradas. */
   origen: z.string().nullable(),
+  /** Solo en salidas. */
+  motivo: z.string().nullable(),
   creadoEn: z.string(),
   insumo: z.object({
     id: z.number(),
@@ -234,15 +274,16 @@ const entradaSchema = z.object({
   responsable: z.object({ id: z.string(), nombre: z.string() }),
 });
 
-export type EntradaRespuesta = z.infer<typeof entradaSchema>;
+export type MovimientoHistorial = z.infer<typeof movimientoHistorialSchema>;
 
 /** Filtros del historial; se envían como query string y todos son opcionales. */
-export const consultarEntradasSchema = z.object({
+export const consultarMovimientosSchema = z.object({
   pagina: z.number().int().min(1).optional(),
   limite: z.number().int().min(1).max(100).optional(),
+  tipo: z.enum(TIPOS_MOVIMIENTO).optional(),
   insumoId: z.number().int().positive().optional(),
   desde: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
   hasta: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
 });
 
-export type ConsultarEntradas = z.output<typeof consultarEntradasSchema>;
+export type ConsultarMovimientos = z.output<typeof consultarMovimientosSchema>;

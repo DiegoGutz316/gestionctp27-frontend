@@ -20,10 +20,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  ETIQUETA_TIPO_MOVIMIENTO,
+  TIPOS_MOVIMIENTO,
+  type TipoMovimiento,
+} from "../models/inventario.model";
 import { getMensajeDeError } from "../api";
-import { useEntradas, useInsumos } from "../hooks";
+import { useInsumos, useMovimientos } from "../hooks";
 
 const TODOS_LOS_INSUMOS = "todos";
+const TODOS_LOS_TIPOS = "todos";
 
 /** Muestra AAAA-MM-DD como DD/MM/AAAA sin pasar por Date (evita corrimientos). */
 function formatearFecha(fecha: string): string {
@@ -31,7 +38,8 @@ function formatearFecha(fecha: string): string {
   return dia && mes && anio ? `${dia}/${mes}/${anio}` : fecha;
 }
 
-export function EntradasTabla() {
+export function MovimientosTabla() {
+  const [tipo, setTipo] = useState<string>(TODOS_LOS_TIPOS);
   const [insumoId, setInsumoId] = useState(TODOS_LOS_INSUMOS);
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
@@ -42,16 +50,20 @@ export function EntradasTabla() {
   const filtros = {
     pagina,
     limite: 10,
+    tipo: tipo === TODOS_LOS_TIPOS ? undefined : (tipo as TipoMovimiento),
     insumoId:
       insumoId === TODOS_LOS_INSUMOS ? undefined : Number(insumoId),
     desde: desde || undefined,
     hasta: hasta || undefined,
   };
 
-  const entradas = useEntradas(filtros);
+  const movimientos = useMovimientos(filtros);
 
   const hayFiltrosActivos =
-    insumoId !== TODOS_LOS_INSUMOS || desde !== "" || hasta !== "";
+    tipo !== TODOS_LOS_TIPOS ||
+    insumoId !== TODOS_LOS_INSUMOS ||
+    desde !== "" ||
+    hasta !== "";
 
   // Cualquier cambio de filtro vuelve a la primera página: la página 5 del
   // resultado anterior no tiene por qué existir en el nuevo.
@@ -61,11 +73,20 @@ export function EntradasTabla() {
   }
 
   function limpiarFiltros() {
+    setTipo(TODOS_LOS_TIPOS);
     setInsumoId(TODOS_LOS_INSUMOS);
     setDesde("");
     setHasta("");
     setPagina(1);
   }
+
+  const tiposItems = [
+    { value: TODOS_LOS_TIPOS, label: "Entradas y salidas" },
+    ...TIPOS_MOVIMIENTO.map((t) => ({
+      value: t,
+      label: ETIQUETA_TIPO_MOVIMIENTO[t],
+    })),
+  ];
 
   const insumosItems = [
     { value: TODOS_LOS_INSUMOS, label: "Todos los insumos" },
@@ -77,7 +98,29 @@ export function EntradasTabla() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:items-end">
+      <div className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto_auto] sm:items-end">
+        <div className="grid gap-1.5">
+          <Label htmlFor="filtro-tipo">Tipo</Label>
+          <Select
+            items={tiposItems}
+            value={tipo}
+            onValueChange={(valor) =>
+              cambiarFiltro(() => setTipo(valor ?? TODOS_LOS_TIPOS))
+            }
+          >
+            <SelectTrigger id="filtro-tipo" className="w-full sm:w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {tiposItems.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="grid gap-1.5">
           <Label htmlFor="filtro-insumo">Insumo</Label>
           <Select
@@ -133,53 +176,67 @@ export function EntradasTabla() {
         )}
       </div>
 
-      {entradas.isError ? (
+      {movimientos.isError ? (
         <p className="text-sm text-destructive">
-          {getMensajeDeError(entradas.error)}
+          {getMensajeDeError(movimientos.error)}
         </p>
-      ) : entradas.isLoading ? (
-        <p className="text-sm text-muted-foreground">Cargando entradas…</p>
-      ) : entradas.data && entradas.data.datos.length > 0 ? (
+      ) : movimientos.isLoading ? (
+        <p className="text-sm text-muted-foreground">Cargando movimientos…</p>
+      ) : movimientos.data && movimientos.data.datos.length > 0 ? (
         <>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Fecha</TableHead>
+                <TableHead>Tipo</TableHead>
                 <TableHead>Insumo</TableHead>
                 <TableHead className="text-right">Cantidad</TableHead>
-                <TableHead>Origen</TableHead>
+                <TableHead>Origen / Motivo</TableHead>
                 <TableHead>Responsable</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {entradas.data.datos.map((entrada) => (
-                <TableRow key={entrada.id}>
-                  <TableCell>{formatearFecha(entrada.fecha)}</TableCell>
-                  <TableCell className="font-medium">
-                    {entrada.insumo.nombre}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {entrada.cantidad} {entrada.insumo.unidadMedida}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {entrada.origen ?? "—"}
-                  </TableCell>
-                  <TableCell>{entrada.responsable.nombre}</TableCell>
-                </TableRow>
-              ))}
+              {movimientos.data.datos.map((movimiento) => {
+                const esEntrada = movimiento.tipo === "ENTRADA";
+
+                return (
+                  <TableRow key={movimiento.id}>
+                    <TableCell>{formatearFecha(movimiento.fecha)}</TableCell>
+                    <TableCell>
+                      <Badge variant={esEntrada ? "secondary" : "outline"}>
+                        {ETIQUETA_TIPO_MOVIMIENTO[movimiento.tipo]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {movimiento.insumo.nombre}
+                    </TableCell>
+                    {/* El signo hace legible de un vistazo si el stock subió o
+                    bajó, sin tener que leer la columna de tipo. */}
+                    <TableCell className="text-right tabular-nums">
+                      {esEntrada ? "+" : "−"}
+                      {movimiento.cantidad} {movimiento.insumo.unidadMedida}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {(esEntrada ? movimiento.origen : movimiento.motivo) ??
+                        "—"}
+                    </TableCell>
+                    <TableCell>{movimiento.responsable.nombre}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
 
           <ControlesPaginacion
-            meta={entradas.data.meta}
+            meta={movimientos.data.meta}
             onPaginaChange={setPagina}
           />
         </>
       ) : (
         <p className="text-sm text-muted-foreground">
           {hayFiltrosActivos
-            ? "No se encontraron entradas con los filtros aplicados."
-            : "Todavía no se han registrado entradas de inventario."}
+            ? "No se encontraron movimientos con los filtros aplicados."
+            : "Todavía no se han registrado movimientos de inventario."}
         </p>
       )}
     </div>

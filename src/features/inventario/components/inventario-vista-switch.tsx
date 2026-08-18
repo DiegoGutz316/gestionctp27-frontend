@@ -14,9 +14,9 @@ const vistas = [
       pathname.includes("/insumos"),
   },
   {
-    href: "/dashboard/inventario/entradas",
-    label: "Entradas",
-    activo: (pathname: string) => pathname.includes("/entradas"),
+    href: "/dashboard/inventario/movimientos",
+    label: "Movimientos",
+    activo: (pathname: string) => pathname.includes("/movimientos"),
   },
 ] as const;
 
