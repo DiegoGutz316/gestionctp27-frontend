@@ -8,6 +8,13 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede"
 import { RequerirPermiso } from "@/features/auth/components/requerir-permiso"
 import type { ModuloSistema } from "@/features/auth/models/permisos.model"
@@ -66,44 +73,44 @@ export default async function DashboardModulePage({
 
   return (
     <RequerirPermiso modulo={details.modulo}>
-      <section className="flex flex-1 flex-col gap-6 rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
-            <Icon className="size-5" strokeWidth={1.75} />
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {details.title}
-            </h1>
-            <p className="max-w-2xl text-sm text-muted-foreground">
-              {details.description}
-            </p>
-          </div>
+      <div className="mx-auto max-w-7xl space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-color-company">
+            {details.title}
+          </h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            {details.description}
+          </p>
         </div>
 
-        {details.action ? (
-          // El guard de la página solo exige LECTURA; la acción escribe, así
-          // que se condiciona aparte a COMPLETO. Sin esto, un rol de solo
-          // lectura veía el botón y caía en "acceso denegado" al pulsarlo.
-          <MostrarSiPuede modulo={details.modulo} nivel="COMPLETO">
-            <div>
-              {/* Link renderiza un <a>, no un <button>; nativeButton={false}
-              evita que Base UI asuma semántica de botón nativo sobre ese
-              elemento. */}
-              <Button
-                nativeButton={false}
-                render={<Link href={details.action.href} />}
-              >
-                {details.action.label}
-              </Button>
+        <Card className="shadow-xs">
+          <CardHeader className="flex flex-row items-start gap-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-color-company">
+              <Icon className="size-5" />
             </div>
-          </MostrarSiPuede>
-        ) : (
-          <div className="rounded-lg border border-dashed bg-muted/30 p-6 text-sm text-muted-foreground">
-            El módulo está listo para recibir su contenido funcional.
-          </div>
-        )}
-      </section>
+            <div className="space-y-1">
+              <CardTitle className="text-lg">{details.title}</CardTitle>
+              <CardDescription>{details.description}</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {details.action ? (
+              <MostrarSiPuede modulo={details.modulo} nivel="COMPLETO">
+                <Button
+                  nativeButton={false}
+                  render={<Link href={details.action.href} />}
+                >
+                  {details.action.label}
+                </Button>
+              </MostrarSiPuede>
+            ) : (
+              <div className="rounded-lg border border-dashed bg-muted/30 p-6 text-sm text-muted-foreground">
+                El módulo está listo para recibir su contenido funcional.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </RequerirPermiso>
   )
 }

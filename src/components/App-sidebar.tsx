@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -141,16 +141,22 @@ export function AppSidebar() {
 
   // Backlog 1.6: solo quedan las opciones permitidas por el rol; las secciones
   // que se vacian dejan de renderizarse.
-  const navegacionPermitida = useMemo(
-    () =>
-      navigation
-        .map((section) => ({
-          ...section,
-          items: section.items.filter((item) => puede(item.modulo)),
-        }))
-        .filter((section) => section.items.length > 0),
-    [puede],
-  )
+  const navegacionPermitida = useMemo(() => {
+    type ItemNavegacion = (typeof navigation)[number]["items"][number]
+    const secciones: { label: string; items: ItemNavegacion[] }[] = []
+
+    for (const section of navigation) {
+      const items: ItemNavegacion[] = []
+      for (const item of section.items) {
+        if (puede(item.modulo)) items.push(item)
+      }
+      if (items.length > 0) {
+        secciones.push({ ...section, items })
+      }
+    }
+
+    return secciones
+  }, [puede])
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     () =>
@@ -163,25 +169,6 @@ export function AppSidebar() {
       ),
   )
 
-  useEffect(() => {
-    setOpenSections((prev) => {
-      let changed = false
-      const next = { ...prev }
-
-      for (const section of navigation) {
-        const active = section.items.some((item) =>
-          isRouteActive(pathname, item.href),
-        )
-        if (active && !next[section.label]) {
-          next[section.label] = true
-          changed = true
-        }
-      }
-
-      return changed ? next : prev
-    })
-  }, [pathname])
-
   async function handleLogout() {
     try {
       await logout()
@@ -192,32 +179,30 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className="font-[family-name:var(--font-roboto)]"
-    >
-      <SidebarHeader className="px-2 pt-3 pb-2">
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
               render={<Link href="/dashboard" />}
-              className="h-11 px-1 hover:bg-transparent data-open:bg-transparent"
+              tooltip="Gestión CTP 27"
+              className="group-data-[collapsible=icon]:p-0!"
             >
-              <span className="relative flex aspect-square size-9 shrink-0 overflow-visible">
+              <span className="flex aspect-square size-9 items-center justify-center overflow-hidden">
                 <Image
                   src="/escudo-ctp27.png"
                   alt="Logo Colegio Técnico Profesional 27 de Abril"
                   width={36}
                   height={36}
-                  className="size-full object-contain"
+                  className="size-10 max-w-none object-contain"
                 />
               </span>
               <span className="grid flex-1 text-left leading-tight">
-                <span className="truncate text-[13px] font-medium">
+                <span className="truncate text-sm font-semibold">
                   Gestión CTP 27
                 </span>
-                <span className="truncate text-[10px] text-muted-foreground">
+                <span className="truncate text-xs text-muted-foreground">
                   Panel administrativo
                 </span>
               </span>
@@ -226,12 +211,17 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="gap-0">
         {navegacionPermitida.map((section) => {
           return (
             <Collapsible
               key={section.label}
-              open={openSections[section.label] ?? false}
+              open={
+                (openSections[section.label] ?? false) ||
+                section.items.some((item) =>
+                  isRouteActive(pathname, item.href),
+                )
+              }
               onOpenChange={(open) =>
                 setOpenSections((prev) => ({
                   ...prev,
@@ -240,12 +230,12 @@ export function AppSidebar() {
               }
               className="group/collapsible"
             >
-              <SidebarGroup className="py-0">
+              <SidebarGroup className="py-1">
                 <SidebarGroupLabel
                   render={<CollapsibleTrigger />}
-                  className="h-8 w-full cursor-pointer px-2 text-[11px] font-normal text-sidebar-foreground hover:bg-transparent"
+                  className="group/label h-6 w-full cursor-pointer hover:text-sidebar-foreground"
                 >
-                  <span>{section.label}</span>
+                  {section.label}
                   <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-open/collapsible:rotate-90" />
                 </SidebarGroupLabel>
                 <CollapsibleContent>
@@ -257,9 +247,8 @@ export function AppSidebar() {
                             render={<Link href={item.href} />}
                             isActive={isRouteActive(pathname, item.href)}
                             tooltip={item.title}
-                            className="h-8 rounded-md px-2 text-[12px] font-normal data-active:font-normal"
                           >
-                            <item.icon strokeWidth={1.75} />
+                            <item.icon className="size-4" />
                             <span>{item.title}</span>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -273,7 +262,7 @@ export function AppSidebar() {
         })}
       </SidebarContent>
 
-      <SidebarFooter className="p-2">
+      <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -281,20 +270,22 @@ export function AppSidebar() {
                 render={
                   <SidebarMenuButton
                     size="lg"
-                    className="h-11 text-[12px] data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+                    className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
                   />
                 }
               >
                 <Avatar className="size-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">{avatar}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg bg-sidebar-accent text-xs font-semibold text-sidebar-accent-foreground">
+                    {avatar}
+                  </AvatarFallback>
                 </Avatar>
-                <span className="grid flex-1 text-left text-[12px] leading-tight">
+                <span className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{nombre}</span>
                   <span className="truncate text-xs text-muted-foreground">
                     {correo}
                   </span>
                 </span>
-                <ChevronsUpDown className="ml-auto size-4" />
+                <ChevronsUpDown className="ml-auto size-4 opacity-60" />
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-(--anchor-width) min-w-56 rounded-lg"

@@ -18,9 +18,7 @@ export const MODULOS_SISTEMA = [
 
 export type ModuloSistema = (typeof MODULOS_SISTEMA)[number];
 
-export const NIVELES_PERMISO = ["NINGUNO", "LECTURA", "COMPLETO"] as const;
-
-export type NivelPermiso = (typeof NIVELES_PERMISO)[number];
+export type NivelPermiso = "NINGUNO" | "LECTURA" | "COMPLETO";
 
 export type MatrizPermisos = Record<ModuloSistema, NivelPermiso>;
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, Home } from "lucide-react";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -72,11 +72,15 @@ export function UsuariosGestion() {
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-5">
+    <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href="/dashboard" />}>
+            <BreadcrumbLink
+              render={<Link href="/dashboard" />}
+              className="flex items-center gap-1.5"
+            >
+              <Home className="size-3.5" />
               Inicio
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -87,35 +91,35 @@ export function UsuariosGestion() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Gestión de Usuarios
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {usuarios.isLoading
-            ? "Cargando usuarios…"
-            : `${total} usuario${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}`}
-        </p>
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Gestión de Usuarios
+          </h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {usuarios.isLoading
+              ? "Cargando usuarios…"
+              : `${total} usuario${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}`}
+          </p>
+        </div>
+        <Button
+          className="w-full sm:w-auto"
+          nativeButton={false}
+          render={<Link href="/dashboard/usuarios/nuevo" />}
+        >
+          <PlusIcon data-icon="inline-start" />
+          Crear usuario
+        </Button>
       </div>
 
-      <Button
-        size="lg"
-        className="h-10 w-full justify-center"
-        nativeButton={false}
-        render={<Link href="/dashboard/usuarios/nuevo" />}
-      >
-        <PlusIcon data-icon="inline-start" />
-        Crear usuario
-      </Button>
-
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <div className="relative min-w-0 flex-1">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={busqueda}
             onChange={(event) => setBusqueda(event.target.value)}
             placeholder="Buscar por nombre o correo…"
-            className="h-10 pl-8"
+            className="pl-9"
             aria-label="Buscar usuarios"
           />
         </div>

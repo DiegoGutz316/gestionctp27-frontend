@@ -1,4 +1,4 @@
-import { api, ApiError } from "@/lib/api";
+import { api, getMensajeDeError } from "@/lib/api";
 import type {
   LoginDatos,
   RespuestaLogin,
@@ -24,27 +24,8 @@ export function obtenerPermisos() {
 }
 
 export function getMensajeDeErrorAuth(error: unknown): string {
-  if (error instanceof ApiError) {
-    try {
-      const body = JSON.parse(error.message) as {
-        message?: string | string[];
-      };
-      if (Array.isArray(body.message) && body.message[0]) {
-        return body.message[0];
-      }
-      if (typeof body.message === "string") {
-        return body.message;
-      }
-    } catch {
-      // El body no era JSON.
-    }
-    if (error.status === 401) {
-      return "El correo o la contraseña no son correctos.";
-    }
-    if (error.status === 403) {
-      return "Esta cuenta está desactivada. Comuníquese con el administrador.";
-    }
-    return "No se pudo iniciar sesión. Intente de nuevo.";
-  }
-  return "Error de conexión con el servidor.";
+  return getMensajeDeError(error, {
+    401: "El correo o la contraseña no son correctos.",
+    403: "Esta cuenta está desactivada. Comuníquese con el administrador.",
+  });
 }

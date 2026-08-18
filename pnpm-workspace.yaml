@@ -4,4 +4,9 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 
+# Retrasa paquetes recien publicados 7 dias para recortar malware de npm.
+minimumReleaseAge: 10080
+# Rechaza actualizaciones si baja la senal de confianza (provenance/firmas).
+trustPolicy: no-downgrade
+
 

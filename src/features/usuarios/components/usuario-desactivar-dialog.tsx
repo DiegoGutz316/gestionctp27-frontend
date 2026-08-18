@@ -87,9 +87,9 @@ export function UsuarioDesactivarDialog({
         </DialogHeader>
 
         <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
+          onSubmit={(evento) => {
+            evento.preventDefault();
+            evento.stopPropagation();
             void form.handleSubmit();
           }}
           noValidate
@@ -101,7 +101,7 @@ export function UsuarioDesactivarDialog({
               return (
                 <Field orientation="horizontal" data-invalid={invalid}>
                   <FieldContent>
-                    <FieldLabel htmlFor={field.name}>
+                    <FieldLabel htmlFor={field.name} required>
                       Confirmar desactivación
                     </FieldLabel>
                     <FieldDescription>

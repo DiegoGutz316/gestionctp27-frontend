@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { InventarioGestion } from "@/features/inventario/components/inventario-gestion";
+import { ProductosGestion } from "@/features/inventario/producto/components/productos-gestion";
 
 export const metadata: Metadata = {
   title: "Inventario | GestiónCTP27",
 };
 
 export default function InventarioPage() {
-  return <InventarioGestion />;
+  return <ProductosGestion />;
 }
