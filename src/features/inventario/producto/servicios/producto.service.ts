@@ -14,6 +14,7 @@ export function listarProductos(filtros: FiltrarProductos = {}) {
       tipoProducto: filtros.tipoProducto,
       departamento: filtros.departamento,
       ubicacion: filtros.ubicacion,
+      orden: filtros.orden,
       pagina: filtros.pagina,
       limite: filtros.limite,
     })

@@ -8,6 +8,19 @@ export const ETIQUETA_TIPO_PRODUCTO: Record<TipoProducto, string> = {
   EQUIPO: "Equipo",
 };
 
+/**
+ * Backlog 4.7: "Ordenar insumos por categoría o nombre". La categoría del
+ * enunciado es el `tipoProducto`. Replica `OrdenProductos` del backend.
+ */
+export const ORDENES_PRODUCTOS = ["NOMBRE", "CATEGORIA"] as const;
+
+export type OrdenProductos = (typeof ORDENES_PRODUCTOS)[number];
+
+export const ETIQUETA_ORDEN_PRODUCTOS: Record<OrdenProductos, string> = {
+  NOMBRE: "Nombre",
+  CATEGORIA: "Categoría",
+};
+
 export const UNIDADES_MEDIDA = ["GRANEL", "UNIDAD"] as const;
 
 export type UnidadMedida = (typeof UNIDADES_MEDIDA)[number];
