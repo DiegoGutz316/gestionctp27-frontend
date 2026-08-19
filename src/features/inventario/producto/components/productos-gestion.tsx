@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { PlusIcon, SearchIcon, Home } from "lucide-react";
+import { ArrowUpDownIcon, PlusIcon, SearchIcon, Home } from "lucide-react";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -14,12 +14,22 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useAuth } from "@/features/auth/context/auth-context";
-import type {
-  Departamento,
-  TipoProducto,
-  Ubicacion,
+import {
+  ETIQUETA_ORDEN_PRODUCTOS,
+  ORDENES_PRODUCTOS,
+  type Departamento,
+  type OrdenProductos,
+  type TipoProducto,
+  type Ubicacion,
 } from "../models/producto.model";
 import { useProductos } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/producto.service";
@@ -27,6 +37,11 @@ import { ProductosFiltrosSheet, TODOS } from "./productos-filtros-sheet";
 import { ProductosTabla } from "./productos-tabla";
 
 const PAGE_SIZE = 8;
+
+const itemsOrden = ORDENES_PRODUCTOS.map((valor) => ({
+  value: valor,
+  label: ETIQUETA_ORDEN_PRODUCTOS[valor],
+}));
 
 export function ProductosGestion() {
   const { usuario } = useAuth();
@@ -38,6 +53,7 @@ export function ProductosGestion() {
     TODOS,
   );
   const [ubicacion, setUbicacion] = useState<Ubicacion | "todos">(TODOS);
+  const [orden, setOrden] = useState<OrdenProductos>("NOMBRE");
   const [page, setPage] = useState(1);
   const [sheetAbierto, setSheetAbierto] = useState(false);
 
@@ -48,6 +64,7 @@ export function ProductosGestion() {
     tipoProducto: tipoProducto === TODOS ? undefined : tipoProducto,
     departamento: departamento === TODOS ? undefined : departamento,
     ubicacion: ubicacion === TODOS ? undefined : ubicacion,
+    orden,
     pagina: page,
     limite: PAGE_SIZE,
   });
@@ -127,6 +144,32 @@ export function ProductosGestion() {
             maxLength={120}
           />
         </div>
+
+        {/* Backlog 4.7: "Ordenar insumos por categoría o nombre". */}
+        <Select
+          items={itemsOrden}
+          value={orden}
+          onValueChange={(valor) => {
+            setOrden((valor as OrdenProductos) ?? "NOMBRE");
+            setPage(1);
+          }}
+        >
+          <SelectTrigger
+            id="orden-productos"
+            aria-label="Ordenar productos"
+            className="w-44 shrink-0"
+          >
+            <ArrowUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
+            <SelectValue placeholder="Nombre" />
+          </SelectTrigger>
+          <SelectContent>
+            {itemsOrden.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <ProductosFiltrosSheet
           abierto={sheetAbierto}

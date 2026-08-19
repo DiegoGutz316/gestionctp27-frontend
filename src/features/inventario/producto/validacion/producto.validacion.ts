@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   DEPARTAMENTOS,
+  ORDENES_PRODUCTOS,
   TIPOS_PRODUCTO,
   UBICACIONES,
   UNIDADES_MEDIDA,
@@ -108,6 +109,7 @@ export const filtrarProductosSchema = paginarSchema.omit({ q: true }).extend({
   tipoProducto: z.enum(TIPOS_PRODUCTO).optional(),
   departamento: z.enum(DEPARTAMENTOS).optional(),
   ubicacion: z.enum(UBICACIONES).optional(),
+  orden: z.enum(ORDENES_PRODUCTOS).optional(),
 });
 
 export type FiltrarProductos = z.output<typeof filtrarProductosSchema>;

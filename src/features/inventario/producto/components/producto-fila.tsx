@@ -78,11 +78,15 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
               <p className="truncate font-medium text-foreground hover:underline">
                 {producto.nombre}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
-                {ETIQUETA_TIPO_PRODUCTO[producto.tipoProducto]}
-              </p>
             </div>
           </Link>
+        </TableCell>
+        {/* Backlog 4.7: la categoría dejó de ser el subtítulo del nombre y pasó
+            a columna propia, para poder ordenar por ella y leerlo. */}
+        <TableCell>
+          <Badge variant="secondary">
+            {ETIQUETA_TIPO_PRODUCTO[producto.tipoProducto]}
+          </Badge>
         </TableCell>
         <TableCell>
           <span className="text-sm text-foreground">

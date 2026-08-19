@@ -29,11 +29,16 @@ export function ProductosTabla({
 }: ProductosTablaProps) {
   return (
     <div className="overflow-x-auto rounded-xl border bg-card shadow-sm">
-      <Table className="min-w-[900px]">
+      <Table className="min-w-[1000px]">
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Producto
+            </TableHead>
+            {/* Backlog 4.7: la categoría es una columna propia, no solo el
+                subtítulo del nombre, para que el orden por categoría se lea. */}
+            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              Categoría
             </TableHead>
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Unidad
@@ -67,6 +72,9 @@ export function ProductosTabla({
                     </div>
                   </TableCell>
                   <TableCell>
+                    <Skeleton className="h-5 w-20" />
+                  </TableCell>
+                  <TableCell>
                     <Skeleton className="h-5 w-16" />
                   </TableCell>
                   <TableCell>
@@ -88,7 +96,7 @@ export function ProductosTabla({
           {error && (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={7}
                 className="py-16 text-center text-sm text-destructive"
               >
                 {mensajeError ??
@@ -100,7 +108,7 @@ export function ProductosTabla({
           {!cargando && !error && productos.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={7}
                 className="py-16 text-center text-sm text-muted-foreground"
               >
                 {vacioConFiltros
