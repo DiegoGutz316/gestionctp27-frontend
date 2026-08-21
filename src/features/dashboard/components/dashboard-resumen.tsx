@@ -1,7 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Leaf, ShieldAlert, Sprout } from "lucide-react";
+import {
+  ArrowRight,
+  Leaf,
+  ShieldAlert,
+  Sprout,
+} from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -27,141 +34,488 @@ export function DashboardResumen({
   total,
   mostrarInventario,
 }: DashboardResumenProps) {
-  const totalDepartamentos = agricola + pecuario + general;
+  const totalDepartamentos =
+    agricola + pecuario + general;
+
+  const porcentajeAgricola =
+    totalDepartamentos > 0
+      ? (agricola / totalDepartamentos) * 100
+      : 0;
+
+  const porcentajePecuario =
+    totalDepartamentos > 0
+      ? (pecuario / totalDepartamentos) * 100
+      : 0;
+
+  const porcentajeGeneral =
+    totalDepartamentos > 0
+      ? (general / totalDepartamentos) * 100
+      : 0;
+
+  const limiteAgricola =
+    porcentajeAgricola;
+
+  const limitePecuario =
+    porcentajeAgricola + porcentajePecuario;
+
+  const stockNormal =
+    mostrarInventario
+      ? Math.max(total - stockBajo, 0)
+      : 0;
+
+  const porcentajeStockNormal =
+    total > 0
+      ? (stockNormal / total) * 100
+      : 0;
+
+  const porcentajeStockBajo =
+    total > 0
+      ? (stockBajo / total) * 100
+      : 0;
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
-      <Card className="shadow-xs md:col-span-2">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <Sprout className="size-5 text-color-company" />
-            Inventario por área
-          </CardTitle>
-          <CardDescription>
-            Distribución de productos registrados según el departamento.
-          </CardDescription>
+      {/* =====================================================
+          GRÁFICA 1 - DISTRIBUCIÓN INVENTARIO
+          ===================================================== */}
+
+      <Card className="overflow-hidden border-[#dde4db] bg-white shadow-[0_8px_30px_rgba(39,50,42,0.05)] md:col-span-2">
+        <CardHeader className="pb-2">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-[#2d352f]">
+                <Sprout className="size-5 text-[#637a4a]" />
+                Distribución del inventario
+              </CardTitle>
+
+              <CardDescription className="mt-1">
+                Productos registrados según el área correspondiente.
+              </CardDescription>
+            </div>
+
+            {mostrarInventario && totalDepartamentos > 0 ? (
+              <div className="rounded-xl border border-[#e2e7df] bg-[#f7f9f6] px-3 py-2 text-right">
+                <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#899287]">
+                  Total
+                </p>
+
+                <p className="text-lg font-semibold leading-none text-[#303832]">
+                  {total}
+                </p>
+              </div>
+            ) : null}
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+
+        <CardContent className="pt-6">
           {mostrarInventario && totalDepartamentos > 0 ? (
-            <>
-              <div className="flex justify-between text-sm font-medium">
-                <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-emerald-500" />
-                  Agrícola ({agricola})
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-amber-500" />
-                  Pecuaria ({pecuario})
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-slate-400" />
-                  General ({general})
-                </span>
+            <div className="grid items-center gap-8 lg:grid-cols-[220px_1fr]">
+              {/* ===============================
+                  DONUT
+                  =============================== */}
+
+              <div className="flex justify-center">
+                <div className="relative flex size-[190px] items-center justify-center">
+                  {/* Sombra exterior */}
+                  <div className="absolute inset-2 rounded-full bg-[#f4f6f2] blur-md" />
+
+                  {/* Donut */}
+                  <div
+                    className="relative size-[180px] rounded-full shadow-[0_8px_25px_rgba(42,54,45,0.08)]"
+                    style={{
+                      background: `
+                        conic-gradient(
+                          #71866a 0% ${limiteAgricola}%,
+                          #9baa82 ${limiteAgricola}% ${limitePecuario}%,
+                          #d4dad2 ${limitePecuario}% 100%
+                        )
+                      `,
+                    }}
+                  >
+                    {/* Centro */}
+                    <div className="absolute inset-[22px] flex flex-col items-center justify-center rounded-full border border-[#e6eae4] bg-white shadow-inner">
+                      <span className="text-[34px] font-semibold tracking-[-0.05em] text-[#252d27]">
+                        {totalDepartamentos}
+                      </span>
+
+                      <span className="mt-1 text-[11px] font-medium text-[#8a9388]">
+                        productos
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
-                <div
-                  style={{ width: `${(agricola / totalDepartamentos) * 100}%` }}
-                  className="h-full bg-emerald-500"
-                  title={`Agrícola: ${agricola}`}
-                />
-                <div
-                  style={{ width: `${(pecuario / totalDepartamentos) * 100}%` }}
-                  className="h-full bg-amber-500"
-                  title={`Pecuaria: ${pecuario}`}
-                />
-                <div
-                  style={{ width: `${(general / totalDepartamentos) * 100}%` }}
-                  className="h-full bg-slate-400"
-                  title={`General: ${general}`}
-                />
+
+              {/* ===============================
+                  LEYENDA / DATOS
+                  =============================== */}
+
+              <div className="space-y-3">
+                {/* Agrícola */}
+                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#e5e9e2] hover:bg-[#f8faf7]">
+                  <div className="flex items-center gap-3">
+                    <span className="size-3 rounded-full bg-[#71866a]" />
+
+                    <div>
+                      <p className="text-sm font-medium text-[#384139]">
+                        Área agrícola
+                      </p>
+
+                      <p className="text-[11px] text-[#90988e]">
+                        Cultivos e insumos agrícolas
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-[#303832]">
+                      {agricola}
+                    </p>
+
+                    <p className="text-[10px] text-[#969d94]">
+                      {porcentajeAgricola.toFixed(0)}%
+                    </p>
+                  </div>
+                </div>
+
+                {/* Pecuaria */}
+                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#e5e9e2] hover:bg-[#f8faf7]">
+                  <div className="flex items-center gap-3">
+                    <span className="size-3 rounded-full bg-[#9baa82]" />
+
+                    <div>
+                      <p className="text-sm font-medium text-[#384139]">
+                        Área pecuaria
+                      </p>
+
+                      <p className="text-[11px] text-[#90988e]">
+                        Recursos e insumos pecuarios
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-[#303832]">
+                      {pecuario}
+                    </p>
+
+                    <p className="text-[10px] text-[#969d94]">
+                      {porcentajePecuario.toFixed(0)}%
+                    </p>
+                  </div>
+                </div>
+
+                {/* General */}
+                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#e5e9e2] hover:bg-[#f8faf7]">
+                  <div className="flex items-center gap-3">
+                    <span className="size-3 rounded-full bg-[#d4dad2]" />
+
+                    <div>
+                      <p className="text-sm font-medium text-[#384139]">
+                        Inventario general
+                      </p>
+
+                      <p className="text-[11px] text-[#90988e]">
+                        Recursos compartidos
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-[#303832]">
+                      {general}
+                    </p>
+
+                    <p className="text-[10px] text-[#969d94]">
+                      {porcentajeGeneral.toFixed(0)}%
+                    </p>
+                  </div>
+                </div>
               </div>
-            </>
+            </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              {mostrarInventario
-                ? "Todavía no hay productos para mostrar la distribución."
-                : "No tiene permiso para consultar el inventario."}
-            </p>
+            /* ===============================
+                ESTADO SIN DATOS
+                =============================== */
+
+            <div className="flex min-h-[230px] flex-col items-center justify-center rounded-2xl border border-dashed border-[#dfe5dc] bg-[#fafbf9] px-6 text-center">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#edf2e9] text-[#71866a]">
+                <Sprout className="size-5" />
+              </div>
+
+              <p className="mt-4 text-sm font-medium text-[#4a544b]">
+                {mostrarInventario
+                  ? "Aún no hay datos para generar la gráfica"
+                  : "Inventario no disponible"}
+              </p>
+
+              <p className="mt-1 max-w-sm text-xs leading-5 text-[#90988e]">
+                {mostrarInventario
+                  ? "Cuando se registren productos, la distribución por área aparecerá automáticamente."
+                  : "No tiene permiso para consultar la información del inventario."}
+              </p>
+            </div>
           )}
 
-          <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
-            <span>Total de productos: {mostrarInventario ? total : "—"}</span>
+          {/* Footer */}
+          <div className="mt-6 flex items-center justify-between border-t border-[#edf0eb] pt-4">
+            <span className="text-xs text-[#8e968c]">
+              Total de productos:{" "}
+              <span className="font-medium text-[#505950]">
+                {mostrarInventario ? total : "—"}
+              </span>
+            </span>
+
             <Link
               href="/dashboard/inventario"
-              className="flex items-center gap-1 text-xs text-primary hover:underline"
+              className="group flex items-center gap-1.5 text-xs font-medium text-[#637a4a] transition hover:text-[#4f633a]"
             >
-              Gestionar inventario <ArrowRight className="size-3" />
+              Gestionar inventario
+
+              <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
         </CardContent>
       </Card>
 
+      {/* =====================================================
+          GRÁFICA 2 - ESTADO EXISTENCIAS
+          ===================================================== */}
+
       <Card
-        className={`shadow-xs border ${stockBajo > 0 ? "border-amber-200 bg-amber-50/20" : ""}`}
+        className={`
+          overflow-hidden
+          border
+          bg-white
+          shadow-[0_8px_30px_rgba(39,50,42,0.05)]
+
+          ${
+            stockBajo > 0
+              ? "border-[#eadcae]"
+              : "border-[#dde4db]"
+          }
+        `}
       >
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-              <ShieldAlert
-                className={`size-5 ${stockBajo > 0 ? "text-amber-600" : "text-color-company"}`}
-              />
-              Alertas de existencias
-            </CardTitle>
+        <CardHeader className="pb-2">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-[#2d352f]">
+                <ShieldAlert
+                  className={`size-5 ${
+                    stockBajo > 0
+                      ? "text-[#b38a28]"
+                      : "text-[#637a4a]"
+                  }`}
+                />
+
+                Estado de existencias
+              </CardTitle>
+
+              <CardDescription className="mt-1">
+                Estado actual del stock registrado.
+              </CardDescription>
+            </div>
+
             {stockBajo > 0 ? (
-              <Badge variant="destructive">{stockBajo}</Badge>
+              <Badge className="border-[#ead69b] bg-[#fff8e6] text-[#9a761f] hover:bg-[#fff8e6]">
+                {stockBajo}
+              </Badge>
             ) : null}
           </div>
-          <CardDescription>
-            Productos que requieren reposición en bodega.
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {stockBajo > 0 ? (
-            <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium text-amber-800">
-                Hay {stockBajo} {stockBajo === 1 ? "producto" : "productos"} en
-                o por debajo del stock mínimo.
+
+        <CardContent className="pt-6">
+          {mostrarInventario && total > 0 ? (
+            <>
+              {/* Número principal */}
+              <div className="flex items-end justify-between">
+                <div>
+                  <p className="text-[38px] font-semibold leading-none tracking-[-0.05em] text-[#283029]">
+                    {stockNormal}
+                  </p>
+
+                  <p className="mt-2 text-xs text-[#858e84]">
+                    productos con stock suficiente
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <p
+                    className={`text-lg font-semibold ${
+                      stockBajo > 0
+                        ? "text-[#a47d22]"
+                        : "text-[#71866a]"
+                    }`}
+                  >
+                    {stockBajo}
+                  </p>
+
+                  <p className="text-[10px] text-[#969e95]">
+                    requieren atención
+                  </p>
+                </div>
+              </div>
+
+              {/* Barra gráfica */}
+              <div className="mt-7">
+                <div className="flex h-3 overflow-hidden rounded-full bg-[#eef1ec]">
+                  <div
+                    className="h-full rounded-l-full bg-[#71866a] transition-all duration-500"
+                    style={{
+                      width: `${porcentajeStockNormal}%`,
+                    }}
+                  />
+
+                  {stockBajo > 0 ? (
+                    <div
+                      className="h-full rounded-r-full bg-[#d8b95f] transition-all duration-500"
+                      style={{
+                        width: `${porcentajeStockBajo}%`,
+                      }}
+                    />
+                  ) : null}
+                </div>
+
+                {/* Leyenda */}
+                <div className="mt-5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="size-2.5 rounded-full bg-[#71866a]" />
+
+                      <span className="text-xs text-[#667066]">
+                        Stock suficiente
+                      </span>
+                    </div>
+
+                    <span className="text-xs font-semibold text-[#3f4840]">
+                      {stockNormal}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`size-2.5 rounded-full ${
+                          stockBajo > 0
+                            ? "bg-[#d8b95f]"
+                            : "bg-[#dfe4dc]"
+                        }`}
+                      />
+
+                      <span className="text-xs text-[#667066]">
+                        Existencias bajas
+                      </span>
+                    </div>
+
+                    <span
+                      className={`text-xs font-semibold ${
+                        stockBajo > 0
+                          ? "text-[#9e7821]"
+                          : "text-[#3f4840]"
+                      }`}
+                    >
+                      {stockBajo}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mensaje */}
+              <div
+                className={`
+                  mt-6
+                  rounded-xl
+                  border
+                  px-4
+                  py-3
+
+                  ${
+                    stockBajo > 0
+                      ? "border-[#eee1ba] bg-[#fffaf0]"
+                      : "border-[#e2e8df] bg-[#f7faf5]"
+                  }
+                `}
+              >
+                <p
+                  className={`text-xs font-medium ${
+                    stockBajo > 0
+                      ? "text-[#8f6b1d]"
+                      : "text-[#557148]"
+                  }`}
+                >
+                  {stockBajo > 0
+                    ? `${stockBajo} ${
+                        stockBajo === 1
+                          ? "producto requiere"
+                          : "productos requieren"
+                      } reposición.`
+                    : "Todas las existencias se encuentran dentro de los mínimos."}
+                </p>
+              </div>
+            </>
+          ) : (
+            /* Sin datos */
+            <div className="flex min-h-[230px] flex-col items-center justify-center text-center">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#edf2e9] text-[#71866a]">
+                <ShieldAlert className="size-5" />
+              </div>
+
+              <p className="mt-4 text-sm font-medium text-[#4a544b]">
+                {mostrarInventario
+                  ? "Sin información de existencias"
+                  : "Inventario no disponible"}
               </p>
-              <p className="text-xs text-muted-foreground">
-                Revise las existencias para evitar desabastecimiento en las
-                prácticas agrícolas y pecuarias.
+
+              <p className="mt-1 max-w-[240px] text-xs leading-5 text-[#90988e]">
+                {mostrarInventario
+                  ? "Las estadísticas aparecerán al registrar productos."
+                  : "Necesita acceso al inventario para consultar esta información."}
               </p>
-              <Link href="/dashboard/inventario" className="mt-2 self-start">
+            </div>
+          )}
+
+          {/* Acciones */}
+          <div className="mt-6 flex flex-wrap gap-2 border-t border-[#edf0eb] pt-4">
+            {stockBajo > 0 ? (
+              <Link
+                href="/dashboard/inventario"
+                className="w-full"
+              >
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-1.5 border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100/60"
+                  className="w-full gap-1.5 border-[#e5d5a7] bg-[#fffaf0] text-[#8e6b1f] hover:bg-[#fff5dc]"
                 >
-                  Ver inventario <ArrowRight className="size-3.5" />
+                  Revisar existencias
+                  <ArrowRight className="size-3.5" />
                 </Button>
               </Link>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium text-emerald-800">
-                {mostrarInventario
-                  ? "Sin alertas. El inventario está dentro de los mínimos."
-                  : "Consulte inventario cuando tenga acceso al módulo."}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Las existencias se actualizan con cada entrada y salida.
-              </p>
-              <div className="mt-2 flex flex-wrap gap-2">
+            ) : (
+              <>
                 <Link href="/dashboard/agricola">
-                  <Button variant="outline" size="sm" className="gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                  >
                     <Sprout className="size-3.5" />
-                    Área agrícola
+                    Agrícola
                   </Button>
                 </Link>
+
                 <Link href="/dashboard/pecuaria">
-                  <Button variant="outline" size="sm" className="gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                  >
                     <Leaf className="size-3.5" />
-                    Área pecuaria
+                    Pecuaria
                   </Button>
                 </Link>
-              </div>
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
