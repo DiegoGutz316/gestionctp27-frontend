@@ -77,18 +77,26 @@ export type {
  * comparar, y uno sin registro de existencias todavía no tiene cantidad: en
  * ninguno de los dos casos hay alerta que mostrar.
  *
+ * Una configuración **inactiva** tampoco alerta: su mínimo quedó obsoleto y el
+ * backend rechaza cualquier entrada o salida contra ella con 404 ("El producto,
+ * su configuración o su inventario no existe o está inactivo"). Avisar de un
+ * faltante que nadie puede reponer es una alerta sin salida, y además
+ * contradiría a la propia fila del listado, que oculta las acciones de stock
+ * justamente cuando la configuración está inactiva.
+ *
  * Recibe la forma mínima que necesita en vez de `ProductoRespuesta`, para no
  * importar nada desde `validacion/` y mantener este módulo sin dependencias en
  * runtime (que es lo que evita el ciclo de imports con los esquemas).
  */
 export function esStockBajo(producto: {
-  configuracionStock: { stockMinimo: number } | null;
+  configuracionStock: { stockMinimo: number; activo: boolean } | null;
   inventario: { cantidadActual: number } | null;
 }): boolean {
   const { configuracionStock, inventario } = producto;
   return (
     inventario !== null &&
     configuracionStock !== null &&
+    configuracionStock.activo &&
     inventario.cantidadActual <= configuracionStock.stockMinimo
   );
 }
