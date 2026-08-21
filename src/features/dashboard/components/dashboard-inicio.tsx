@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/context/auth-context";
 import { useProductos } from "@/features/inventario/producto/hooks/hooks";
+import { esStockBajo } from "@/features/inventario/producto/models/producto.model";
 import type { ProductoRespuesta } from "@/features/inventario/producto/validacion/producto.validacion";
 import { useUsuarios } from "@/features/usuarios/hooks/hooks";
 
@@ -76,17 +77,9 @@ export function DashboardInicio() {
         general += 1;
       }
 
-      const {
-        configuracionStock,
-        inventario,
-      } = producto;
-
-      if (
-        configuracionStock &&
-        inventario &&
-        inventario.cantidadActual <=
-          configuracionStock.stockMinimo
-      ) {
+      // Backlog 4.8: la regla vive en `esStockBajo` para que el panel, el
+      // listado de inventario y el detalle del producto no puedan discrepar.
+      if (esStockBajo(producto)) {
         stockBajo.push(producto);
       }
     }
