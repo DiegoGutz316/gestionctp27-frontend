@@ -5,6 +5,7 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/context/auth-context";
 import { useProductos } from "@/features/inventario/producto/hooks/hooks";
+import { esStockBajo } from "@/features/inventario/producto/models/producto.model";
 import type { ProductoRespuesta } from "@/features/inventario/producto/validacion/producto.validacion";
 import { useUsuarios } from "@/features/usuarios/hooks/hooks";
 import { DashboardActividad } from "./dashboard-actividad";
@@ -52,12 +53,7 @@ export function DashboardInicio() {
       else if (producto.departamento === "PECUARIO") pecuario += 1;
       else general += 1;
 
-      const { configuracionStock, inventario } = producto;
-      if (
-        configuracionStock &&
-        inventario &&
-        inventario.cantidadActual <= configuracionStock.stockMinimo
-      ) {
+      if (esStockBajo(producto)) {
         stockBajo.push(producto);
       }
     }

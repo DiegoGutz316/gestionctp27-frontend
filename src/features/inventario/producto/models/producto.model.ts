@@ -64,3 +64,31 @@ export type {
   FiltrarProductos,
   ProductoRespuesta,
 } from "../validacion/producto.validacion";
+
+/**
+ * Backlog 4.8: "El sistema identifica automáticamente los insumos con cantidad
+ * menor o igual al nivel mínimo definido".
+ *
+ * Vive aquí porque la regla se consulta desde tres pantallas (el listado, el
+ * detalle del producto y el panel principal) y tenía tres copias distintas. Con
+ * una sola definición no pueden discrepar entre sí.
+ *
+ * Un producto sin configuración de stock no tiene mínimo contra el cual
+ * comparar, y uno sin registro de existencias todavía no tiene cantidad: en
+ * ninguno de los dos casos hay alerta que mostrar.
+ *
+ * Recibe la forma mínima que necesita en vez de `ProductoRespuesta`, para no
+ * importar nada desde `validacion/` y mantener este módulo sin dependencias en
+ * runtime (que es lo que evita el ciclo de imports con los esquemas).
+ */
+export function esStockBajo(producto: {
+  configuracionStock: { stockMinimo: number } | null;
+  inventario: { cantidadActual: number } | null;
+}): boolean {
+  const { configuracionStock, inventario } = producto;
+  return (
+    inventario !== null &&
+    configuracionStock !== null &&
+    inventario.cantidadActual <= configuracionStock.stockMinimo
+  );
+}
