@@ -8,6 +8,7 @@ import {
   EyeIcon,
   PencilIcon,
   PlusIcon,
+  TriangleAlertIcon,
 } from "lucide-react";
 import { AccionesMenu } from "@/components/acciones-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -23,6 +24,7 @@ import {
   ETIQUETA_TIPO_PRODUCTO,
   ETIQUETA_UBICACION,
   ETIQUETA_UNIDAD_MEDIDA,
+  esStockBajo,
 } from "../models/producto.model";
 import type { ProductoRespuesta } from "../validacion/producto.validacion";
 
@@ -41,6 +43,7 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
   const [entradaAbierta, setEntradaAbierta] = useState(false);
   const [salidaAbierta, setSalidaAbierta] = useState(false);
   const { configuracionStock, inventario } = producto;
+  const stockBajo = esStockBajo(producto);
 
   return (
     <>
@@ -103,11 +106,37 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
             {ETIQUETA_UBICACION[producto.ubicacion]}
           </span>
         </TableCell>
+        {/* Backlog 4.8: "Los insumos con bajo stock se muestran resaltados en
+            el módulo de inventario". El badge acompaña al color para que la
+            alerta no dependa solo del tinte, y el title expone el mínimo
+            contra el que se está comparando. */}
         <TableCell className="text-right">
           {inventario ? (
-            <span className="text-sm font-medium tabular-nums text-foreground">
-              {inventario.cantidadActual}
-            </span>
+            <div className="flex items-center justify-end gap-2">
+              {stockBajo ? (
+                <Badge
+                  variant="secondary"
+                  className="rounded-full border-transparent bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200"
+                >
+                  <TriangleAlertIcon className="size-3" aria-hidden="true" />
+                  Stock bajo
+                </Badge>
+              ) : null}
+              <span
+                className={`text-sm font-medium tabular-nums ${
+                  stockBajo
+                    ? "text-orange-800 dark:text-orange-200"
+                    : "text-foreground"
+                }`}
+                title={
+                  configuracionStock
+                    ? `Mínimo: ${configuracionStock.stockMinimo}`
+                    : undefined
+                }
+              >
+                {inventario.cantidadActual}
+              </span>
+            </div>
           ) : (
             <Badge variant="secondary">Sin existencias</Badge>
           )}

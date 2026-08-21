@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useAuth } from "@/features/auth/context/auth-context";
+import { esStockBajo } from "../../producto/models/producto.model";
 import type { ProductoRespuesta } from "../../producto/validacion/producto.validacion";
 import type { Inventario } from "../models/stock.model";
 import { StockEntradaDialog } from "./stock-entrada-dialog";
@@ -27,10 +28,7 @@ export function StockDeProducto({
   const { configuracionStock, inventario } = producto;
   const [entradaPara, setEntradaPara] = useState<Inventario | null>(null);
   const [salidaPara, setSalidaPara] = useState<Inventario | null>(null);
-  const stockBajo =
-    inventario !== null &&
-    configuracionStock !== null &&
-    inventario.cantidadActual <= configuracionStock.stockMinimo;
+  const stockBajo = esStockBajo(producto);
 
   return (
     <div className="flex flex-col gap-2">
