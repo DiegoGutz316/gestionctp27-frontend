@@ -13,6 +13,11 @@ type Foto = {
 
 const FOTOS: Foto[] = [
   {
+    src: "/landing/galeria/ctp-galeria-03.jpg",
+    alt: "Áreas verdes y espacios institucionales del CTP 27 de Abril",
+    caption: "Áreas verdes y espacios institucionales",
+  },
+  {
     src: "/landing/galeria/ctp-galeria-01.jpg",
     alt: "Estudiantes cosechando hortalizas en el invernadero institucional",
     caption: "Cosecha de hortalizas en el invernadero institucional",
@@ -22,11 +27,6 @@ const FOTOS: Foto[] = [
     src: "/landing/galeria/ctp-galeria-02.jpg",
     alt: "Grupo de estudiantes en la producción agrícola del colegio",
     caption: "Estudiantes en la producción agrícola del colegio",
-  },
-  {
-    src: "/landing/galeria/ctp-galeria-03.jpg",
-    alt: "Áreas verdes y espacios institucionales del CTP 27 de Abril",
-    caption: "Áreas verdes y espacios institucionales",
   },
   {
     src: "/landing/galeria/ctp-galeria-04.jpg",
@@ -39,6 +39,8 @@ const FOTOS: Foto[] = [
     caption: "Crías en el área de producción pecuaria",
   },
 ];
+
+const AUTOPLAY_MS = 5000;
 
 export function LandingGaleria() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -57,6 +59,32 @@ export function LandingGaleria() {
   const siguiente = useCallback(() => {
     irA(Math.min(activo + 1, FOTOS.length - 1));
   }, [activo, irA]);
+
+  const activoRef = useRef(activo);
+  activoRef.current = activo;
+  const [pausado, setPausado] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduceMotion(mql.matches);
+    const onChange = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  // Reinicia el ciclo de autoplay cada vez que cambia la foto activa
+  // (por swipe, botones o navegación automática), evitando saltos dobles.
+  useEffect(() => {
+    if (pausado || reduceMotion) return;
+
+    const id = setInterval(() => {
+      const siguienteIndice = (activoRef.current + 1) % FOTOS.length;
+      irA(siguienteIndice);
+    }, AUTOPLAY_MS);
+
+    return () => clearInterval(id);
+  }, [activo, pausado, reduceMotion, irA]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -81,7 +109,11 @@ export function LandingGaleria() {
 
   return (
     <div className="w-full max-w-md sm:max-w-lg lg:max-w-none">
-      <div className="relative overflow-hidden rounded-3xl border border-[#252624]/10 bg-white shadow-[0_30px_70px_-25px_rgba(37,38,36,0.35)]">
+      <div
+        className="relative overflow-hidden rounded-3xl border border-[#252624]/10 bg-white shadow-[0_30px_70px_-25px_rgba(37,38,36,0.35)]"
+        onMouseEnter={() => setPausado(true)}
+        onMouseLeave={() => setPausado(false)}
+      >
         <div
           ref={trackRef}
           className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
