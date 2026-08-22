@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -42,14 +48,51 @@ const FOTOS: Foto[] = [
 
 const AUTOPLAY_MS = 5000;
 
+const CONSULTA_REDUCE_MOTION = "(prefers-reduced-motion: reduce)";
+
+/**
+ * Lee `prefers-reduced-motion` con `useSyncExternalStore`, que es la API
+ * pensada para suscribirse a un origen externo al estado de React (aquí,
+ * `matchMedia`). Antes se hacía con `useState` + `setState` dentro de un
+ * efecto, lo que provoca un render en cascada en cada montaje.
+ *
+ * El tercer argumento es el valor durante el renderizado en servidor, donde no
+ * existe `window` ni se conoce la preferencia: se asume que no hay reducción de
+ * movimiento y el cliente lo corrige al hidratar, que es el mismo valor inicial
+ * que tenía la versión anterior.
+ */
+function useReduceMotion(): boolean {
+  return useSyncExternalStore(
+    (alCambiar) => {
+      const mql = window.matchMedia(CONSULTA_REDUCE_MOTION);
+      mql.addEventListener("change", alCambiar);
+      return () => mql.removeEventListener("change", alCambiar);
+    },
+    () => window.matchMedia(CONSULTA_REDUCE_MOTION).matches,
+    () => false,
+  );
+}
+
 export function LandingGaleria() {
   const trackRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activo, setActivo] = useState(0);
 
+  // Se mueve únicamente el scroll horizontal del carrusel. `scrollIntoView`
+  // desplaza todos los contenedores con scroll por encima del elemento,
+  // incluida la página: si el visitante estaba más abajo, cada avance
+  // automático lo arrastraba de vuelta hasta el carrusel.
   const irA = useCallback((indice: number) => {
     const destino = slideRefs.current[indice];
-    destino?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    const track = trackRef.current;
+    if (!destino || !track) return;
+
+    const desplazamiento =
+      destino.getBoundingClientRect().left - track.getBoundingClientRect().left;
+    track.scrollTo({
+      left: track.scrollLeft + desplazamiento,
+      behavior: "smooth",
+    });
   }, []);
 
   const anterior = useCallback(() => {
@@ -60,26 +103,18 @@ export function LandingGaleria() {
     irA(Math.min(activo + 1, FOTOS.length - 1));
   }, [activo, irA]);
 
-  const activoRef = useRef(activo);
-  activoRef.current = activo;
   const [pausado, setPausado] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mql.matches);
-    const onChange = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
+  const reduceMotion = useReduceMotion();
 
   // Reinicia el ciclo de autoplay cada vez que cambia la foto activa
   // (por swipe, botones o navegación automática), evitando saltos dobles.
+  // Como `activo` es dependencia, el intervalo se recrea en cada cambio y su
+  // clausura ya ve el índice vigente: no hace falta guardarlo en un ref.
   useEffect(() => {
     if (pausado || reduceMotion) return;
 
     const id = setInterval(() => {
-      const siguienteIndice = (activoRef.current + 1) % FOTOS.length;
+      const siguienteIndice = (activo + 1) % FOTOS.length;
       irA(siguienteIndice);
     }, AUTOPLAY_MS);
 
