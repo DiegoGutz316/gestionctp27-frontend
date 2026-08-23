@@ -51,25 +51,55 @@ const AUTOPLAY_MS = 5000;
 const CONSULTA_REDUCE_MOTION = "(prefers-reduced-motion: reduce)";
 
 /**
+ * `useSyncExternalStore` vuelve a suscribirse cada vez que cambia la identidad
+ * de `subscribe`. Si estas funciones se definieran dentro del hook, se crearían
+ * en cada render del carrusel y cada cambio de foto o de pausa daría de baja y
+ * de alta el listener de la media query.
+ *
+ * Por eso viven en el ámbito del módulo: su identidad es estable durante toda
+ * la vida de la página y la suscripción se hace una sola vez.
+ */
+let mediaQueryReduceMotion: MediaQueryList | null = null;
+
+/**
+ * El `MediaQueryList` se crea una única vez y de forma perezosa: en el módulo
+ * no puede crearse porque `window` no existe durante el render en servidor.
+ */
+function obtenerMediaQuery(): MediaQueryList {
+  mediaQueryReduceMotion ??= window.matchMedia(CONSULTA_REDUCE_MOTION);
+  return mediaQueryReduceMotion;
+}
+
+function suscribirReduceMotion(alCambiar: () => void): () => void {
+  const mql = obtenerMediaQuery();
+  mql.addEventListener("change", alCambiar);
+  return () => mql.removeEventListener("change", alCambiar);
+}
+
+function leerReduceMotion(): boolean {
+  return obtenerMediaQuery().matches;
+}
+
+/**
+ * Valor durante el renderizado en servidor, donde no se conoce la preferencia:
+ * se asume que no hay reducción de movimiento y el cliente lo corrige al
+ * hidratar. Es el mismo valor inicial que tenía la versión con `useState`.
+ */
+function leerReduceMotionEnServidor(): boolean {
+  return false;
+}
+
+/**
  * Lee `prefers-reduced-motion` con `useSyncExternalStore`, que es la API
  * pensada para suscribirse a un origen externo al estado de React (aquí,
  * `matchMedia`). Antes se hacía con `useState` + `setState` dentro de un
  * efecto, lo que provoca un render en cascada en cada montaje.
- *
- * El tercer argumento es el valor durante el renderizado en servidor, donde no
- * existe `window` ni se conoce la preferencia: se asume que no hay reducción de
- * movimiento y el cliente lo corrige al hidratar, que es el mismo valor inicial
- * que tenía la versión anterior.
  */
 function useReduceMotion(): boolean {
   return useSyncExternalStore(
-    (alCambiar) => {
-      const mql = window.matchMedia(CONSULTA_REDUCE_MOTION);
-      mql.addEventListener("change", alCambiar);
-      return () => mql.removeEventListener("change", alCambiar);
-    },
-    () => window.matchMedia(CONSULTA_REDUCE_MOTION).matches,
-    () => false,
+    suscribirReduceMotion,
+    leerReduceMotion,
+    leerReduceMotionEnServidor,
   );
 }
 
@@ -77,23 +107,34 @@ export function LandingGaleria() {
   const trackRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activo, setActivo] = useState(0);
+  const [pausado, setPausado] = useState(false);
+  const reduceMotion = useReduceMotion();
 
   // Se mueve únicamente el scroll horizontal del carrusel. `scrollIntoView`
   // desplaza todos los contenedores con scroll por encima del elemento,
   // incluida la página: si el visitante estaba más abajo, cada avance
   // automático lo arrastraba de vuelta hasta el carrusel.
-  const irA = useCallback((indice: number) => {
-    const destino = slideRefs.current[indice];
-    const track = trackRef.current;
-    if (!destino || !track) return;
+  //
+  // Quien pide menos movimiento tampoco debe ver la animación al navegar con
+  // los botones, el teclado o los indicadores. Se usa "instant" y no "auto":
+  // con "auto" el navegador consulta la propiedad CSS `scroll-behavior` del
+  // contenedor, así que la animación volvería por esa vía.
+  const irA = useCallback(
+    (indice: number) => {
+      const destino = slideRefs.current[indice];
+      const track = trackRef.current;
+      if (!destino || !track) return;
 
-    const desplazamiento =
-      destino.getBoundingClientRect().left - track.getBoundingClientRect().left;
-    track.scrollTo({
-      left: track.scrollLeft + desplazamiento,
-      behavior: "smooth",
-    });
-  }, []);
+      const desplazamiento =
+        destino.getBoundingClientRect().left -
+        track.getBoundingClientRect().left;
+      track.scrollTo({
+        left: track.scrollLeft + desplazamiento,
+        behavior: reduceMotion ? "instant" : "smooth",
+      });
+    },
+    [reduceMotion],
+  );
 
   const anterior = useCallback(() => {
     irA(Math.max(activo - 1, 0));
@@ -102,9 +143,6 @@ export function LandingGaleria() {
   const siguiente = useCallback(() => {
     irA(Math.min(activo + 1, FOTOS.length - 1));
   }, [activo, irA]);
-
-  const [pausado, setPausado] = useState(false);
-  const reduceMotion = useReduceMotion();
 
   // Reinicia el ciclo de autoplay cada vez que cambia la foto activa
   // (por swipe, botones o navegación automática), evitando saltos dobles.
@@ -151,14 +189,24 @@ export function LandingGaleria() {
       >
         <div
           ref={trackRef}
-          className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
+          // `scroll-smooth` solo cuando no se pidió reducir el movimiento: la
+          // clase afecta a cualquier desplazamiento del contenedor, incluido
+          // el ajuste del scroll-snap tras un gesto del usuario.
+          className={`scrollbar-none flex snap-x snap-mandatory overflow-x-auto ${
+            reduceMotion ? "" : "scroll-smooth"
+          }`}
           tabIndex={0}
           role="region"
           aria-roledescription="carrusel"
           aria-label="Fotografías institucionales"
           onKeyDown={(e) => {
+            if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+            // El contenedor tiene scroll propio, así que el navegador también
+            // desplaza por su cuenta al pulsar las flechas. Sumado al
+            // scroll-snap, eso avanzaba dos fotos en lugar de una.
+            e.preventDefault();
             if (e.key === "ArrowRight") siguiente();
-            if (e.key === "ArrowLeft") anterior();
+            else anterior();
           }}
         >
           {FOTOS.map((foto, i) => (
