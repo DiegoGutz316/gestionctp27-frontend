@@ -20,7 +20,7 @@ export function LandingStats() {
               <p className="text-2xl font-semibold tracking-tight text-[#52634D] sm:text-3xl">
                 {dato.numero}
               </p>
-              <p className="mt-1 text-xs leading-snug text-[#252624]/60 sm:text-sm">
+              <p className="mt-1 text-xs leading-snug text-[#252624]/65 sm:text-sm">
                 {dato.texto}
               </p>
             </div>
