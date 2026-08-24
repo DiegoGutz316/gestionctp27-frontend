@@ -23,7 +23,7 @@ export function LandingFooter() {
               </p>
             </div>
           </div>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#252624]/55">
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#252624]/65">
             Educación técnica al servicio de nuestra comunidad, en Veintisiete
             de Abril, Santa Cruz, Guanacaste.
           </p>
