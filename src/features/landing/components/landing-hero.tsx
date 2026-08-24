@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { LandingGaleria } from "./landing-galeria";
 
 export function LandingHero() {
@@ -14,35 +12,28 @@ export function LandingHero() {
         className="pointer-events-none absolute -bottom-24 left-[-10%] h-[380px] w-[380px] rounded-full bg-[#52634D]/10 blur-3xl"
       />
 
-      <div className="mx-auto grid max-w-7xl gap-14 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[0.82fr_1fr] lg:items-center lg:py-20">
+      <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[0.85fr_1fr] lg:items-center lg:py-24">
         <div>
           <span className="inline-flex items-center rounded-full border border-[#252624]/15 bg-white/60 px-3.5 py-1.5 text-xs font-medium tracking-wide text-[#896A78]">
-            Gestión institucional
+            Colegio Técnico Profesional
           </span>
 
-          <h1 className="mt-6 text-4xl font-semibold leading-[1.1] tracking-tight text-[#252624] sm:text-5xl lg:text-[3.4rem]">
-            Gestión inteligente para los procesos productivos del{" "}
-            <span className="text-[#52634D]">CTP 27 de Abril</span>
+          <h1 className="mt-6 text-4xl font-semibold leading-[1.08] tracking-tight text-[#252624] sm:text-5xl lg:text-[3.4rem]">
+            Colegio Técnico Profesional{" "}
+            <span className="text-[#52634D]">27 de Abril</span>
           </h1>
 
           <p className="mt-6 max-w-xl text-base leading-relaxed text-[#252624]/65 sm:text-lg">
-            Una plataforma diseñada para centralizar la gestión agrícola,
-            pecuaria, inventario, reportes y administración institucional.
+            Educación técnica para nuestra comunidad, en Veintisiete de Abril,
+            Santa Cruz, Guanacaste.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-4">
-            <Link
-              href="/login"
-              className="group inline-flex items-center gap-2 rounded-full bg-[#252624] px-6 py-3.5 text-sm font-medium text-[#F7F5F0] transition-colors hover:bg-[#3a3c37]"
-            >
-              Ingresar al sistema
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
             <a
-              href="#modulos"
-              className="inline-flex items-center gap-2 rounded-full border border-[#252624]/20 px-6 py-3.5 text-sm font-medium text-[#252624] transition-colors hover:border-[#252624]/40"
+              href="#nosotros"
+              className="inline-flex items-center gap-2 rounded-full bg-[#52634D] px-6 py-3.5 text-sm font-medium text-[#F7F5F0] transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F5F0] active:brightness-95"
             >
-              Explorar módulos
+              Conoce el colegio
             </a>
           </div>
         </div>
