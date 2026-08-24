@@ -7,8 +7,10 @@ import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "#inicio", label: "Inicio" },
-  { href: "#modulos", label: "Módulos" },
-  { href: "#sistema", label: "El sistema" },
+  { href: "#nosotros", label: "Nosotros" },
+  { href: "#especialidades", label: "Especialidades" },
+  { href: "#noticias", label: "Noticias" },
+  { href: "#contacto", label: "Contacto" },
 ];
 
 export function LandingHeader() {
@@ -30,7 +32,7 @@ export function LandingHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-9 md:flex">
+        <nav className="hidden items-center gap-7 lg:flex">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
@@ -42,10 +44,10 @@ export function LandingHeader() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <Link
             href="/login"
-            className="rounded-full bg-[#252624] px-5 py-2.5 text-sm font-medium text-[#F7F5F0] transition-colors hover:bg-[#3a3c37]"
+            className="rounded-full bg-[#52634D] px-5 py-2.5 text-sm font-medium text-[#F7F5F0] transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F5F0] active:brightness-95"
           >
             Ingresar
           </Link>
@@ -54,7 +56,7 @@ export function LandingHeader() {
         <button
           type="button"
           onClick={() => setMenuAbierto((v) => !v)}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-[#252624] md:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-[#252624] lg:hidden"
           aria-label="Abrir menú"
         >
           {menuAbierto ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -62,7 +64,7 @@ export function LandingHeader() {
       </div>
 
       {menuAbierto && (
-        <div className="border-t border-[#252624]/10 bg-[#F7F5F0] px-5 pb-6 pt-2 md:hidden">
+        <div className="border-t border-[#252624]/10 bg-[#F7F5F0] px-5 pb-6 pt-2 lg:hidden">
           <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <a
@@ -77,7 +79,7 @@ export function LandingHeader() {
             <Link
               href="/login"
               onClick={() => setMenuAbierto(false)}
-              className="mt-2 rounded-full bg-[#252624] px-5 py-3 text-center text-sm font-medium text-[#F7F5F0]"
+              className="mt-2 rounded-full bg-[#52634D] px-5 py-3 text-center text-sm font-medium text-[#F7F5F0] transition hover:brightness-105 active:brightness-95"
             >
               Ingresar
             </Link>
