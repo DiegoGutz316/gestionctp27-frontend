@@ -84,7 +84,8 @@ export function DashboardResumen({
           <div className="flex items-start justify-between gap-4">
             <div>
               <CardTitle className="flex items-center gap-2 text-lg font-semibold text-[#2d352f]">
-                <Sprout className="size-5 text-[#637a4a]" />
+                <Sprout className="size-5 text-[#7fa36a]" />
+
                 Distribución del inventario
               </CardTitle>
 
@@ -125,16 +126,16 @@ export function DashboardResumen({
                     style={{
                       background: `
                         conic-gradient(
-                          #71866a 0% ${limiteAgricola}%,
-                          #9baa82 ${limiteAgricola}% ${limitePecuario}%,
-                          #d4dad2 ${limitePecuario}% 100%
+                          #7fa36a 0% ${limiteAgricola}%,
+                          #d6a36c ${limiteAgricola}% ${limitePecuario}%,
+                          #ad8fa3 ${limitePecuario}% 100%
                         )
                       `,
                     }}
                   >
                     {/* Centro */}
                     <div className="absolute inset-[22px] flex flex-col items-center justify-center rounded-full border border-[#e6eae4] bg-white shadow-inner">
-                      <span className="text-[34px] font-semibold tracking-[-0.05em] text-[#252d27]">
+                      <span className="text-[34px] font-semibold tracking-[-0.05em] text-[#303832]">
                         {totalDepartamentos}
                       </span>
 
@@ -152,9 +153,9 @@ export function DashboardResumen({
 
               <div className="space-y-3">
                 {/* Agrícola */}
-                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#e5e9e2] hover:bg-[#f8faf7]">
+                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#dfe8da] hover:bg-[#f7faf5]">
                   <div className="flex items-center gap-3">
-                    <span className="size-3 rounded-full bg-[#71866a]" />
+                    <span className="size-3 rounded-full bg-[#7fa36a]" />
 
                     <div>
                       <p className="text-sm font-medium text-[#384139]">
@@ -179,9 +180,9 @@ export function DashboardResumen({
                 </div>
 
                 {/* Pecuaria */}
-                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#e5e9e2] hover:bg-[#f8faf7]">
+                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#eee0d0] hover:bg-[#fdf9f4]">
                   <div className="flex items-center gap-3">
-                    <span className="size-3 rounded-full bg-[#9baa82]" />
+                    <span className="size-3 rounded-full bg-[#d6a36c]" />
 
                     <div>
                       <p className="text-sm font-medium text-[#384139]">
@@ -206,9 +207,9 @@ export function DashboardResumen({
                 </div>
 
                 {/* General */}
-                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#e5e9e2] hover:bg-[#f8faf7]">
+                <div className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[#e9dfe6] hover:bg-[#fbf8fa]">
                   <div className="flex items-center gap-3">
-                    <span className="size-3 rounded-full bg-[#d4dad2]" />
+                    <span className="size-3 rounded-full bg-[#ad8fa3]" />
 
                     <div>
                       <p className="text-sm font-medium text-[#384139]">
@@ -239,7 +240,7 @@ export function DashboardResumen({
                 =============================== */
 
             <div className="flex min-h-[230px] flex-col items-center justify-center rounded-2xl border border-dashed border-[#dfe5dc] bg-[#fafbf9] px-6 text-center">
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#edf2e9] text-[#71866a]">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#edf4e9] text-[#7fa36a]">
                 <Sprout className="size-5" />
               </div>
 
@@ -268,7 +269,7 @@ export function DashboardResumen({
 
             <Link
               href="/dashboard/inventario"
-              className="group flex items-center gap-1.5 text-xs font-medium text-[#637a4a] transition hover:text-[#4f633a]"
+              className="group flex items-center gap-1.5 text-xs font-medium text-[#6f935e] transition hover:text-[#5f7f50]"
             >
               Gestionar inventario
 
@@ -291,7 +292,7 @@ export function DashboardResumen({
 
           ${
             stockBajo > 0
-              ? "border-[#eadcae]"
+              ? "border-[#efdca6]"
               : "border-[#dde4db]"
           }
         `}
@@ -303,8 +304,8 @@ export function DashboardResumen({
                 <ShieldAlert
                   className={`size-5 ${
                     stockBajo > 0
-                      ? "text-[#b38a28]"
-                      : "text-[#637a4a]"
+                      ? "text-[#c18e27]"
+                      : "text-[#7fa36a]"
                   }`}
                 />
 
@@ -317,7 +318,7 @@ export function DashboardResumen({
             </div>
 
             {stockBajo > 0 ? (
-              <Badge className="border-[#ead69b] bg-[#fff8e6] text-[#9a761f] hover:bg-[#fff8e6]">
+              <Badge className="border-[#efdca6] bg-[#fff8e8] text-[#b58424] hover:bg-[#fff8e8]">
                 {stockBajo}
               </Badge>
             ) : null}
@@ -330,7 +331,7 @@ export function DashboardResumen({
               {/* Número principal */}
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-[38px] font-semibold leading-none tracking-[-0.05em] text-[#283029]">
+                  <p className="text-[38px] font-semibold leading-none tracking-[-0.05em] text-[#303832]">
                     {stockNormal}
                   </p>
 
@@ -343,8 +344,8 @@ export function DashboardResumen({
                   <p
                     className={`text-lg font-semibold ${
                       stockBajo > 0
-                        ? "text-[#a47d22]"
-                        : "text-[#71866a]"
+                        ? "text-[#c18e27]"
+                        : "text-[#7fa36a]"
                     }`}
                   >
                     {stockBajo}
@@ -360,7 +361,7 @@ export function DashboardResumen({
               <div className="mt-7">
                 <div className="flex h-3 overflow-hidden rounded-full bg-[#eef1ec]">
                   <div
-                    className="h-full rounded-l-full bg-[#71866a] transition-all duration-500"
+                    className="h-full rounded-l-full bg-[#7fa36a] transition-all duration-500"
                     style={{
                       width: `${porcentajeStockNormal}%`,
                     }}
@@ -368,7 +369,7 @@ export function DashboardResumen({
 
                   {stockBajo > 0 ? (
                     <div
-                      className="h-full rounded-r-full bg-[#d8b95f] transition-all duration-500"
+                      className="h-full rounded-r-full bg-[#e2b85b] transition-all duration-500"
                       style={{
                         width: `${porcentajeStockBajo}%`,
                       }}
@@ -380,7 +381,7 @@ export function DashboardResumen({
                 <div className="mt-5 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="size-2.5 rounded-full bg-[#71866a]" />
+                      <span className="size-2.5 rounded-full bg-[#7fa36a]" />
 
                       <span className="text-xs text-[#667066]">
                         Stock suficiente
@@ -397,8 +398,8 @@ export function DashboardResumen({
                       <span
                         className={`size-2.5 rounded-full ${
                           stockBajo > 0
-                            ? "bg-[#d8b95f]"
-                            : "bg-[#dfe4dc]"
+                            ? "bg-[#e2b85b]"
+                            : "bg-[#e6e9e3]"
                         }`}
                       />
 
@@ -410,7 +411,7 @@ export function DashboardResumen({
                     <span
                       className={`text-xs font-semibold ${
                         stockBajo > 0
-                          ? "text-[#9e7821]"
+                          ? "text-[#b58424]"
                           : "text-[#3f4840]"
                       }`}
                     >
@@ -431,16 +432,16 @@ export function DashboardResumen({
 
                   ${
                     stockBajo > 0
-                      ? "border-[#eee1ba] bg-[#fffaf0]"
-                      : "border-[#e2e8df] bg-[#f7faf5]"
+                      ? "border-[#f0dfac] bg-[#fff9eb]"
+                      : "border-[#dfe8da] bg-[#f6faf4]"
                   }
                 `}
               >
                 <p
                   className={`text-xs font-medium ${
                     stockBajo > 0
-                      ? "text-[#8f6b1d]"
-                      : "text-[#557148]"
+                      ? "text-[#a97a20]"
+                      : "text-[#628253]"
                   }`}
                 >
                   {stockBajo > 0
@@ -456,7 +457,7 @@ export function DashboardResumen({
           ) : (
             /* Sin datos */
             <div className="flex min-h-[230px] flex-col items-center justify-center text-center">
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#edf2e9] text-[#71866a]">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#edf4e9] text-[#7fa36a]">
                 <ShieldAlert className="size-5" />
               </div>
 
@@ -484,9 +485,19 @@ export function DashboardResumen({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full gap-1.5 border-[#e5d5a7] bg-[#fffaf0] text-[#8e6b1f] hover:bg-[#fff5dc]"
+                  className="
+                    w-full
+                    gap-1.5
+                    border-[#efdca6]
+                    bg-[#fff9eb]
+                    text-[#a97a20]
+                    hover:border-[#e2b85b]
+                    hover:bg-[#fff5dc]
+                    hover:text-[#926718]
+                  "
                 >
                   Revisar existencias
+
                   <ArrowRight className="size-3.5" />
                 </Button>
               </Link>
@@ -496,7 +507,14 @@ export function DashboardResumen({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5"
+                    className="
+                      gap-1.5
+                      border-[#d8e5d0]
+                      bg-[#f7faf5]
+                      text-[#628253]
+                      hover:bg-[#edf4e9]
+                      hover:text-[#547247]
+                    "
                   >
                     <Sprout className="size-3.5" />
                     Agrícola
@@ -507,7 +525,14 @@ export function DashboardResumen({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5"
+                    className="
+                      gap-1.5
+                      border-[#ead8c5]
+                      bg-[#fdf9f4]
+                      text-[#b17f4d]
+                      hover:bg-[#f8efe6]
+                      hover:text-[#95683d]
+                    "
                   >
                     <Leaf className="size-3.5" />
                     Pecuaria
