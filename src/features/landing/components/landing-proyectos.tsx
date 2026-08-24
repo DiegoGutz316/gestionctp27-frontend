@@ -60,7 +60,7 @@ export function LandingProyectos() {
                   src={proyecto.src}
                   alt={proyecto.alt}
                   fill
-                  sizes="128px"
+                  sizes="(max-width: 639px) 100vw, 128px"
                   className="object-cover"
                 />
               </div>
