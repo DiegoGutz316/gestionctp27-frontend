@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import {
   ArrowRight,
   Eye,
@@ -32,6 +32,15 @@ import {
 } from "../servicios/auth.service";
 import { loginSchema } from "../validacion/auth.validacion";
 
+/**
+ * Misma normalizacion que aplica el backend al correo (`trim` + minusculas),
+ * para que la comparacion con el correo bloqueado no falle por may/min ni por
+ * espacios sobrantes.
+ */
+function normalizarCorreo(correo: string): string {
+  return correo.trim().toLowerCase();
+}
+
 /** mm:ss para la cuenta regresiva del bloqueo. */
 function formatearEspera(segundos: number): string {
   const minutos = Math.floor(segundos / 60);
@@ -47,8 +56,13 @@ export function LoginForm() {
     useState(false);
 
   /**
-   * Momento (epoch en ms) en que expira el bloqueo, y una marca del "ahora" que
-   * se refresca para recalcular lo que falta.
+   * Bloqueo vigente: a qué correo corresponde y en qué instante (epoch en ms)
+   * expira. Junto a él, una marca del "ahora" que se refresca para recalcular
+   * lo que falta.
+   *
+   * Se guarda el correo porque el backend bloquea **por cuenta**, no por
+   * dispositivo: quien comparte el equipo debe poder entrar con otra cuenta que
+   * no esté bloqueada sin recargar la página.
    *
    * Se guarda el instante de expiración y no un contador que se decrementa: el
    * navegador ralentiza los temporizadores de las pestañas en segundo plano y
@@ -60,33 +74,11 @@ export function LoginForm() {
    * página o llamando a la API directamente, y el backend lo rechazará igual.
    * La validación real vive allí.
    */
-  const [expiraEn, setExpiraEn] = useState<number | null>(null);
+  const [bloqueo, setBloqueo] = useState<{
+    correo: string;
+    expiraEn: number;
+  } | null>(null);
   const [ahora, setAhora] = useState(() => Date.now());
-
-  const esperaSegundos =
-    expiraEn === null
-      ? 0
-      : Math.max(0, Math.ceil((expiraEn - ahora) / 1000));
-  const bloqueado = esperaSegundos > 0;
-
-  // El intervalo solo empuja el reloj; lo que falta se recalcula en cada
-  // render a partir de la hora real, así que un tick perdido no acumula error.
-  // Además se recalcula al volver a la pestaña, sin esperar al siguiente tick.
-  useEffect(() => {
-    if (!bloqueado) return;
-
-    const refrescar = () => setAhora(Date.now());
-    const id = setInterval(refrescar, 1000);
-
-    document.addEventListener("visibilitychange", refrescar);
-    window.addEventListener("focus", refrescar);
-
-    return () => {
-      clearInterval(id);
-      document.removeEventListener("visibilitychange", refrescar);
-      window.removeEventListener("focus", refrescar);
-    };
-  }, [bloqueado]);
 
   const form = useForm({
     defaultValues: {
@@ -111,7 +103,10 @@ export function LoginForm() {
         const espera = segundosDeBloqueo(error);
         if (espera !== null) {
           setAhora(Date.now());
-          setExpiraEn(Date.now() + espera * 1000);
+          setBloqueo({
+            correo: normalizarCorreo(value.correo),
+            expiraEn: Date.now() + espera * 1000,
+          });
         }
 
         toast.error(
@@ -120,6 +115,42 @@ export function LoginForm() {
       }
     },
   });
+
+  // El correo tal como está escrito ahora en el campo: si el usuario lo cambia
+  // por otra cuenta, el bloqueo de la anterior deja de aplicar.
+  const correoActual = useStore(
+    form.store,
+    (estado) => estado.values.correo,
+  );
+
+  const esperaSegundos =
+    bloqueo === null
+      ? 0
+      : Math.max(0, Math.ceil((bloqueo.expiraEn - ahora) / 1000));
+
+  const bloqueado =
+    bloqueo !== null &&
+    esperaSegundos > 0 &&
+    normalizarCorreo(correoActual) === bloqueo.correo;
+
+  // El intervalo solo empuja el reloj; lo que falta se recalcula en cada
+  // render a partir de la hora real, así que un tick perdido no acumula error.
+  // Además se recalcula al volver a la pestaña, sin esperar al siguiente tick.
+  useEffect(() => {
+    if (!bloqueado) return;
+
+    const refrescar = () => setAhora(Date.now());
+    const id = setInterval(refrescar, 1000);
+
+    document.addEventListener("visibilitychange", refrescar);
+    window.addEventListener("focus", refrescar);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", refrescar);
+      window.removeEventListener("focus", refrescar);
+    };
+  }, [bloqueado]);
 
   return (
     <form
