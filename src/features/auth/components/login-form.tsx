@@ -47,25 +47,45 @@ export function LoginForm() {
     useState(false);
 
   /**
-   * Segundos que faltan para poder reintentar tras agotar los intentos.
+   * Momento (epoch en ms) en que expira el bloqueo, y una marca del "ahora" que
+   * se refresca para recalcular lo que falta.
    *
-   * Es solo comodidad: quien lo desee puede saltarse este bloqueo recargando la
+   * Se guarda el instante de expiración y no un contador que se decrementa: el
+   * navegador ralentiza los temporizadores de las pestañas en segundo plano y
+   * los detiene si el equipo se suspende, así que un contador acumula el
+   * desfase de cada tick perdido y seguiría bloqueando el botón mucho después
+   * de que el servidor haya liberado la cuenta.
+   *
+   * Todo esto es solo comodidad: quien quiera puede saltárselo recargando la
    * página o llamando a la API directamente, y el backend lo rechazará igual.
    * La validación real vive allí.
    */
-  const [esperaSegundos, setEsperaSegundos] = useState(0);
+  const [expiraEn, setExpiraEn] = useState<number | null>(null);
+  const [ahora, setAhora] = useState(() => Date.now());
+
+  const esperaSegundos =
+    expiraEn === null
+      ? 0
+      : Math.max(0, Math.ceil((expiraEn - ahora) / 1000));
   const bloqueado = esperaSegundos > 0;
 
-  // El intervalo se crea al empezar el bloqueo y se destruye al terminar, no en
-  // cada segundo: la dependencia es el booleano, no el contador.
+  // El intervalo solo empuja el reloj; lo que falta se recalcula en cada
+  // render a partir de la hora real, así que un tick perdido no acumula error.
+  // Además se recalcula al volver a la pestaña, sin esperar al siguiente tick.
   useEffect(() => {
     if (!bloqueado) return;
 
-    const id = setInterval(() => {
-      setEsperaSegundos((restante) => Math.max(0, restante - 1));
-    }, 1000);
+    const refrescar = () => setAhora(Date.now());
+    const id = setInterval(refrescar, 1000);
 
-    return () => clearInterval(id);
+    document.addEventListener("visibilitychange", refrescar);
+    window.addEventListener("focus", refrescar);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", refrescar);
+      window.removeEventListener("focus", refrescar);
+    };
   }, [bloqueado]);
 
   const form = useForm({
@@ -90,7 +110,8 @@ export function LoginForm() {
       } catch (error) {
         const espera = segundosDeBloqueo(error);
         if (espera !== null) {
-          setEsperaSegundos(espera);
+          setAhora(Date.now());
+          setExpiraEn(Date.now() + espera * 1000);
         }
 
         toast.error(
