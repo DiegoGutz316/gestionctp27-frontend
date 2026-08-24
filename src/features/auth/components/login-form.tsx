@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import {
@@ -9,6 +9,7 @@ import {
   EyeOff,
   Lock,
   Mail,
+  ShieldAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,8 +26,18 @@ import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 
 import { useAuth } from "../context/auth-context";
-import { getMensajeDeErrorAuth } from "../servicios/auth.service";
+import {
+  getMensajeDeErrorAuth,
+  segundosDeBloqueo,
+} from "../servicios/auth.service";
 import { loginSchema } from "../validacion/auth.validacion";
+
+/** mm:ss para la cuenta regresiva del bloqueo. */
+function formatearEspera(segundos: number): string {
+  const minutos = Math.floor(segundos / 60);
+  const resto = segundos % 60;
+  return `${minutos}:${String(resto).padStart(2, "0")}`;
+}
 
 export function LoginForm() {
   const router = useRouter();
@@ -34,6 +45,28 @@ export function LoginForm() {
 
   const [mostrarContrasena, setMostrarContrasena] =
     useState(false);
+
+  /**
+   * Segundos que faltan para poder reintentar tras agotar los intentos.
+   *
+   * Es solo comodidad: quien lo desee puede saltarse este bloqueo recargando la
+   * página o llamando a la API directamente, y el backend lo rechazará igual.
+   * La validación real vive allí.
+   */
+  const [esperaSegundos, setEsperaSegundos] = useState(0);
+  const bloqueado = esperaSegundos > 0;
+
+  // El intervalo se crea al empezar el bloqueo y se destruye al terminar, no en
+  // cada segundo: la dependencia es el booleano, no el contador.
+  useEffect(() => {
+    if (!bloqueado) return;
+
+    const id = setInterval(() => {
+      setEsperaSegundos((restante) => Math.max(0, restante - 1));
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [bloqueado]);
 
   const form = useForm({
     defaultValues: {
@@ -55,6 +88,11 @@ export function LoginForm() {
 
         router.replace("/dashboard");
       } catch (error) {
+        const espera = segundosDeBloqueo(error);
+        if (espera !== null) {
+          setEsperaSegundos(espera);
+        }
+
         toast.error(
           getMensajeDeErrorAuth(error),
         );
@@ -307,6 +345,40 @@ export function LoginForm() {
           BOTÓN LOGIN
           ============================ */}
 
+      {bloqueado ? (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="
+            mt-6
+            flex
+            items-start
+            gap-3
+            rounded-xl
+            border
+            border-[#e6d3b8]
+            bg-[#fdf7ec]
+            px-4
+            py-3
+          "
+        >
+          <ShieldAlert className="mt-0.5 size-4 shrink-0 text-[#a8791f]" />
+
+          <div className="text-xs leading-5 text-[#6b5426]">
+            <p className="font-semibold">
+              Demasiados intentos fallidos
+            </p>
+            <p>
+              Por seguridad, espere{" "}
+              <span className="font-semibold tabular-nums">
+                {formatearEspera(esperaSegundos)}
+              </span>{" "}
+              antes de volver a intentarlo.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       <form.Subscribe
         selector={(state) =>
           state.isSubmitting
@@ -315,7 +387,7 @@ export function LoginForm() {
         {(isSubmitting) => (
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || bloqueado}
             className="
               group
               mt-7
