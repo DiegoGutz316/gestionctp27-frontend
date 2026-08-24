@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import {
   ArrowRight,
   Eye,
   EyeOff,
   Lock,
   Mail,
+  ShieldAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,8 +26,27 @@ import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 
 import { useAuth } from "../context/auth-context";
-import { getMensajeDeErrorAuth } from "../servicios/auth.service";
+import {
+  getMensajeDeErrorAuth,
+  segundosDeBloqueo,
+} from "../servicios/auth.service";
 import { loginSchema } from "../validacion/auth.validacion";
+
+/**
+ * Misma normalizacion que aplica el backend al correo (`trim` + minusculas),
+ * para que la comparacion con el correo bloqueado no falle por may/min ni por
+ * espacios sobrantes.
+ */
+function normalizarCorreo(correo: string): string {
+  return correo.trim().toLowerCase();
+}
+
+/** mm:ss para la cuenta regresiva del bloqueo. */
+function formatearEspera(segundos: number): string {
+  const minutos = Math.floor(segundos / 60);
+  const resto = segundos % 60;
+  return `${minutos}:${String(resto).padStart(2, "0")}`;
+}
 
 export function LoginForm() {
   const router = useRouter();
@@ -34,6 +54,31 @@ export function LoginForm() {
 
   const [mostrarContrasena, setMostrarContrasena] =
     useState(false);
+
+  /**
+   * Bloqueo vigente: a qué correo corresponde y en qué instante (epoch en ms)
+   * expira. Junto a él, una marca del "ahora" que se refresca para recalcular
+   * lo que falta.
+   *
+   * Se guarda el correo porque el backend bloquea **por cuenta**, no por
+   * dispositivo: quien comparte el equipo debe poder entrar con otra cuenta que
+   * no esté bloqueada sin recargar la página.
+   *
+   * Se guarda el instante de expiración y no un contador que se decrementa: el
+   * navegador ralentiza los temporizadores de las pestañas en segundo plano y
+   * los detiene si el equipo se suspende, así que un contador acumula el
+   * desfase de cada tick perdido y seguiría bloqueando el botón mucho después
+   * de que el servidor haya liberado la cuenta.
+   *
+   * Todo esto es solo comodidad: quien quiera puede saltárselo recargando la
+   * página o llamando a la API directamente, y el backend lo rechazará igual.
+   * La validación real vive allí.
+   */
+  const [bloqueo, setBloqueo] = useState<{
+    correo: string;
+    expiraEn: number;
+  } | null>(null);
+  const [ahora, setAhora] = useState(() => Date.now());
 
   const form = useForm({
     defaultValues: {
@@ -55,12 +100,57 @@ export function LoginForm() {
 
         router.replace("/dashboard");
       } catch (error) {
+        const espera = segundosDeBloqueo(error);
+        if (espera !== null) {
+          setAhora(Date.now());
+          setBloqueo({
+            correo: normalizarCorreo(value.correo),
+            expiraEn: Date.now() + espera * 1000,
+          });
+        }
+
         toast.error(
           getMensajeDeErrorAuth(error),
         );
       }
     },
   });
+
+  // El correo tal como está escrito ahora en el campo: si el usuario lo cambia
+  // por otra cuenta, el bloqueo de la anterior deja de aplicar.
+  const correoActual = useStore(
+    form.store,
+    (estado) => estado.values.correo,
+  );
+
+  const esperaSegundos =
+    bloqueo === null
+      ? 0
+      : Math.max(0, Math.ceil((bloqueo.expiraEn - ahora) / 1000));
+
+  const bloqueado =
+    bloqueo !== null &&
+    esperaSegundos > 0 &&
+    normalizarCorreo(correoActual) === bloqueo.correo;
+
+  // El intervalo solo empuja el reloj; lo que falta se recalcula en cada
+  // render a partir de la hora real, así que un tick perdido no acumula error.
+  // Además se recalcula al volver a la pestaña, sin esperar al siguiente tick.
+  useEffect(() => {
+    if (!bloqueado) return;
+
+    const refrescar = () => setAhora(Date.now());
+    const id = setInterval(refrescar, 1000);
+
+    document.addEventListener("visibilitychange", refrescar);
+    window.addEventListener("focus", refrescar);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", refrescar);
+      window.removeEventListener("focus", refrescar);
+    };
+  }, [bloqueado]);
 
   return (
     <form
@@ -307,6 +397,53 @@ export function LoginForm() {
           BOTÓN LOGIN
           ============================ */}
 
+      {bloqueado ? (
+        <>
+          {/*
+            El anuncio para lectores de pantalla va aparte y con texto fijo, que
+            se lee una sola vez al aparecer. El bloque visual de abajo NO es una
+            region viva: `role="alert"` implica `aria-atomic="true"`, asi que con
+            el contador dentro se reanunciaba el aviso entero cada segundo.
+            Sin region viva, el tiempo restante sigue siendo legible para quien
+            navegue hasta el, pero no interrumpe cada segundo.
+          */}
+          <p role="status" className="sr-only">
+            Demasiados intentos fallidos. El formulario volverá a habilitarse
+            cuando termine la espera.
+          </p>
+
+          <div
+            className="
+              mt-6
+              flex
+              items-start
+              gap-3
+              rounded-xl
+              border
+              border-[#e6d3b8]
+              bg-[#fdf7ec]
+              px-4
+              py-3
+            "
+          >
+            <ShieldAlert className="mt-0.5 size-4 shrink-0 text-[#a8791f]" />
+
+            <div className="text-xs leading-5 text-[#6b5426]">
+              <p className="font-semibold">
+                Demasiados intentos fallidos
+              </p>
+              <p>
+                Por seguridad, espere{" "}
+                <span className="font-semibold tabular-nums">
+                  {formatearEspera(esperaSegundos)}
+                </span>{" "}
+                antes de volver a intentarlo.
+              </p>
+            </div>
+          </div>
+        </>
+      ) : null}
+
       <form.Subscribe
         selector={(state) =>
           state.isSubmitting
@@ -315,7 +452,7 @@ export function LoginForm() {
         {(isSubmitting) => (
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || bloqueado}
             className="
               group
               mt-7
