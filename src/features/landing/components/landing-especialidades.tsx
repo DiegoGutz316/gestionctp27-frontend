@@ -111,7 +111,7 @@ export function LandingEspecialidades() {
                 <h3 className="mt-5 text-lg font-medium text-[#252624]">
                   {especialidad.nombre}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#252624]/60">
+                <p className="mt-2 text-sm leading-relaxed text-[#252624]/65">
                   {especialidad.descripcion}
                 </p>
               </div>
