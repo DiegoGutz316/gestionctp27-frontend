@@ -398,37 +398,50 @@ export function LoginForm() {
           ============================ */}
 
       {bloqueado ? (
-        <div
-          role="alert"
-          aria-live="polite"
-          className="
-            mt-6
-            flex
-            items-start
-            gap-3
-            rounded-xl
-            border
-            border-[#e6d3b8]
-            bg-[#fdf7ec]
-            px-4
-            py-3
-          "
-        >
-          <ShieldAlert className="mt-0.5 size-4 shrink-0 text-[#a8791f]" />
+        <>
+          {/*
+            El anuncio para lectores de pantalla va aparte y con texto fijo, que
+            se lee una sola vez al aparecer. El bloque visual de abajo NO es una
+            region viva: `role="alert"` implica `aria-atomic="true"`, asi que con
+            el contador dentro se reanunciaba el aviso entero cada segundo.
+            Sin region viva, el tiempo restante sigue siendo legible para quien
+            navegue hasta el, pero no interrumpe cada segundo.
+          */}
+          <p role="status" className="sr-only">
+            Demasiados intentos fallidos. El formulario volverá a habilitarse
+            cuando termine la espera.
+          </p>
 
-          <div className="text-xs leading-5 text-[#6b5426]">
-            <p className="font-semibold">
-              Demasiados intentos fallidos
-            </p>
-            <p>
-              Por seguridad, espere{" "}
-              <span className="font-semibold tabular-nums">
-                {formatearEspera(esperaSegundos)}
-              </span>{" "}
-              antes de volver a intentarlo.
-            </p>
+          <div
+            className="
+              mt-6
+              flex
+              items-start
+              gap-3
+              rounded-xl
+              border
+              border-[#e6d3b8]
+              bg-[#fdf7ec]
+              px-4
+              py-3
+            "
+          >
+            <ShieldAlert className="mt-0.5 size-4 shrink-0 text-[#a8791f]" />
+
+            <div className="text-xs leading-5 text-[#6b5426]">
+              <p className="font-semibold">
+                Demasiados intentos fallidos
+              </p>
+              <p>
+                Por seguridad, espere{" "}
+                <span className="font-semibold tabular-nums">
+                  {formatearEspera(esperaSegundos)}
+                </span>{" "}
+                antes de volver a intentarlo.
+              </p>
+            </div>
           </div>
-        </div>
+        </>
       ) : null}
 
       <form.Subscribe
