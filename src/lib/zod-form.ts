@@ -1,5 +1,21 @@
 import type { z } from "zod";
 
+function rutaDeCampo(path: PropertyKey[]): string | null {
+  if (path.length === 0) return null;
+
+  let nombre = "";
+  for (const parte of path) {
+    if (typeof parte === "number") {
+      nombre += `[${parte}]`;
+      continue;
+    }
+    if (typeof parte !== "string") return null;
+    nombre = nombre === "" ? parte : `${nombre}.${parte}`;
+  }
+
+  return nombre === "" ? null : nombre;
+}
+
 /**
  * Adaptador para usar schemas Zod (incl. preprocess/transform) con TanStack Form.
  * Standard Schema tipa mal z.preprocess; validamos con safeParse y devolvemos
@@ -12,8 +28,8 @@ export function zodValidator<TSchema extends z.ZodType>(schema: TSchema) {
 
     const fields: Record<string, string> = {};
     for (const issue of result.error.issues) {
-      const key = issue.path[0];
-      if (typeof key === "string" && !fields[key]) {
+      const key = rutaDeCampo(issue.path);
+      if (key && !fields[key]) {
         fields[key] = issue.message;
       }
     }

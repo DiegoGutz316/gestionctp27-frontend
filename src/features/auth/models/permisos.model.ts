@@ -13,6 +13,7 @@ export const MODULOS_SISTEMA = [
   "PECUARIA",
   "AGRICOLA",
   "INVENTARIO",
+  "LIBRO_CAJA",
   "REPORTES",
 ] as const;
 
@@ -55,5 +56,6 @@ export const ETIQUETA_MODULO: Record<ModuloSistema, string> = {
   PECUARIA: "Gestión pecuaria",
   AGRICOLA: "Gestión agrícola",
   INVENTARIO: "Inventario e insumos",
+  LIBRO_CAJA: "Libro de caja",
   REPORTES: "Reportes",
 };

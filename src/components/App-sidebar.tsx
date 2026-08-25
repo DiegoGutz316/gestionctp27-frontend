@@ -16,6 +16,7 @@ import {
   Settings,
   Sprout,
   Users,
+  Wallet,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -77,6 +78,12 @@ const navigation = [
         href: "/dashboard/inventario",
         icon: Boxes,
         modulo: "INVENTARIO" as const,
+      },
+      {
+        title: "Libro de caja",
+        href: "/dashboard/libro-caja",
+        icon: Wallet,
+        modulo: "LIBRO_CAJA" as const,
       },
       {
         title: "Área agrícola",

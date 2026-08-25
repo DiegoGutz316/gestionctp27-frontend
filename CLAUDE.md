@@ -9,7 +9,7 @@ independiente del backend (`gestionctp27-backend`).
 - Gestor de paquetes: **pnpm** exclusivamente.
 - TypeScript estricto.
 - Organización por features: el código de cada área vive en `src/features/`
-  (`usuarios`, `pecuaria`, `agricola`, `inventario`, `reportes`, `dashboard`);
+  (`usuarios`, `pecuaria`, `agricola`, `inventario`, `libro-caja`, `reportes`, `dashboard`);
   `src/components/` solo para componentes compartidos.
 - Rutas: `src/app/(public)/` para rutas públicas (login) y `src/app/(private)/`
   para las privadas (su layout base ya existe).

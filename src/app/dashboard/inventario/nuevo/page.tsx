@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { RequerirPermiso } from "@/features/auth/components/requerir-permiso";
-import { ProductoForm } from "@/features/inventario/producto/components/producto-form";
+import { ProductoNuevo } from "@/features/inventario/producto/components/producto-nuevo";
 
 export const metadata: Metadata = {
   title: "Registrar producto | GestiónCTP27",
@@ -10,17 +10,7 @@ export const metadata: Metadata = {
 export default function NuevoProductoPage() {
   return (
     <RequerirPermiso modulo="INVENTARIO" nivel="COMPLETO">
-      <main className="mx-auto w-full max-w-lg">
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Registrar producto
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Agregue un producto al catálogo de inventario del colegio.
-          </p>
-        </header>
-        <ProductoForm />
-      </main>
+      <ProductoNuevo />
     </RequerirPermiso>
   );
 }
