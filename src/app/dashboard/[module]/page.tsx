@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import {
-  BarChart3,
   Leaf,
   Sprout,
   type LucideIcon,
@@ -45,13 +44,6 @@ const modules: Record<string, ModuleDetails> = {
       "Consulte y gestione las actividades, animales e insumos del área pecuaria.",
     icon: Leaf,
     modulo: "PECUARIA",
-  },
-  reportes: {
-    title: "Reportes",
-    description:
-      "Visualice indicadores y genere reportes de las diferentes áreas del colegio.",
-    icon: BarChart3,
-    modulo: "REPORTES",
   },
 }
 

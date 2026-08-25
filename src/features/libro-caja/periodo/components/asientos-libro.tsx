@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { Home, Printer } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,6 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -112,26 +113,41 @@ export function AsientosLibro({
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div>
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-color-company">
-            {unidad}
-          </h1>
-          <Badge
-            variant="secondary"
-            className={
-              abierto
-                ? "rounded-full border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200"
-                : "rounded-full border-transparent bg-muted text-muted-foreground"
-            }
-          >
-            {ETIQUETA_ESTADO_PERIODO[datos.periodo.estado]}
-          </Badge>
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-semibold tracking-tight text-color-company">
+              {unidad}
+            </h1>
+            <Badge
+              variant="secondary"
+              className={
+                abierto
+                  ? "rounded-full border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200"
+                  : "rounded-full border-transparent bg-muted text-muted-foreground"
+              }
+            >
+              {ETIQUETA_ESTADO_PERIODO[datos.periodo.estado]}
+            </Badge>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {datos.periodo.nombre} · {formatearFechaPeriodo(datos.periodo.fechaInicio)}{" "}
+            – {formatearFechaPeriodo(datos.periodo.fechaFin)}
+          </p>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {datos.periodo.nombre} · {formatearFechaPeriodo(datos.periodo.fechaInicio)}{" "}
-          – {formatearFechaPeriodo(datos.periodo.fechaFin)}
-        </p>
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={
+            <Link
+              href={`/dashboard/libro-caja/periodos/${periodoId}/fondos/${fondoId}/informe`}
+              prefetch={false}
+            />
+          }
+        >
+          <Printer data-icon="inline-start" />
+          Generar informe
+        </Button>
       </div>
 
       {abierto && fondoListo ? (
