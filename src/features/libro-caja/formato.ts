@@ -20,3 +20,12 @@ export function formatearColones(monto: number): string {
     maximumFractionDigits: 2,
   })}`;
 }
+
+/** Fecha de calendario en la zona local, sin convertir a UTC. */
+export function fechaHoyLocal(): string {
+  const ahora = new Date();
+  const anio = ahora.getFullYear();
+  const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+  const dia = String(ahora.getDate()).padStart(2, "0");
+  return `${anio}-${mes}-${dia}`;
+}

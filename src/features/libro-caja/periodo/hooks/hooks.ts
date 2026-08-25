@@ -6,6 +6,7 @@ import type {
   FiltrarPeriodos,
   SolicitarFondo,
 } from "../validacion/periodo.validacion";
+import type { CrearAsiento } from "../validacion/asiento.validacion";
 import {
   abrirPeriodo,
   cerrarPeriodo,
@@ -14,8 +15,19 @@ import {
   obtenerPeriodo,
   solicitarFondo,
 } from "../servicios/periodo.service";
+import { crearAsiento, listarAsientos } from "../servicios/asiento.service";
 
 export const periodosQueryKey = ["libro-caja", "periodos"] as const;
+
+export function asientosQueryKey(periodoId: number, fondoId: number) {
+  return [
+    ...periodosQueryKey,
+    periodoId,
+    "fondos",
+    fondoId,
+    "asientos",
+  ] as const;
+}
 
 export function usePeriodos(
   filtros: FiltrarPeriodos = {},
@@ -75,5 +87,29 @@ export function useSolicitarFondo(periodoId: number) {
     }) => solicitarFondo(periodoId, fondoId, datos),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: periodosQueryKey }),
+  });
+}
+
+export function useAsientos(periodoId: number, fondoId: number) {
+  return useQuery({
+    queryKey: asientosQueryKey(periodoId, fondoId),
+    queryFn: () => listarAsientos(periodoId, fondoId),
+    enabled:
+      Number.isInteger(periodoId) &&
+      periodoId > 0 &&
+      Number.isInteger(fondoId) &&
+      fondoId > 0,
+  });
+}
+
+export function useCrearAsiento(periodoId: number, fondoId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (datos: CrearAsiento) =>
+      crearAsiento(periodoId, fondoId, datos),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: asientosQueryKey(periodoId, fondoId),
+      }),
   });
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, LockIcon, PencilIcon } from "lucide-react";
+import { BookOpen, Home, LockIcon, PencilIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -245,17 +245,33 @@ export function PeriodoDetalle({ id }: { id: number }) {
                       : "—"}
                   </TableCell>
                   <TableCell className="text-right">
-                    {puedePedir ? (
-                      <MostrarSiPuede modulo="LIBRO_CAJA" nivel="COMPLETO">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setFondoASolicitar(fondo)}
-                        >
-                          Solicitar fondo
-                        </Button>
-                      </MostrarSiPuede>
-                    ) : null}
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        nativeButton={false}
+                        render={
+                          <Link
+                            href={`/dashboard/libro-caja/periodos/${id}/fondos/${fondo.id}`}
+                            prefetch={false}
+                          />
+                        }
+                      >
+                        <BookOpen data-icon="inline-start" />
+                        Ver libro
+                      </Button>
+                      {puedePedir ? (
+                        <MostrarSiPuede modulo="LIBRO_CAJA" nivel="COMPLETO">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setFondoASolicitar(fondo)}
+                          >
+                            Solicitar fondo
+                          </Button>
+                        </MostrarSiPuede>
+                      ) : null}
+                    </div>
                   </TableCell>
                 </TableRow>
               );
