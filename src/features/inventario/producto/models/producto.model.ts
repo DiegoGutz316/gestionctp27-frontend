@@ -21,13 +21,20 @@ export const ETIQUETA_ORDEN_PRODUCTOS: Record<OrdenProductos, string> = {
   CATEGORIA: "Categoría",
 };
 
-export const UNIDADES_MEDIDA = ["GRANEL", "UNIDAD"] as const;
+export const UNIDADES_MEDIDA = [
+  "Kilogramo",
+  "Litro",
+  "UNIDAD",
+  "Mililitro",
+] as const;
 
 export type UnidadMedida = (typeof UNIDADES_MEDIDA)[number];
 
 export const ETIQUETA_UNIDAD_MEDIDA: Record<UnidadMedida, string> = {
-  GRANEL: "Granel",
+  Kilogramo: "Kilogramo",
+  Litro: "Litro",
   UNIDAD: "Unidad",
+  Mililitro: "Mililitro",
 };
 
 export const DEPARTAMENTOS = ["AGRICOLA", "PECUARIO", "GENERAL"] as const;

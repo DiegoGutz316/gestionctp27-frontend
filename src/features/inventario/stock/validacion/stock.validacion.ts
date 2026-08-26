@@ -139,7 +139,7 @@ const fechaMovimiento = z
 
 /**
  * El campo `cantidad` de un movimiento admite decimales cuando el producto
- * es GRANEL (ej. 12.5 kg) pero exige enteros cuando es UNIDAD (ej. 12
+ * no es UNIDAD (ej. 12.5 kg) pero exige enteros cuando es UNIDAD (ej. 12
  * unidades) — replica `StockService.validarCantidadSegunUnidad` del backend.
  */
 function campoCantidadMovimiento(unidadMedida: UnidadMedida) {

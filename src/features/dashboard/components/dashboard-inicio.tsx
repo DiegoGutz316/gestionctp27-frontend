@@ -136,7 +136,13 @@ export function DashboardInicio() {
 
         <Button
           onClick={recargar}
-          className="gap-2 bg-[#2f302e] text-white hover:bg-[#3a3b38]"
+          className="
+            gap-2
+            bg-[#7fa36a]
+            text-white
+            shadow-[0_5px_16px_rgba(127,163,106,0.22)]
+            hover:bg-[#6f935e]
+          "
         >
           <RefreshCw className="size-4" />
           Reintentar
@@ -177,13 +183,13 @@ export function DashboardInicio() {
             top-0
             h-[3px]
             bg-linear-to-r
-            from-[#343532]
-            via-[#c3a464]
-            to-[#d8c8a6]
+            from-[#7fa36a]
+            via-[#d6a36c]
+            to-[#ad8fa3]
           "
         />
 
-        {/* Luz champagne */}
+        {/* Luz verde suave */}
         <div
           className="
             pointer-events-none
@@ -192,7 +198,7 @@ export function DashboardInicio() {
             -right-20
             size-80
             rounded-full
-            bg-[#d6bd8a]/16
+            bg-[#a8be8e]/16
             blur-[100px]
           "
         />
@@ -206,7 +212,7 @@ export function DashboardInicio() {
             left-[28%]
             size-72
             rounded-full
-            bg-[#9b7888]/8
+            bg-[#ad8fa3]/10
             blur-[110px]
           "
         />
@@ -229,23 +235,23 @@ export function DashboardInicio() {
             <div
               className="
                 flex
-                size-12
-                shrink-0
+                size-14
                 items-center
                 justify-center
                 rounded-2xl
-                bg-[#2f302e]
-                text-[#d6b66f]
-                shadow-[0_8px_24px_rgba(34,34,31,0.16)]
-              "
-            >
-              <LayoutDashboard className="size-5" />
+                border
+                border-[#d8e5d0]
+                bg-[#edf4e9]
+                text-[#6f935e]
+                shadow-[0_12px_30px_rgba(111,147,94,0.16)]">
+
+              <LayoutDashboard className="size-6" />
             </div>
 
             <div>
               {/* Etiqueta */}
               <div className="flex items-center gap-2">
-                <span className="h-px w-5 bg-[#c3a464]" />
+                <span className="h-px w-5 bg-[#7fa36a]" />
 
                 <p
                   className="
@@ -263,13 +269,13 @@ export function DashboardInicio() {
               {/* Título */}
               <h1
                 className="
-                  mt-2
-                  text-[32px]
+                  mt-3
+                  text-[40px]
                   font-semibold
-                  tracking-[-0.045em]
+                  leading-[1]
+                  tracking-[-0.055em]
                   text-[#292a28]
-
-                  sm:text-[36px]
+                  sm:text-[46px]
                 "
               >
                 Panel de Control
@@ -295,21 +301,21 @@ export function DashboardInicio() {
               gap-2
               self-start
               rounded-xl
-              border-[#ddd8cf]
+              border-[#d7dfd1]
               bg-white
               px-4
               text-xs
               font-medium
-              text-[#41413e]
+              text-[#4d5948]
 
               shadow-[0_4px_14px_rgba(36,35,32,0.05)]
 
               transition-all
               duration-200
 
-              hover:border-[#c9b98f]
-              hover:bg-[#faf7f0]
-              hover:text-[#292a28]
+              hover:border-[#a8be8e]
+              hover:bg-[#f4f8f1]
+              hover:text-[#5f7f50]
 
               sm:self-auto
             "
@@ -329,13 +335,11 @@ export function DashboardInicio() {
         </div>
 
         {/* Detalle inferior */}
-        <div className="relative mt-7 flex items-center gap-2">
-          <span className="h-[3px] w-9 rounded-full bg-[#c3a464]" />
-
-          <span className="h-[3px] w-3 rounded-full bg-[#9b7888]" />
-
-          <span className="h-[3px] w-1.5 rounded-full bg-[#d17d68]" />
-        </div>
+        <div className="mt-8 flex items-center gap-2">
+        <span className="h-1 w-14 rounded-full bg-[#7fa36a]" />
+        <span className="h-1 w-7 rounded-full bg-[#d6a36c]" />
+        <span className="h-1 w-4 rounded-full bg-[#ad8fa3]" />
+      </div>
       </section>
 
       {/* =====================================================
