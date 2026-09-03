@@ -78,7 +78,7 @@ export function InformeEconomico({
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6">
+    <section className="mx-auto flex w-full max-w-[1100px] flex-1 flex-col gap-6">
       <div className="print:hidden space-y-6">
         <Breadcrumb>
           <BreadcrumbList>
@@ -143,8 +143,10 @@ export function InformeEconomico({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border bg-white shadow-xs print:overflow-visible print:rounded-none print:border-0 print:shadow-none">
-        <InformeEconomicoUdp colegio={datosColegio} libro={datosLibro} />
+      <div className="overflow-x-auto bg-[#cfcfcf] p-4 print:overflow-visible print:bg-white print:p-0">
+        <div className="mx-auto bg-white shadow-md print:shadow-none">
+          <InformeEconomicoUdp colegio={datosColegio} libro={datosLibro} />
+        </div>
       </div>
     </section>
   );

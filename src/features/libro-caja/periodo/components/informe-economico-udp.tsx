@@ -2,25 +2,38 @@
 
 import {
   formatearColones,
-  formatearFechaInstante,
-  formatearFechaLarga,
-  formatearFechaPeriodo,
+  formatearFechaInstantePlantilla,
+  formatearFechaPlantilla,
+  formatearFechaTotalesInforme,
 } from "@/features/libro-caja/formato";
 import type { ColegioRespuesta } from "@/features/libro-caja/colegio/validacion/colegio.validacion";
 import type { LibroDepartamentoRespuesta } from "../validacion/asiento.validacion";
+
+const FILAS_PLANTILLA = 20;
+const AMARILLO = "#ffff99";
 
 function cuentaYEntidad(colegio: ColegioRespuesta): string {
   const cuenta = colegio.numeroCuentaBancaria.trim();
   const entidad = colegio.entidadDeposito.trim();
   if (cuenta && entidad) return `${cuenta}  ${entidad}`;
-  return cuenta || entidad || "Sin registrar";
+  return cuenta || entidad || "";
 }
 
 function fechaSaldoAnterior(libro: LibroDepartamentoRespuesta): string {
   if (libro.fondo.solicitadoEn) {
-    return formatearFechaInstante(libro.fondo.solicitadoEn);
+    return formatearFechaInstantePlantilla(libro.fondo.solicitadoEn);
   }
-  return formatearFechaPeriodo(libro.periodo.fechaInicio);
+  return formatearFechaPlantilla(libro.periodo.fechaInicio);
+}
+
+function celdaMonto(valor: number | string, extra = "") {
+  return (
+    <td
+      className={`border border-black px-1 py-0.5 text-right align-middle ${extra}`}
+    >
+      {typeof valor === "number" ? formatearColones(valor) : valor}
+    </td>
+  );
 }
 
 export function InformeEconomicoUdp({
@@ -30,181 +43,287 @@ export function InformeEconomicoUdp({
   colegio: ColegioRespuesta;
   libro: LibroDepartamentoRespuesta;
 }) {
-  const unidad = libro.fondo.departamento.nombreUnidad;
-  const tipoActividad = libro.fondo.departamento.tipoActividad;
-
+  const filasVacias = Math.max(0, FILAS_PLANTILLA - libro.asientos.length);
   const datosColegio = [
     ["Nombre Centro Educativo", colegio.nombre],
-    ["Nombre de la Unidad", unidad],
+    ["Nombre de la Unidad ", libro.fondo.departamento.nombreUnidad],
     ["Periodo del Informe", libro.periodo.nombre],
-    ["Tipo de Actividad", tipoActividad],
+    ["Tipo de Actividad", libro.fondo.departamento.tipoActividad],
     [
-      "N° Cuenta Bancaria y Entidad en que se depositaron los fondos",
+      "N° Cuenta Bancaria y Entidad en que se depositaron los fondos ",
       cuentaYEntidad(colegio),
     ],
   ] as const;
 
   return (
-    <article className="informe-udp mx-auto w-full max-w-[210mm] bg-white px-2 py-4 text-black print:max-w-none print:px-0 print:py-0">
-      <header className="space-y-0.5 text-center font-[Arial,Helvetica,sans-serif]">
-        <p className="text-[12pt] font-bold uppercase">
-          Ministerio de Educación Pública
-        </p>
-        <p className="text-[12pt] font-bold uppercase">
-          Departamento de Especialidades Técnicas
-        </p>
-        <p className="text-[12pt] font-bold uppercase">
-          Unidad de Financiamiento y Coordinación Técnica
-        </p>
-        <h1 className="pt-3 text-[14pt] font-bold">Informe Económico-UDP</h1>
-      </header>
-
-      <table className="mt-5 w-full table-fixed border-collapse border border-black font-[Arial,Helvetica,sans-serif] text-[11pt]">
+    <article
+      className="informe-udp w-full bg-white text-black"
+      style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+    >
+      <table
+        className="w-full table-fixed border-collapse border-2 border-black text-[11pt] leading-tight"
+        style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+      >
         <colgroup>
-          <col className="w-[42%]" />
-          <col className="w-[58%]" />
+          <col style={{ width: "5.4%" }} />
+          <col style={{ width: "5.4%" }} />
+          <col style={{ width: "8%" }} />
+          <col style={{ width: "37.4%" }} />
+          <col style={{ width: "11.1%" }} />
+          <col style={{ width: "14%" }} />
+          <col style={{ width: "18.7%" }} />
         </colgroup>
         <tbody>
-          {datosColegio.map(([etiqueta, valor]) => (
+          <tr>
+            <td
+              colSpan={7}
+              className="h-[72px] border-x-2 border-black p-1 text-left align-top"
+            >
+              <img
+                src="/logo-mep.jpg"
+                alt="Ministerio de Educación Pública. Dirección de Educación Técnica y Capacidades Emprendedoras"
+                width={254}
+                height={69}
+                className="h-[69px] w-[254px] object-contain object-left"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={7}
+              className="border-x-2 border-black py-0.5 text-center text-[12pt] font-bold uppercase"
+            >
+              Ministerio de Educación Pública
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={7}
+              className="border-x-2 border-black py-0.5 text-center text-[12pt] font-bold uppercase"
+            >
+              Departamento de&nbsp;&nbsp;Especialidades Técnicas
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={7}
+              className="border-x-2 border-black py-0.5 text-center text-[12pt] font-bold uppercase"
+            >
+              Unidad de Financiamiento y Coordinación Técnica
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={7} className="h-3 border-x-2 border-black p-0" />
+          </tr>
+          <tr>
+            <td
+              colSpan={7}
+              className="border-x-2 border-black py-1 text-center text-[14pt] font-bold"
+            >
+              Informe Económico-UDP
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={7} className="h-4 border-x-2 border-black p-0" />
+          </tr>
+
+          {datosColegio.map(([etiqueta, valor], indice) => (
             <tr key={etiqueta}>
-              <th className="w-[42%] border border-black px-2 py-1.5 text-left align-middle font-bold leading-tight">
+              <th
+                colSpan={3}
+                className={`border border-black px-2 py-1.5 text-left align-middle text-[11pt] font-bold ${
+                  indice === 4 ? "h-[37px]" : ""
+                }`}
+              >
                 {etiqueta}
               </th>
-              <td className="border border-black px-2 py-1.5 text-center align-middle font-normal">
+              <td
+                colSpan={4}
+                className="border border-black px-2 py-1.5 text-center align-middle text-[11pt] font-normal"
+              >
                 {valor}
               </td>
             </tr>
           ))}
-        </tbody>
-      </table>
 
-      <div className="mt-3 flex items-center justify-between bg-[#ffff99] px-3 py-2 font-[Arial,Helvetica,sans-serif] text-[11pt] font-bold">
-        <span>{fechaSaldoAnterior(libro)}</span>
-        <span className="tabular-nums">
-          {formatearColones(libro.fondoInicial)}
-        </span>
-      </div>
+          <tr>
+            <td colSpan={7} className="h-4 border-x-2 border-black p-0" />
+          </tr>
 
-      <table className="mt-0 w-full border-collapse font-[Arial,Helvetica,sans-serif] text-[11pt]">
-        <thead>
-          <tr className="bg-[#deeaf6]">
-            <th className="border border-black px-1 py-2 text-center font-bold">
+          <tr>
+            <td
+              colSpan={6}
+              className="border border-black px-2 py-1 text-right align-middle text-[11pt] font-bold"
+              style={{ backgroundColor: AMARILLO }}
+            >
+              {fechaSaldoAnterior(libro)}
+            </td>
+            {celdaMonto(libro.fondoInicial, "bg-[#ffff99] font-bold")}
+          </tr>
+
+          <tr>
+            <th className="h-12 border border-black bg-[#deeaf6] px-1 text-center align-middle text-[11pt] font-bold">
               Asiento
             </th>
-            <th className="border border-black px-1 py-2 text-center font-bold">
+            <th className="border border-black bg-[#deeaf6] px-1 text-center align-middle text-[11pt] font-bold">
               Fecha
             </th>
-            <th className="border border-black px-1 py-2 text-center font-bold leading-tight">
-              No Factura / N.º Depósito
+            <th className="border border-black bg-[#deeaf6] px-1 text-center align-middle text-[11pt] font-bold leading-tight">
+              N<sup>o</sup> Factura/
+              <br />
+              N<sup>0</sup> Depósito
             </th>
-            <th className="border border-black px-1 py-2 text-center font-bold">
+            <th className="border border-black bg-[#deeaf6] px-1 text-center align-middle text-[11pt] font-bold">
               Descripción
             </th>
-            <th className="border border-black px-1 py-2 text-center font-bold">
+            <th className="border border-black bg-[#deeaf6] px-1 text-center align-middle text-[11pt] font-bold">
               Ingresos
             </th>
-            <th className="border border-black px-1 py-2 text-center font-bold">
+            <th className="border border-black bg-[#deeaf6] px-1 text-center align-middle text-[11pt] font-bold">
               Egresos
             </th>
-            <th className="border border-black px-1 py-2 text-center font-bold">
+            <th className="border border-black bg-[#deeaf6] px-1 text-center align-middle text-[11pt] font-bold">
               Saldo
             </th>
           </tr>
-        </thead>
-        <tbody>
-          {libro.asientos.length === 0 ? (
-            <tr>
-              <td
-                colSpan={7}
-                className="border border-black px-2 py-6 text-center text-[10pt]"
-              >
-                No hay asientos registrados en este periodo.
-              </td>
-            </tr>
-          ) : null}
 
           {libro.asientos.map((asiento) => (
             <tr key={asiento.id}>
-              <td className="border border-black bg-[#deeaf6] px-1 py-1.5 text-center font-bold tabular-nums">
+              <td className="border border-black px-1 py-1 text-center align-middle">
                 {asiento.numero}
               </td>
-              <td className="border border-black px-1 py-1.5 text-center">
-                {formatearFechaPeriodo(asiento.fecha)}
+              <td className="border border-black px-1 py-1 text-center align-middle">
+                {formatearFechaPlantilla(asiento.fecha)}
               </td>
-              <td className="border border-black px-1 py-1.5 text-center">
+              <td className="border border-black px-1 py-1 text-center align-middle">
                 {asiento.numeroFactura}
               </td>
-              <td className="border border-black px-2 py-1.5">
+              <td className="border border-black px-2 py-1 text-left align-middle">
                 {asiento.descripcion}
               </td>
-              <td className="border border-black px-1 py-1.5 text-right tabular-nums">
-                {formatearColones(asiento.ingresos)}
-              </td>
-              <td className="border border-black px-1 py-1.5 text-right tabular-nums">
-                {formatearColones(asiento.egresos)}
-              </td>
-              <td className="border border-black bg-[#deeaf6] px-1 py-1.5 text-right tabular-nums">
-                {formatearColones(asiento.saldo)}
-              </td>
+              {celdaMonto(asiento.ingresos)}
+              {celdaMonto(asiento.egresos)}
+              {celdaMonto(asiento.saldo, "bg-[#deeaf6]")}
             </tr>
           ))}
-        </tbody>
-        <tfoot>
-          <tr className="bg-[#deeaf6] font-bold">
+
+          {Array.from({ length: filasVacias }, (_, indice) => (
+            <tr key={`vacio-${indice}`}>
+              <td className="h-7 border border-black" />
+              <td className="border border-black" />
+              <td className="border border-black" />
+              <td className="border border-black" />
+              <td className="border border-black" />
+              <td className="border border-black" />
+              <td className="border border-black bg-[#deeaf6]" />
+            </tr>
+          ))}
+
+          <tr className="font-bold">
             <td
               colSpan={4}
-              className="border border-black px-2 py-2 text-center"
+              className="border border-black bg-[#deeaf6] px-2 py-1.5 text-center align-middle"
             >
-              Totales al {formatearFechaLarga(libro.periodo.fechaFin)}
+              Totales al {formatearFechaTotalesInforme(libro.periodo.fechaFin)}
             </td>
-            <td className="border border-black px-1 py-2 text-right tabular-nums">
-              {formatearColones(libro.totales.ingresos)}
+            {celdaMonto(libro.totales.ingresos, "bg-[#deeaf6] font-bold")}
+            {celdaMonto(libro.totales.egresos, "bg-[#deeaf6] font-bold")}
+            {celdaMonto(libro.totales.saldo, "bg-[#deeaf6] font-bold")}
+          </tr>
+
+          <tr>
+            <td
+              rowSpan={3}
+              colSpan={2}
+              className="fuente-calibri border border-black text-center align-middle text-[11pt] font-bold"
+            >
+              Observaciones:
             </td>
-            <td className="border border-black px-1 py-2 text-right tabular-nums">
-              {formatearColones(libro.totales.egresos)}
-            </td>
-            <td className="border border-black px-1 py-2 text-right tabular-nums">
-              {formatearColones(libro.totales.saldo)}
+            <td
+              colSpan={5}
+              className="fuente-calibri border border-black px-2 py-1.5"
+            >
+              1
             </td>
           </tr>
-        </tfoot>
+          <tr>
+            <td
+              colSpan={5}
+              className="fuente-calibri border border-black px-2 py-1.5"
+            >
+              2
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={5}
+              className="fuente-calibri border border-black px-2 py-1.5"
+            >
+              3
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              colSpan={3}
+              className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
+            >
+              Nombre y apellidos:
+            </td>
+            <td className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]">
+              Nombre y apellidos:
+            </td>
+            <td
+              colSpan={3}
+              className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
+            >
+              Nombre y apellidos:
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={3}
+              className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
+            >
+              Director (a)
+            </td>
+            <td className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]">
+              Presidente Junta Administrativa
+            </td>
+            <td
+              colSpan={3}
+              className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
+            >
+              Tesorera -&nbsp;&nbsp;Contadora
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={3}
+              className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
+            >
+              Firma:
+            </td>
+            <td className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]">
+              Firma:
+            </td>
+            <td
+              colSpan={3}
+              className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
+            >
+              Firma:
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={7}
+              className="border border-black py-1.5 text-center align-middle text-[9pt] font-bold"
+            >
+              Elaborado por Coordinador Técnico:
+            </td>
+          </tr>
+        </tbody>
       </table>
-
-      <section className="mt-4 font-[Arial,Helvetica,sans-serif] text-[11pt]">
-        <p className="font-bold">Observaciones:</p>
-        <ol className="mt-1 list-decimal space-y-2 pl-8">
-          <li className="min-h-5 border-b border-black" />
-          <li className="min-h-5 border-b border-black" />
-          <li className="min-h-5 border-b border-black" />
-        </ol>
-      </section>
-
-      <section className="mt-8 grid grid-cols-3 gap-6 font-[Arial,Helvetica,sans-serif] text-[9pt]">
-        <Firma rol="Director (a)" />
-        <Firma rol="Presidente Junta Administrativa" />
-        <Firma rol="Tesorera - Contadora" />
-      </section>
-
-      <p className="mt-8 text-center font-[Arial,Helvetica,sans-serif] text-[9pt] font-bold">
-        Elaborado por Coordinador Técnico:
-        <span className="ml-2 inline-block min-w-[16rem] border-b border-black" />
-      </p>
     </article>
-  );
-}
-
-function Firma({ rol }: { rol: string }) {
-  return (
-    <div className="space-y-2">
-      <p>
-        Nombre y apellidos:
-        <span className="ml-1 inline-block min-w-[8rem] border-b border-black" />
-      </p>
-      <p>{rol}</p>
-      <p>
-        Firma:
-        <span className="ml-1 inline-block min-w-[8rem] border-b border-black" />
-      </p>
-    </div>
   );
 }

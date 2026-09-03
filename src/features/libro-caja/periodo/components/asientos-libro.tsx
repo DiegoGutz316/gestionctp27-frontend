@@ -25,6 +25,7 @@ import {
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import {
   formatearColones,
+  formatearFechaInstante,
   formatearFechaPeriodo,
 } from "@/features/libro-caja/formato";
 import { ETIQUETA_ESTADO_PERIODO } from "../models/periodo.model";
@@ -163,53 +164,52 @@ export function AsientosLibro({
         </p>
       ) : null}
 
-      <div className="overflow-x-auto rounded-xl border bg-card shadow-xs">
-        <Table>
+      <div className="overflow-x-auto rounded-xl border bg-white shadow-xs">
+        <Table className="font-[Arial,Helvetica,sans-serif]">
           <TableHeader>
-            <TableRow className="bg-muted/30 hover:bg-muted/30">
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <TableRow className="bg-[#ffff99] hover:bg-[#ffff99]">
+              <TableCell
+                colSpan={6}
+                className="py-2 text-right text-sm font-bold tabular-nums"
+              >
+                {datos.fondo.solicitadoEn
+                  ? formatearFechaInstante(datos.fondo.solicitadoEn)
+                  : formatearFechaPeriodo(datos.periodo.fechaInicio)}
+              </TableCell>
+              <TableCell className="py-2 text-right text-sm font-bold tabular-nums">
+                {formatearColones(datos.fondoInicial)}
+              </TableCell>
+            </TableRow>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="border border-black py-2 text-center text-sm font-normal text-black">
                 Asiento
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="border border-black bg-[#deeaf6] py-2 text-center text-sm font-bold text-black">
                 Fecha
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                N.º factura
+              <TableHead className="border border-black bg-[#deeaf6] py-2 text-center text-sm font-bold leading-tight whitespace-normal text-black">
+                N<sup>o</sup> Factura/ N<sup>0</sup> Depósito
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="border border-black bg-[#deeaf6] py-2 text-center text-sm font-bold text-black">
                 Descripción
               </TableHead>
-              <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="border border-black bg-[#deeaf6] py-2 text-center text-sm font-bold text-black">
                 Ingresos
               </TableHead>
-              <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="border border-black bg-[#deeaf6] py-2 text-center text-sm font-bold text-black">
                 Egresos
               </TableHead>
-              <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="border border-black bg-[#deeaf6] py-2 text-center text-sm font-bold text-black">
                 Saldo
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="bg-muted/20">
-              <TableCell className="py-3 text-muted-foreground">—</TableCell>
-              <TableCell className="py-3 text-muted-foreground">
-                {formatearFechaPeriodo(datos.periodo.fechaInicio)}
-              </TableCell>
-              <TableCell />
-              <TableCell className="py-3 font-medium">Fondo inicial</TableCell>
-              <TableCell />
-              <TableCell />
-              <TableCell className="text-right tabular-nums">
-                {formatearColones(datos.fondoInicial)}
-              </TableCell>
-            </TableRow>
-
             {datos.asientos.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={7}
-                  className="py-10 text-center text-sm text-muted-foreground"
+                  className="border border-black py-8 text-center text-sm text-muted-foreground"
                 >
                   Todavía no hay ingresos ni egresos en este departamento.
                 </TableCell>
@@ -217,44 +217,46 @@ export function AsientosLibro({
             ) : null}
 
             {datos.asientos.map((asiento) => (
-              <TableRow
-                key={asiento.id}
-                className="transition-colors hover:bg-muted/30"
-              >
-                <TableCell className="py-3 tabular-nums">
+              <TableRow key={asiento.id} className="hover:bg-muted/20">
+                <TableCell className="border border-black py-2 text-center tabular-nums">
                   {asiento.numero}
                 </TableCell>
-                <TableCell className="py-3">
+                <TableCell className="border border-black py-2 text-center">
                   {formatearFechaPeriodo(asiento.fecha)}
                 </TableCell>
-                <TableCell className="py-3">
-                  {asiento.numeroFactura || "—"}
+                <TableCell className="border border-black py-2 text-center">
+                  {asiento.numeroFactura}
                 </TableCell>
-                <TableCell className="py-3">{asiento.descripcion}</TableCell>
-                <TableCell className="text-right tabular-nums">
+                <TableCell className="border border-black py-2 whitespace-normal">
+                  {asiento.descripcion}
+                </TableCell>
+                <TableCell className="border border-black py-2 text-right tabular-nums">
                   {celdaMonto(asiento.ingresos)}
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
+                <TableCell className="border border-black py-2 text-right tabular-nums">
                   {celdaMonto(asiento.egresos)}
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
+                <TableCell className="border border-black bg-[#deeaf6] py-2 text-right tabular-nums">
                   {formatearColones(asiento.saldo)}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
           <TableFooter>
-            <TableRow>
-              <TableCell colSpan={4} className="py-3 font-semibold">
-                Totales
+            <TableRow className="bg-[#deeaf6] hover:bg-[#deeaf6]">
+              <TableCell
+                colSpan={4}
+                className="border border-black py-2 text-center font-bold"
+              >
+                Totales al {formatearFechaPeriodo(datos.periodo.fechaFin)}
               </TableCell>
-              <TableCell className="text-right tabular-nums font-semibold">
+              <TableCell className="border border-black py-2 text-right font-bold tabular-nums">
                 {formatearColones(datos.totales.ingresos)}
               </TableCell>
-              <TableCell className="text-right tabular-nums font-semibold">
+              <TableCell className="border border-black py-2 text-right font-bold tabular-nums">
                 {formatearColones(datos.totales.egresos)}
               </TableCell>
-              <TableCell className="text-right tabular-nums font-semibold">
+              <TableCell className="border border-black py-2 text-right font-bold tabular-nums">
                 {formatearColones(datos.totales.saldo)}
               </TableCell>
             </TableRow>

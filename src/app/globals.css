@@ -293,6 +293,19 @@
   color: #465526 !important;
 }
 
+/* Plantilla oficial MEP: Arial en el cuerpo, Calibri en observaciones. */
+.informe-udp,
+.informe-udp table,
+.informe-udp th,
+.informe-udp td {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-variant-numeric: normal;
+}
+
+.informe-udp .fuente-calibri {
+  font-family: Calibri, Carlito, sans-serif !important;
+}
+
 @media print {
   @page {
     size: letter portrait;
@@ -322,5 +335,10 @@
   main {
     padding: 0 !important;
     overflow: visible !important;
+  }
+
+  .informe-udp {
+    width: 100% !important;
+    max-width: none !important;
   }
 }

@@ -117,7 +117,9 @@ export function AsientoForm({
               const invalid = errors.length > 0;
               return (
                 <Field data-invalid={invalid}>
-                  <FieldLabel htmlFor={field.name}>N.º factura</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>
+                    N<sup>o</sup> factura / N<sup>0</sup> depósito
+                  </FieldLabel>
                   <Input
                     id={field.name}
                     maxLength={40}
