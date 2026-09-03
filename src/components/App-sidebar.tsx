@@ -51,6 +51,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 /**
@@ -147,6 +148,8 @@ export function AppSidebar() {
   const router = useRouter()
 
   const { usuario, logout, puede } = useAuth()
+  const { state } = useSidebar()
+  const colapsado = state === "collapsed"
 
   const nombre = usuario?.nombre ?? "Usuario"
   const correo = usuario?.correo ?? ""
@@ -217,9 +220,9 @@ export function AppSidebar() {
           HEADER
           ===================================================== */}
 
-      <SidebarHeader className="px-3 pt-4 pb-3">
-        <SidebarMenu>
-          <SidebarMenuItem>
+      <SidebarHeader className="px-3 pt-4 pb-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2">
+        <SidebarMenu className="group-data-[collapsible=icon]:items-center">
+          <SidebarMenuItem className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
             <SidebarMenuButton
               size="lg"
               render={<Link href="/dashboard" />}
@@ -239,7 +242,10 @@ export function AppSidebar() {
                 hover:bg-white
                 hover:shadow-[0_6px_18px_rgba(39,54,42,0.06)]
 
-                group-data-[collapsible=icon]:p-1!
+                group-data-[collapsible=icon]:size-10!
+                group-data-[collapsible=icon]:justify-center
+                group-data-[collapsible=icon]:rounded-[12px]!
+                group-data-[collapsible=icon]:p-0!
               "
             >
               {/* Logo */}
@@ -258,6 +264,11 @@ export function AppSidebar() {
                   border-[#dde5d9]
                   bg-white
                   shadow-[0_4px_12px_rgba(34,49,37,0.08)]
+
+                  group-data-[collapsible=icon]:size-8
+                  group-data-[collapsible=icon]:rounded-[10px]
+                  group-data-[collapsible=icon]:border-0
+                  group-data-[collapsible=icon]:shadow-none
                 "
               >
                 <Image
@@ -269,6 +280,8 @@ export function AppSidebar() {
                     size-10
                     max-w-none
                     object-contain
+
+                    group-data-[collapsible=icon]:size-7
                   "
                 />
               </span>
@@ -282,6 +295,8 @@ export function AppSidebar() {
                   pl-1.5
                   text-left
                   leading-tight
+
+                  group-data-[collapsible=icon]:hidden
                 "
               >
                 <span
@@ -322,6 +337,8 @@ export function AppSidebar() {
           from-transparent
           via-[#dde4da]
           to-transparent
+
+          group-data-[collapsible=icon]:mx-2
         "
       />
 
@@ -329,25 +346,27 @@ export function AppSidebar() {
           NAVEGACIÓN
           ===================================================== */}
 
-      <SidebarContent className="gap-1 px-2 pt-4">
+      <SidebarContent className="gap-1 px-2 pt-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:overflow-x-hidden group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:pt-3">
         {navegacionPermitida.map((section) => (
           <Collapsible
             key={section.label}
             open={
+              colapsado ||
               (openSections[section.label] ?? false) ||
               section.items.some((item) =>
                 isRouteActive(pathname, item.href),
               )
             }
-            onOpenChange={(open) =>
+            onOpenChange={(open) => {
+              if (colapsado) return
               setOpenSections((prev) => ({
                 ...prev,
                 [section.label]: open,
               }))
-            }
-            className="group/collapsible"
+            }}
+            className="group/collapsible w-full"
           >
-            <SidebarGroup className="py-1.5">
+            <SidebarGroup className="py-1.5 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:py-1">
               {/* Título sección */}
               <SidebarGroupLabel
                 render={<CollapsibleTrigger />}
@@ -391,7 +410,7 @@ export function AppSidebar() {
 
               <CollapsibleContent>
                 <SidebarGroupContent>
-                  <SidebarMenu className="gap-1.5">
+                  <SidebarMenu className="gap-1.5 group-data-[collapsible=icon]:items-center">
                     {section.items.map((item) => {
                       const activo = isRouteActive(
                         pathname,
@@ -399,7 +418,10 @@ export function AppSidebar() {
                       )
 
                       return (
-                        <SidebarMenuItem key={item.href}>
+                        <SidebarMenuItem
+                          key={item.href}
+                          className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center"
+                        >
                           <SidebarMenuButton
                             render={<Link href={item.href} />}
                             isActive={activo}
@@ -431,6 +453,11 @@ export function AppSidebar() {
                               data-[active=true]:font-semibold
                               data-[active=true]:text-[#405c39]
                               data-[active=true]:shadow-[0_5px_18px_rgba(76,105,64,0.08)]
+
+                              group-data-[collapsible=icon]:size-10!
+                              group-data-[collapsible=icon]:justify-center
+                              group-data-[collapsible=icon]:rounded-[12px]!
+                              group-data-[collapsible=icon]:p-0!
                             "
                           >
                             {/* Indicador lateral activo */}
@@ -445,6 +472,8 @@ export function AppSidebar() {
                                   -translate-y-1/2
                                   rounded-r-full
                                   bg-[#668b55]
+
+                                  group-data-[collapsible=icon]:hidden
                                 "
                               />
                             ) : null}
@@ -461,6 +490,8 @@ export function AppSidebar() {
 
                                 transition-all
                                 duration-200
+
+                                group-data-[collapsible=icon]:size-8
 
                                 ${
                                   activo
@@ -482,13 +513,13 @@ export function AppSidebar() {
                               <item.icon className="size-[17px]" />
                             </span>
 
-                            <span className="truncate text-[14px]">
+                            <span className="truncate text-[14px] group-data-[collapsible=icon]:hidden">
                               {item.title}
                             </span>
 
                             {/* Punto activo */}
                             {activo ? (
-                              <span className="ml-auto size-1.5 rounded-full bg-[#72945f]" />
+                              <span className="ml-auto size-1.5 rounded-full bg-[#72945f] group-data-[collapsible=icon]:hidden" />
                             ) : null}
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -512,10 +543,13 @@ export function AppSidebar() {
           border-[#e3e8e0]
           bg-[#f8faf7]
           p-3
+
+          group-data-[collapsible=icon]:items-center
+          group-data-[collapsible=icon]:p-2
         "
       >
-        <SidebarMenu>
-          <SidebarMenuItem>
+        <SidebarMenu className="group-data-[collapsible=icon]:items-center">
+          <SidebarMenuItem className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -543,6 +577,11 @@ export function AppSidebar() {
                       data-open:bg-white
                       data-open:text-sidebar-accent-foreground
                       data-open:shadow-[0_8px_24px_rgba(37,51,40,0.09)]
+
+                      group-data-[collapsible=icon]:size-10!
+                      group-data-[collapsible=icon]:justify-center
+                      group-data-[collapsible=icon]:rounded-[12px]!
+                      group-data-[collapsible=icon]:p-0!
                     "
                   />
                 }
@@ -555,6 +594,9 @@ export function AppSidebar() {
                     border
                     border-[#d7e2d3]
                     shadow-sm
+
+                    group-data-[collapsible=icon]:size-8
+                    group-data-[collapsible=icon]:rounded-[10px]
                   "
                 >
                   <AvatarFallback
@@ -567,6 +609,8 @@ export function AppSidebar() {
                       text-xs
                       font-semibold
                       text-white
+
+                      group-data-[collapsible=icon]:rounded-[10px]
                     "
                   >
                     {avatar}
@@ -583,6 +627,8 @@ export function AppSidebar() {
                     text-left
                     text-sm
                     leading-tight
+
+                    group-data-[collapsible=icon]:hidden
                   "
                 >
                   <span
@@ -620,6 +666,8 @@ export function AppSidebar() {
                     transition
                     hover:bg-[#f1f5ef]
                     hover:text-[#526b4a]
+
+                    group-data-[collapsible=icon]:hidden
                   "
                 >
                   <ChevronsUpDown className="size-3.5" />
