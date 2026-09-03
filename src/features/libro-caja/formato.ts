@@ -49,7 +49,7 @@ export function formatearFechaTotalesInforme(valor: string): string {
 }
 
 /**
- * Fecha de la plantilla oficial (`mm-dd-yy`), p. ej. "11-28-25".
+ * Fecha de la plantilla oficial, p. ej. "06/04/2026".
  */
 export function formatearFechaPlantilla(valor: string): string {
   const iso = fechaPeriodoIso(valor);
@@ -57,8 +57,7 @@ export function formatearFechaPlantilla(valor: string): string {
   if (!anio || !mes || !dia) return iso;
   const mm = String(mes).padStart(2, "0");
   const dd = String(dia).padStart(2, "0");
-  const yy = String(anio).slice(-2);
-  return `${mm}-${dd}-${yy}`;
+  return `${dd}/${mm}/${anio}`;
 }
 
 /** Fecha de un instante (timestamptz) en calendario local. */
@@ -72,7 +71,7 @@ export function formatearFechaInstantePlantilla(iso: string): string {
   const anio = instante.getFullYear();
   const mes = String(instante.getMonth() + 1).padStart(2, "0");
   const dia = String(instante.getDate()).padStart(2, "0");
-  return `${mes}-${dia}-${String(anio).slice(-2)}`;
+  return `${dia}/${mes}/${anio}`;
 }
 
 export function formatearFechaHora(iso: string): string {

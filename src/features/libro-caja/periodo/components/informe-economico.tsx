@@ -19,7 +19,11 @@ import { getMensajeDeError as getMensajeColegio } from "@/features/libro-caja/co
 import { useAsientos } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/asiento.service";
 import { descargarInformeEconomicoExcel } from "../servicios/informe-excel";
-import { InformeEconomicoUdp } from "./informe-economico-udp";
+import {
+  InformeEconomicoUdp,
+  PIE_INFORME_VACIO,
+  type PieInformeUdp,
+} from "./informe-economico-udp";
 
 export function InformeEconomico({
   periodoId,
@@ -31,6 +35,7 @@ export function InformeEconomico({
   const colegio = useColegio();
   const libro = useAsientos(periodoId, fondoId);
   const [descargandoExcel, setDescargandoExcel] = useState(false);
+  const [pie, setPie] = useState<PieInformeUdp>(PIE_INFORME_VACIO);
 
   if (colegio.isLoading || libro.isLoading) {
     return (
@@ -64,7 +69,7 @@ export function InformeEconomico({
   async function descargarExcel() {
     setDescargandoExcel(true);
     try {
-      await descargarInformeEconomicoExcel(datosColegio, datosLibro);
+      await descargarInformeEconomicoExcel(datosColegio, datosLibro, pie);
       toast.success("El informe de Excel se descargó correctamente.");
     } catch (error) {
       toast.error(
@@ -145,7 +150,12 @@ export function InformeEconomico({
 
       <div className="overflow-x-auto bg-[#cfcfcf] p-4 print:overflow-visible print:bg-white print:p-0">
         <div className="mx-auto bg-white shadow-md print:shadow-none">
-          <InformeEconomicoUdp colegio={datosColegio} libro={datosLibro} />
+          <InformeEconomicoUdp
+            colegio={datosColegio}
+            libro={datosLibro}
+            pie={pie}
+            onPieChange={setPie}
+          />
         </div>
       </div>
     </section>

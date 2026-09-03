@@ -11,12 +11,18 @@ import {
   fechaPeriodoIso,
   formatearFechaTotalesInforme,
 } from "@/features/libro-caja/formato";
+import type { PieInformeUdp } from "../components/informe-economico-udp";
 import type { LibroDepartamentoRespuesta } from "../validacion/asiento.validacion";
+
+function textoConNombre(etiqueta: string, nombre: string): string {
+  const limpio = nombre.trim();
+  return limpio ? `${etiqueta} ${limpio}` : etiqueta;
+}
 
 const AZUL = "FFDEEAF6";
 const AMARILLO = "FFFFFF99";
 const COLONES = '"₡"#,##0.00';
-const FECHA_PLANTILLA = "mm-dd-yy";
+const FECHA_PLANTILLA = "dd/mm/yyyy";
 const MIME_XLSX =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
@@ -184,6 +190,7 @@ function construirInforme(
   colegio: ColegioRespuesta,
   libro: LibroDepartamentoRespuesta,
   logoBase64: string,
+  pie: PieInformeUdp,
 ) {
   const hoja = workbook.addWorksheet("Hoja1", {
     views: [{ showGridLines: true, zoomScale: 69 }],
@@ -207,7 +214,7 @@ function construirInforme(
   hoja.properties.defaultRowHeight = 15;
   hoja.columns = [
     { width: 8.43 },
-    { width: 8.43 },
+    { width: 16 },
     { width: 12.43 },
     { width: 58.43 },
     { width: 17.29 },
@@ -379,14 +386,14 @@ function construirInforme(
     descripcionCelda.border = BORDE_FINO;
 
     const ingresoCelda = hoja.getCell(fila, 5);
-    ingresoCelda.value = asiento.ingresos;
+    if (asiento.ingresos > 0) ingresoCelda.value = asiento.ingresos;
     ingresoCelda.numFmt = COLONES;
     ingresoCelda.font = fuente({ color: "FF000000" });
     ingresoCelda.alignment = { vertical: "middle" };
     ingresoCelda.border = BORDE_FINO;
 
     const egresoCelda = hoja.getCell(fila, 6);
-    egresoCelda.value = asiento.egresos;
+    if (asiento.egresos > 0) egresoCelda.value = asiento.egresos;
     egresoCelda.numFmt = COLONES;
     egresoCelda.font = fuente({ color: "FF000000" });
     egresoCelda.alignment = { vertical: "middle" };
@@ -460,7 +467,7 @@ function construirInforme(
     const fila = filaObs + i;
     hoja.mergeCells(fila, 3, fila, 7);
     const linea = hoja.getCell(fila, 3);
-    linea.value = i + 1;
+    linea.value = pie.observaciones[i] ?? "";
     linea.font = { name: "Calibri", size: 11, color: { theme: 1 } };
     linea.alignment = { horizontal: "left", vertical: "middle" };
     pintarRango(hoja, fila, 3, 7, (celda) => {
@@ -479,9 +486,9 @@ function construirInforme(
   const firmas = [
     {
       fila: filaFirmas,
-      a: "Nombre y apellidos:",
-      d: "Nombre y apellidos:",
-      e: "Nombre y apellidos:",
+      a: textoConNombre("Nombre y apellidos:", pie.director),
+      d: textoConNombre("Nombre y apellidos:", pie.presidente),
+      e: textoConNombre("Nombre y apellidos:", pie.tesorera),
     },
     {
       fila: filaFirmas + 1,
@@ -491,9 +498,9 @@ function construirInforme(
     },
     {
       fila: filaFirmas + 2,
-      a: "Firma:",
-      d: "Firma:",
-      e: "Firma:",
+      a: textoConNombre("Firma:", pie.firmaDirector),
+      d: textoConNombre("Firma:", pie.firmaPresidente),
+      e: textoConNombre("Firma:", pie.firmaTesorera),
     },
   ];
   for (const firma of firmas) {
@@ -512,7 +519,10 @@ function construirInforme(
   const filaCoord = filaFirmas + 3;
   hoja.mergeCells(`A${filaCoord}:G${filaCoord}`);
   const coord = hoja.getCell(`A${filaCoord}`);
-  coord.value = "Elaborado por Coordinador Técnico:";
+  coord.value = textoConNombre(
+    "Elaborado por Coordinador Técnico:",
+    pie.coordinador,
+  );
   coord.font = fuente({ size: 9, bold: true });
   coord.alignment = { horizontal: "center", vertical: "middle" };
 
@@ -531,6 +541,7 @@ function dispararDescarga(blob: Blob, nombre: string) {
 export async function descargarInformeEconomicoExcel(
   colegio: ColegioRespuesta,
   libro: LibroDepartamentoRespuesta,
+  pie: PieInformeUdp,
 ): Promise<void> {
   const exceljs = await import("exceljs");
   const modulo = exceljs as unknown as {
@@ -545,7 +556,7 @@ export async function descargarInformeEconomicoExcel(
   workbook.creator = "Gestión CTP 27";
   workbook.created = new Date();
   const logoBase64 = await cargarLogoMep();
-  construirInforme(workbook, colegio, libro, logoBase64);
+  construirInforme(workbook, colegio, libro, logoBase64, pie);
 
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer as BlobPart], { type: MIME_XLSX });

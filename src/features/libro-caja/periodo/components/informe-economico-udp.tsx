@@ -9,8 +9,51 @@ import {
 import type { ColegioRespuesta } from "@/features/libro-caja/colegio/validacion/colegio.validacion";
 import type { LibroDepartamentoRespuesta } from "../validacion/asiento.validacion";
 
-const FILAS_PLANTILLA = 20;
 const AMARILLO = "#ffff99";
+
+export type PieInformeUdp = {
+  observaciones: [string, string, string];
+  director: string;
+  presidente: string;
+  tesorera: string;
+  firmaDirector: string;
+  firmaPresidente: string;
+  firmaTesorera: string;
+  coordinador: string;
+};
+
+export const PIE_INFORME_VACIO: PieInformeUdp = {
+  observaciones: ["", "", ""],
+  director: "",
+  presidente: "",
+  tesorera: "",
+  firmaDirector: "",
+  firmaPresidente: "",
+  firmaTesorera: "",
+  coordinador: "",
+};
+
+function CampoInforme({
+  value,
+  onChange,
+  ariaLabel,
+  className = "",
+}: {
+  value: string;
+  onChange: (valor: string) => void;
+  ariaLabel: string;
+  className?: string;
+}) {
+  return (
+    <input
+      type="text"
+      value={value}
+      aria-label={ariaLabel}
+      className={`w-full ${className}`}
+      onChange={(evento) => onChange(evento.target.value)}
+    />
+  );
+}
 
 function cuentaYEntidad(colegio: ColegioRespuesta): string {
   const cuenta = colegio.numeroCuentaBancaria.trim();
@@ -26,12 +69,18 @@ function fechaSaldoAnterior(libro: LibroDepartamentoRespuesta): string {
   return formatearFechaPlantilla(libro.periodo.fechaInicio);
 }
 
-function celdaMonto(valor: number | string, extra = "") {
+function celdaMonto(valor: number | string, extra = "", vacioSiCero = false) {
+  const texto =
+    typeof valor === "number"
+      ? vacioSiCero && valor === 0
+        ? ""
+        : formatearColones(valor)
+      : valor;
   return (
     <td
       className={`border border-black px-1 py-0.5 text-right align-middle ${extra}`}
     >
-      {typeof valor === "number" ? formatearColones(valor) : valor}
+      {texto}
     </td>
   );
 }
@@ -39,11 +88,18 @@ function celdaMonto(valor: number | string, extra = "") {
 export function InformeEconomicoUdp({
   colegio,
   libro,
+  pie,
+  onPieChange,
 }: {
   colegio: ColegioRespuesta;
   libro: LibroDepartamentoRespuesta;
+  pie: PieInformeUdp;
+  onPieChange: (pie: PieInformeUdp) => void;
 }) {
-  const filasVacias = Math.max(0, FILAS_PLANTILLA - libro.asientos.length);
+  function actualizarPie(cambio: Partial<PieInformeUdp>) {
+    onPieChange({ ...pie, ...cambio });
+  }
+
   const datosColegio = [
     ["Nombre Centro Educativo", colegio.nombre],
     ["Nombre de la Unidad ", libro.fondo.departamento.nombreUnidad],
@@ -66,9 +122,9 @@ export function InformeEconomicoUdp({
       >
         <colgroup>
           <col style={{ width: "5.4%" }} />
-          <col style={{ width: "5.4%" }} />
-          <col style={{ width: "8%" }} />
-          <col style={{ width: "37.4%" }} />
+          <col style={{ width: "14%" }} />
+          <col style={{ width: "10%" }} />
+          <col style={{ width: "26.8%" }} />
           <col style={{ width: "11.1%" }} />
           <col style={{ width: "14%" }} />
           <col style={{ width: "18.7%" }} />
@@ -201,21 +257,9 @@ export function InformeEconomicoUdp({
               <td className="border border-black px-2 py-1 text-left align-middle">
                 {asiento.descripcion}
               </td>
-              {celdaMonto(asiento.ingresos)}
-              {celdaMonto(asiento.egresos)}
+              {celdaMonto(asiento.ingresos, "", true)}
+              {celdaMonto(asiento.egresos, "", true)}
               {celdaMonto(asiento.saldo, "bg-[#deeaf6]")}
-            </tr>
-          ))}
-
-          {Array.from({ length: filasVacias }, (_, indice) => (
-            <tr key={`vacio-${indice}`}>
-              <td className="h-7 border border-black" />
-              <td className="border border-black" />
-              <td className="border border-black" />
-              <td className="border border-black" />
-              <td className="border border-black" />
-              <td className="border border-black" />
-              <td className="border border-black bg-[#deeaf6]" />
             </tr>
           ))}
 
@@ -241,25 +285,49 @@ export function InformeEconomicoUdp({
             </td>
             <td
               colSpan={5}
-              className="fuente-calibri border border-black px-2 py-1.5"
+              className="fuente-calibri h-7 border border-black px-2 py-1.5"
             >
-              1
+              <CampoInforme
+                value={pie.observaciones[0]}
+                ariaLabel="Observación 1"
+                onChange={(valor) =>
+                  actualizarPie({
+                    observaciones: [valor, pie.observaciones[1], pie.observaciones[2]],
+                  })
+                }
+              />
             </td>
           </tr>
           <tr>
             <td
               colSpan={5}
-              className="fuente-calibri border border-black px-2 py-1.5"
+              className="fuente-calibri h-7 border border-black px-2 py-1.5"
             >
-              2
+              <CampoInforme
+                value={pie.observaciones[1]}
+                ariaLabel="Observación 2"
+                onChange={(valor) =>
+                  actualizarPie({
+                    observaciones: [pie.observaciones[0], valor, pie.observaciones[2]],
+                  })
+                }
+              />
             </td>
           </tr>
           <tr>
             <td
               colSpan={5}
-              className="fuente-calibri border border-black px-2 py-1.5"
+              className="fuente-calibri h-7 border border-black px-2 py-1.5"
             >
-              3
+              <CampoInforme
+                value={pie.observaciones[2]}
+                ariaLabel="Observación 3"
+                onChange={(valor) =>
+                  actualizarPie({
+                    observaciones: [pie.observaciones[0], pie.observaciones[1], valor],
+                  })
+                }
+              />
             </td>
           </tr>
 
@@ -268,16 +336,34 @@ export function InformeEconomicoUdp({
               colSpan={3}
               className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
             >
-              Nombre y apellidos:
+              <span className="whitespace-nowrap">Nombre y apellidos:</span>{" "}
+              <CampoInforme
+                value={pie.director}
+                ariaLabel="Nombre del director o directora"
+                className="inline w-[calc(100%-8rem)]"
+                onChange={(valor) => actualizarPie({ director: valor })}
+              />
             </td>
             <td className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]">
-              Nombre y apellidos:
+              <span className="whitespace-nowrap">Nombre y apellidos:</span>{" "}
+              <CampoInforme
+                value={pie.presidente}
+                ariaLabel="Nombre del presidente de la Junta Administrativa"
+                className="inline w-[calc(100%-8rem)]"
+                onChange={(valor) => actualizarPie({ presidente: valor })}
+              />
             </td>
             <td
               colSpan={3}
               className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
             >
-              Nombre y apellidos:
+              <span className="whitespace-nowrap">Nombre y apellidos:</span>{" "}
+              <CampoInforme
+                value={pie.tesorera}
+                ariaLabel="Nombre de la tesorera o contadora"
+                className="inline w-[calc(100%-8rem)]"
+                onChange={(valor) => actualizarPie({ tesorera: valor })}
+              />
             </td>
           </tr>
           <tr>
@@ -302,16 +388,34 @@ export function InformeEconomicoUdp({
               colSpan={3}
               className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
             >
-              Firma:
+              <span>Firma:</span>{" "}
+              <CampoInforme
+                value={pie.firmaDirector}
+                ariaLabel="Firma del director o directora"
+                className="inline w-[calc(100%-3rem)]"
+                onChange={(valor) => actualizarPie({ firmaDirector: valor })}
+              />
             </td>
             <td className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]">
-              Firma:
+              <span>Firma:</span>{" "}
+              <CampoInforme
+                value={pie.firmaPresidente}
+                ariaLabel="Firma del presidente de la Junta Administrativa"
+                className="inline w-[calc(100%-3rem)]"
+                onChange={(valor) => actualizarPie({ firmaPresidente: valor })}
+              />
             </td>
             <td
               colSpan={3}
               className="border border-black px-2 py-1.5 text-left align-middle text-[9pt]"
             >
-              Firma:
+              <span>Firma:</span>{" "}
+              <CampoInforme
+                value={pie.firmaTesorera}
+                ariaLabel="Firma de la tesorera o contadora"
+                className="inline w-[calc(100%-3rem)]"
+                onChange={(valor) => actualizarPie({ firmaTesorera: valor })}
+              />
             </td>
           </tr>
           <tr>
@@ -319,7 +423,13 @@ export function InformeEconomicoUdp({
               colSpan={7}
               className="border border-black py-1.5 text-center align-middle text-[9pt] font-bold"
             >
-              Elaborado por Coordinador Técnico:
+              Elaborado por Coordinador Técnico:{" "}
+              <CampoInforme
+                value={pie.coordinador}
+                ariaLabel="Nombre del coordinador técnico"
+                className="inline w-[16rem] text-center font-bold"
+                onChange={(valor) => actualizarPie({ coordinador: valor })}
+              />
             </td>
           </tr>
         </tbody>

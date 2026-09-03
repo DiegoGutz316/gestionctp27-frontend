@@ -306,6 +306,31 @@
   font-family: Calibri, Carlito, sans-serif !important;
 }
 
+.informe-udp input {
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+}
+
+.informe-udp input:focus {
+  outline: none;
+  background: #fffde7;
+}
+
+@media print {
+  .informe-udp input {
+    background: transparent !important;
+    print-color-adjust: exact;
+  }
+}
+
 @media print {
   @page {
     size: letter portrait;
