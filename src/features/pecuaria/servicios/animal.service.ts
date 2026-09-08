@@ -12,4 +12,26 @@ export function crearAnimal(datos: CrearAnimal) {
   );
 }
 
+export function listarAnimales() {
+  return api.get<AnimalRespuesta[]>(
+    "/pecuaria/animales",
+  );
+}
+
+export function obtenerAnimal(id: number) {
+  return api.get<AnimalRespuesta>(
+    `/pecuaria/animales/${id}`,
+  );
+}
+
+export function editarAnimal(
+  id: number,
+  datos: CrearAnimal,
+) {
+  return api.patch<AnimalRespuesta>(
+    `/pecuaria/animales/${id}`,
+    datos,
+  );
+}
+
 export { getMensajeDeError } from "@/lib/api";
