@@ -1,7 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { PencilIcon } from "lucide-react";
+import {
+  PencilIcon,
+  UserXIcon,
+} from "lucide-react";
 
 import { AccionesMenu } from "@/components/acciones-menu";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +20,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+
 import type { AnimalRespuesta } from "../validacion/animal.validacion";
+import { AnimalDesactivarDialog } from "./animal-desactivar-dialog";
 
 type AnimalesTablaProps = {
   cargando: boolean;
@@ -29,8 +36,25 @@ export function AnimalesTabla({
   error,
   animales,
 }: AnimalesTablaProps) {
+  const [
+    animalADesactivar,
+    setAnimalADesactivar,
+  ] = useState<AnimalRespuesta | null>(
+    null,
+  );
+
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+      <AnimalDesactivarDialog
+        animal={animalADesactivar}
+        open={animalADesactivar !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) {
+            setAnimalADesactivar(null);
+          }
+        }}
+      />
+
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
@@ -65,7 +89,9 @@ export function AnimalesTabla({
             Array.from({
               length: 4,
             }).map((_, index) => (
-              <TableRow key={index}>
+              <TableRow
+                key={`skeleton-${index}`}
+              >
                 <TableCell>
                   <Skeleton className="h-4 w-20" />
                 </TableCell>
@@ -98,8 +124,9 @@ export function AnimalesTabla({
                 colSpan={6}
                 className="py-16 text-center text-sm text-destructive"
               >
-                No se pudieron cargar los animales.
-                Verifique la conexión con el servidor.
+                No se pudieron cargar los
+                animales. Verifique la conexión
+                con el servidor.
               </TableCell>
             </TableRow>
           ) : null}
@@ -117,51 +144,83 @@ export function AnimalesTabla({
             </TableRow>
           ) : null}
 
-          {animales.map((animal) => (
-            <TableRow
-              key={animal.id}
-              className="transition-colors hover:bg-muted/30"
-            >
-              <TableCell className="font-medium">
-                {animal.codigo}
-              </TableCell>
+          {animales.map((animal) => {
+            const inactivo =
+              animal.estado.toUpperCase() ===
+              "INACTIVO";
 
-              <TableCell>
-                {animal.nombre}
-              </TableCell>
+            return (
+              <TableRow
+                key={animal.id}
+                className="transition-colors hover:bg-muted/30"
+              >
+                <TableCell className="font-medium">
+                  {animal.codigo}
+                </TableCell>
 
-              <TableCell>
-                {animal.especie}
-              </TableCell>
+                <TableCell>
+                  {animal.nombre}
+                </TableCell>
 
-              <TableCell>
-                {animal.raza}
-              </TableCell>
+                <TableCell>
+                  {animal.especie}
+                </TableCell>
 
-              <TableCell>
-                <Badge variant="secondary">
-                  {animal.estado}
-                </Badge>
-              </TableCell>
+                <TableCell>
+                  {animal.raza}
+                </TableCell>
 
-              <TableCell className="text-right">
-                <AccionesMenu
-                  aria-label={`Acciones de ${animal.nombre}`}
-                >
-                  <DropdownMenuItem
-                    render={
-                      <Link
-                        href={`/dashboard/pecuaria/${animal.id}/editar`}
-                      />
+                <TableCell>
+                  <Badge
+                    variant="secondary"
+                    className={
+                      inactivo
+                        ? "rounded-full"
+                        : undefined
                     }
                   >
-                    <PencilIcon />
-                    Editar
-                  </DropdownMenuItem>
-                </AccionesMenu>
-              </TableCell>
-            </TableRow>
-          ))}
+                    {animal.estado}
+                  </Badge>
+                </TableCell>
+
+                <TableCell className="text-right">
+                  <MostrarSiPuede
+                    modulo="PECUARIA"
+                    nivel="COMPLETO"
+                  >
+                    <AccionesMenu
+                      aria-label={`Acciones de ${animal.nombre}`}
+                    >
+                      <DropdownMenuItem
+                        render={
+                          <Link
+                            href={`/dashboard/pecuaria/${animal.id}/editar`}
+                          />
+                        }
+                      >
+                        <PencilIcon />
+                        Editar
+                      </DropdownMenuItem>
+
+                      {!inactivo ? (
+                        <DropdownMenuItem
+                          variant="destructive"
+                          onClick={() =>
+                            setAnimalADesactivar(
+                              animal,
+                            )
+                          }
+                        >
+                          <UserXIcon />
+                          Desactivar
+                        </DropdownMenuItem>
+                      ) : null}
+                    </AccionesMenu>
+                  </MostrarSiPuede>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

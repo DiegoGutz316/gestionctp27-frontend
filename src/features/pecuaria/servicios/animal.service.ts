@@ -34,4 +34,10 @@ export function editarAnimal(
   );
 }
 
+export function desactivarAnimal(id: number) {
+  return api.patch<AnimalRespuesta>(
+    `/pecuaria/animales/${id}/desactivar`,
+  );
+}
+
 export { getMensajeDeError } from "@/lib/api";

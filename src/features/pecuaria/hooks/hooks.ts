@@ -8,6 +8,7 @@ import {
 
 import {
   crearAnimal,
+  desactivarAnimal,
   editarAnimal,
   listarAnimales,
   obtenerAnimal,
@@ -71,5 +72,18 @@ export function useEditarAnimal(id: number) {
         queryKey: animalesQueryKey,
       });
     },
+  });
+}
+export function useDesactivarAnimal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) =>
+      desactivarAnimal(id),
+
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: animalesQueryKey,
+      }),
   });
 }
