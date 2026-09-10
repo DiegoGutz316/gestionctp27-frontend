@@ -20,10 +20,14 @@ export const crearDesparasitacionSchema = z.object({
     .min(1, "El producto aplicado es obligatorio")
     .max(120, "El producto no puede superar 120 caracteres"),
 
+  // `z.iso.date()` y no una expresión regular: la regular solo mira la forma
+  // del texto, así que fechas que no existen en el calendario (2026-02-31,
+  // 2025-02-29, mes 00) la superaban y encima colaban la comparación con hoy.
+  // Es el mismo patrón que ya usa el módulo de stock.
   fecha: z
     .string({ error: "La fecha es obligatoria" })
     .min(1, "La fecha es obligatoria")
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "La fecha debe tener un formato válido")
+    .pipe(z.iso.date({ error: "Ingrese una fecha válida" }))
     .refine(
       (valor) => valor <= fechaHoyCR(),
       "La fecha no puede ser futura",
