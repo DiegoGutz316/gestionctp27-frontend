@@ -7,6 +7,7 @@ import {
   Home,
   PlusIcon,
   SearchIcon,
+  ShieldPlusIcon,
   SyringeIcon,
 } from "lucide-react";
 
@@ -120,6 +121,19 @@ export function AnimalesGestion() {
             >
               <SyringeIcon data-icon="inline-start" />
               Registrar desparasitación
+            </Button>
+
+            {/* Backlog 2.5: entrada al registro de vacunas. */}
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              nativeButton={false}
+              render={
+                <Link href="/dashboard/pecuaria/vacunas/nueva" />
+              }
+            >
+              <ShieldPlusIcon data-icon="inline-start" />
+              Registrar vacuna
             </Button>
 
             <Button

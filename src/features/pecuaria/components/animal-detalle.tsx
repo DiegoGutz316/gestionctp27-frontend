@@ -21,6 +21,7 @@ import { formatearFecha } from "../formato";
 import { useAnimal } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/animal.service";
 import { DesparasitacionesHistorial } from "./desparasitaciones-historial";
+import { VacunasHistorial } from "./vacunas-historial";
 
 function Dato({
   etiqueta,
@@ -165,6 +166,9 @@ export function AnimalDetalle({ id }: { id: number }) {
           )}
         </p>
       </div>
+
+      {/* Backlog 2.6: historial de vacunas del animal. */}
+      <VacunasHistorial animalId={id} />
 
       {/* Backlog 2.8: historial de desparasitaciones del animal. */}
       <DesparasitacionesHistorial animalId={id} />
