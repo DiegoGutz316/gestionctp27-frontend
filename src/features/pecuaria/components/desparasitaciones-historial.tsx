@@ -12,6 +12,7 @@ import {
 
 import { formatearFecha } from "../formato";
 import { useDesparasitacionesDeAnimal } from "../hooks/desparasitacion-hooks";
+import { getMensajeDeError } from "../servicios/desparasitacion.service";
 
 /**
  * Backlog 2.8: historial de desparasitaciones del animal que se está viendo.
@@ -80,8 +81,10 @@ export function DesparasitacionesHistorial({
                 colSpan={3}
                 className="py-10 text-center text-sm whitespace-normal text-destructive"
               >
-                No se pudo cargar el historial de desparasitaciones. Revise
-                la conexión e inténtelo de nuevo.
+                {/* Como en el resto de la app: el motivo lo da la API (permisos,
+                    animal inexistente…) y solo se habla de conexión cuando
+                    realmente falla la red. */}
+                {getMensajeDeError(historial.error)}
               </TableCell>
             </TableRow>
           ) : null}
