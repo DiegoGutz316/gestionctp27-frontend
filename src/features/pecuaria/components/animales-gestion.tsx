@@ -7,6 +7,7 @@ import {
   Home,
   PlusIcon,
   SearchIcon,
+  SyringeIcon,
 } from "lucide-react";
 
 import {
@@ -107,16 +108,31 @@ export function AnimalesGestion() {
           modulo="PECUARIA"
           nivel="COMPLETO"
         >
-          <Button
-            className="w-full sm:w-auto"
-            nativeButton={false}
-            render={
-              <Link href="/dashboard/pecuaria/nuevo" />
-            }
-          >
-            <PlusIcon data-icon="inline-start" />
-            Registrar animal
-          </Button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            {/* Backlog 2.7: entrada al registro de desparasitaciones. */}
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              nativeButton={false}
+              render={
+                <Link href="/dashboard/pecuaria/desparasitaciones/nueva" />
+              }
+            >
+              <SyringeIcon data-icon="inline-start" />
+              Registrar desparasitación
+            </Button>
+
+            <Button
+              className="w-full sm:w-auto"
+              nativeButton={false}
+              render={
+                <Link href="/dashboard/pecuaria/nuevo" />
+              }
+            >
+              <PlusIcon data-icon="inline-start" />
+              Registrar animal
+            </Button>
+          </div>
         </MostrarSiPuede>
       </div>
 
