@@ -27,11 +27,11 @@ import { useAnimales } from "@/features/pecuaria/animal/hooks/hooks";
 import { useRegistrarProduccion } from "../hooks/hooks";
 import {
   ETIQUETA_TIPO_PRODUCCION,
+  TIPOS_PRODUCCION,
   UNIDAD_TIPO_PRODUCCION,
   esAnimalActivo,
   etiquetaEspecieProduccion,
   fechaHoyLocal,
-  tiposProduccionDeEspecie,
   type TipoProduccion,
 } from "../models/produccion.model";
 import { getMensajeDeError } from "../servicios/produccion.service";
@@ -50,6 +50,10 @@ export function ProduccionForm() {
   const animalesItems = activos.map((animal) => ({
     value: String(animal.id),
     label: `${animal.codigo} — ${animal.nombre} (${etiquetaEspecieProduccion(animal.especie)})`,
+  }));
+  const tiposItems = TIPOS_PRODUCCION.map((tipo) => ({
+    value: tipo,
+    label: `${ETIQUETA_TIPO_PRODUCCION[tipo]} (${UNIDAD_TIPO_PRODUCCION[tipo]})`,
   }));
 
   const form = useForm({
@@ -102,20 +106,9 @@ export function ProduccionForm() {
                 <Select
                   items={animalesItems}
                   value={field.state.value === "" ? null : field.state.value}
-                  onValueChange={(valor) => {
-                    field.handleChange((valor as string | null) ?? "");
-                    const animal = activos.find(
-                      (item) => String(item.id) === (valor as string | null),
-                    );
-                    const tipos = tiposProduccionDeEspecie(animal?.especie);
-                    const tipoActual = form.getFieldValue("tipoProduccion");
-                    if (
-                      tipoActual &&
-                      !tipos.includes(tipoActual as TipoProduccion)
-                    ) {
-                      form.setFieldValue("tipoProduccion", "");
-                    }
-                  }}
+                  onValueChange={(valor) =>
+                    field.handleChange((valor as string | null) ?? "")
+                  }
                 >
                   <SelectTrigger
                     id={field.name}
@@ -141,70 +134,48 @@ export function ProduccionForm() {
           }}
         </form.Field>
 
-        <form.Subscribe selector={(state) => state.values.animalId}>
-          {(animalId) => {
-            const animal = activos.find((item) => String(item.id) === animalId);
-            const tipos = tiposProduccionDeEspecie(animal?.especie);
-            const tiposItems = tipos.map((tipo) => ({
-              value: tipo,
-              label: `${ETIQUETA_TIPO_PRODUCCION[tipo]} (${UNIDAD_TIPO_PRODUCCION[tipo]})`,
-            }));
+        <form.Field name="tipoProduccion">
+          {(field) => {
+            const errors = fieldErrors(field.state.meta.errors);
+            const invalid = errors.length > 0;
 
             return (
-              <form.Field name="tipoProduccion">
-                {(field) => {
-                  const errors = fieldErrors(field.state.meta.errors);
-                  const invalid = errors.length > 0;
+              <Field data-invalid={invalid}>
+                <FieldLabel htmlFor={field.name} required>
+                  Tipo de producción
+                </FieldLabel>
 
-                  return (
-                    <Field data-invalid={invalid}>
-                      <FieldLabel htmlFor={field.name} required>
-                        Tipo de producción
-                      </FieldLabel>
+                <Select
+                  items={tiposItems}
+                  value={field.state.value === "" ? null : field.state.value}
+                  onValueChange={(valor) =>
+                    field.handleChange(
+                      (valor as TipoProduccion | null) ?? "",
+                    )
+                  }
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    className="w-full"
+                    aria-invalid={invalid}
+                    onBlur={field.handleBlur}
+                  >
+                    <SelectValue placeholder="Seleccione un tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tiposItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-                      <Select
-                        items={tiposItems}
-                        value={
-                          field.state.value === "" ? null : field.state.value
-                        }
-                        onValueChange={(valor) =>
-                          field.handleChange(
-                            (valor as TipoProduccion | null) ?? "",
-                          )
-                        }
-                      >
-                        <SelectTrigger
-                          id={field.name}
-                          className="w-full"
-                          aria-invalid={invalid}
-                          disabled={!animal}
-                          onBlur={field.handleBlur}
-                        >
-                          <SelectValue
-                            placeholder={
-                              animal
-                                ? "Seleccione un tipo"
-                                : "Seleccione primero un animal"
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {tiposItems.map((item) => (
-                            <SelectItem key={item.value} value={item.value}>
-                              {item.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <FieldError errors={errors} />
-                    </Field>
-                  );
-                }}
-              </form.Field>
+                <FieldError errors={errors} />
+              </Field>
             );
           }}
-        </form.Subscribe>
+        </form.Field>
 
         <form.Field name="cantidad">
           {(field) => {

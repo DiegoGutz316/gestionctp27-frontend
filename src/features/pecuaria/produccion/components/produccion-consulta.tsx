@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/table";
 
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+import { PecuariaVistasNav } from "@/features/pecuaria/components/pecuaria-vistas-nav";
 
 import { useAnimales } from "@/features/pecuaria/animal/hooks/hooks";
 import { useProduccion } from "../hooks/hooks";
@@ -154,6 +155,8 @@ export function ProduccionConsulta() {
           </Button>
         </MostrarSiPuede>
       </div>
+
+      <PecuariaVistasNav />
 
       <div className="grid gap-4 rounded-xl border bg-card p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-2">

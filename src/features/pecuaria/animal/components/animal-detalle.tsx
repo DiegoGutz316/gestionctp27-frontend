@@ -40,9 +40,11 @@ import { getMensajeDeError } from "@/features/pecuaria/salud/servicios/salud.ser
 import { useAnimal } from "../hooks/hooks";
 import {
   ETIQUETA_ESTADO_ANIMAL,
+  ETIQUETA_TIPO_INVENTARIO_ANIMAL,
   esAnimalActivo,
   etiquetaCategoriaBovina,
   etiquetaEspecie,
+  tipoInventarioDeEspecie,
   type EstadoAnimal,
 } from "../models/animal.model";
 
@@ -153,6 +155,18 @@ export function AnimalDetalle({ id }: { id: number }) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 rounded-xl border bg-card p-4 shadow-xs sm:grid-cols-3">
+        <div>
+          <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            Tipo de inventario
+          </p>
+          <p className="mt-1 text-sm">
+            {
+              ETIQUETA_TIPO_INVENTARIO_ANIMAL[
+                tipoInventarioDeEspecie(datos.especie)
+              ]
+            }
+          </p>
+        </div>
         <div>
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             Especie

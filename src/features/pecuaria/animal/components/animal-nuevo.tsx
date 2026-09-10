@@ -53,7 +53,7 @@ export function AnimalNuevo() {
         </h1>
 
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Registre la información general del animal en el sistema.
+          Indique si pertenece al inventario de bovinos o a especies menores.
         </p>
       </div>
 

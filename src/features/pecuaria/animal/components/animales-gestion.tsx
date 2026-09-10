@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  FileSpreadsheet,
-  Home,
-  MilkIcon,
-  PlusIcon,
-} from "lucide-react";
+import { Home, PlusIcon } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -19,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+import { PecuariaVistasNav } from "@/features/pecuaria/components/pecuaria-vistas-nav";
 
 import { useAnimales } from "../hooks/hooks";
 import { AnimalesTabla } from "./animales-tabla";
@@ -69,43 +65,7 @@ export function AnimalesGestion() {
           </p>
         </div>
 
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
-          <Button
-            variant="outline"
-            className="w-full sm:w-auto"
-            nativeButton={false}
-            render={
-              <Link href="/dashboard/pecuaria/inventario/especies-menores" />
-            }
-          >
-            <FileSpreadsheet data-icon="inline-start" />
-            Inventario especies menores
-          </Button>
-
-          <Button
-            variant="outline"
-            className="w-full sm:w-auto"
-            nativeButton={false}
-            render={
-              <Link href="/dashboard/pecuaria/inventario/ganado-bovino" />
-            }
-          >
-            <FileSpreadsheet data-icon="inline-start" />
-            Inventario ganado bovino
-          </Button>
-
-          <Button
-            variant="outline"
-            className="w-full sm:w-auto"
-            nativeButton={false}
-            render={
-              <Link href="/dashboard/pecuaria/produccion" />
-            }
-          >
-            <MilkIcon data-icon="inline-start" />
-            Producción
-          </Button>
-
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:justify-end">
           <MostrarSiPuede
             modulo="PECUARIA"
             nivel="COMPLETO"
@@ -123,6 +83,8 @@ export function AnimalesGestion() {
           </MostrarSiPuede>
         </div>
       </div>
+
+      <PecuariaVistasNav />
 
       <AnimalesTabla
         cargando={animales.isLoading}

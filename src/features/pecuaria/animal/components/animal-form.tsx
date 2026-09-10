@@ -26,21 +26,24 @@ import { zodValidator } from "@/lib/zod-form";
 import { useCrearAnimal } from "../hooks/hooks";
 import {
   CATEGORIAS_BOVINAS,
-  ESPECIES_ANIMAL,
   ESTADOS_ANIMAL,
   ETIQUETA_CATEGORIA_BOVINA,
   ETIQUETA_ESPECIE_ANIMAL,
   ETIQUETA_ESTADO_ANIMAL,
+  ETIQUETA_TIPO_INVENTARIO_ANIMAL,
+  TIPOS_INVENTARIO_ANIMAL,
+  especiesDeInventario,
   type CategoriaBovina,
   type EspecieAnimal,
   type EstadoAnimal,
+  type TipoInventarioAnimal,
 } from "../models/animal.model";
 import { getMensajeDeError } from "../servicios/animal.service";
 import { crearAnimalSchema } from "../validacion/animal.validacion";
 
-const especiesItems = ESPECIES_ANIMAL.map((especie) => ({
-  value: especie,
-  label: ETIQUETA_ESPECIE_ANIMAL[especie],
+const tiposInventarioItems = TIPOS_INVENTARIO_ANIMAL.map((tipo) => ({
+  value: tipo,
+  label: ETIQUETA_TIPO_INVENTARIO_ANIMAL[tipo],
 }));
 
 const estadosItems = ESTADOS_ANIMAL.map((estado) => ({
@@ -56,6 +59,7 @@ export function AnimalForm() {
     defaultValues: {
       codigo: "",
       nombre: "",
+      tipoInventario: "" as TipoInventarioAnimal | "",
       especie: "" as EspecieAnimal | "",
       categoriaBovina: "" as CategoriaBovina | "",
       raza: "",
@@ -151,7 +155,7 @@ export function AnimalForm() {
           }}
         </form.Field>
 
-        <form.Field name="especie">
+        <form.Field name="tipoInventario">
           {(field) => {
             const errors = fieldErrors(field.state.meta.errors);
             const invalid = errors.length > 0;
@@ -159,16 +163,25 @@ export function AnimalForm() {
             return (
               <Field data-invalid={invalid}>
                 <FieldLabel htmlFor={field.name} required>
-                  Especie
+                  Tipo de inventario
                 </FieldLabel>
 
                 <Select
-                  items={especiesItems}
+                  items={tiposInventarioItems}
                   value={field.state.value === "" ? null : field.state.value}
                   onValueChange={(valor) => {
-                    const siguiente = (valor as EspecieAnimal | null) ?? "";
+                    const siguiente =
+                      (valor as TipoInventarioAnimal | null) ?? "";
                     field.handleChange(siguiente);
-                    if (siguiente !== "VACA") {
+                    if (siguiente === "GANADO_BOVINO") {
+                      form.setFieldValue("especie", "VACA");
+                    } else if (siguiente === "ESPECIES_MENORES") {
+                      if (form.getFieldValue("especie") === "VACA") {
+                        form.setFieldValue("especie", "");
+                      }
+                      form.setFieldValue("categoriaBovina", "");
+                    } else {
+                      form.setFieldValue("especie", "");
                       form.setFieldValue("categoriaBovina", "");
                     }
                   }}
@@ -179,10 +192,10 @@ export function AnimalForm() {
                     aria-invalid={invalid}
                     onBlur={field.handleBlur}
                   >
-                    <SelectValue placeholder="Seleccione la especie" />
+                    <SelectValue placeholder="Bovinos o especies menores" />
                   </SelectTrigger>
                   <SelectContent>
-                    {especiesItems.map((item) => (
+                    {tiposInventarioItems.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
                       </SelectItem>
@@ -196,59 +209,121 @@ export function AnimalForm() {
           }}
         </form.Field>
 
-        <form.Subscribe selector={(state) => state.values.especie}>
-          {(especie) =>
-            especie === "VACA" ? (
-              <form.Field name="categoriaBovina">
-                {(field) => {
-                  const errors = fieldErrors(field.state.meta.errors);
-                  const invalid = errors.length > 0;
-                  const items = CATEGORIAS_BOVINAS.map((categoria) => ({
-                    value: categoria,
-                    label: ETIQUETA_CATEGORIA_BOVINA[categoria],
-                  }));
+        <form.Subscribe
+          selector={(state) => state.values.tipoInventario}
+        >
+          {(tipoInventario) => {
+            if (tipoInventario === "GANADO_BOVINO") {
+              return (
+                <form.Field name="categoriaBovina">
+                  {(field) => {
+                    const errors = fieldErrors(field.state.meta.errors);
+                    const invalid = errors.length > 0;
+                    const items = CATEGORIAS_BOVINAS.map((categoria) => ({
+                      value: categoria,
+                      label: ETIQUETA_CATEGORIA_BOVINA[categoria],
+                    }));
 
-                  return (
-                    <Field data-invalid={invalid}>
-                      <FieldLabel htmlFor={field.name} required>
-                        Categoría (ganado bovino)
-                      </FieldLabel>
+                    return (
+                      <Field data-invalid={invalid}>
+                        <FieldLabel htmlFor={field.name} required>
+                          Categoría (ganado bovino)
+                        </FieldLabel>
 
-                      <Select
-                        items={items}
-                        value={
-                          field.state.value === "" ? null : field.state.value
-                        }
-                        onValueChange={(valor) =>
-                          field.handleChange(
-                            (valor as CategoriaBovina | null) ?? "",
-                          )
-                        }
-                      >
-                        <SelectTrigger
-                          id={field.name}
-                          className="w-full"
-                          aria-invalid={invalid}
-                          onBlur={field.handleBlur}
+                        <Select
+                          items={items}
+                          value={
+                            field.state.value === "" ? null : field.state.value
+                          }
+                          onValueChange={(valor) =>
+                            field.handleChange(
+                              (valor as CategoriaBovina | null) ?? "",
+                            )
+                          }
                         >
-                          <SelectValue placeholder="Toro, novilla, vaca, ternero/a o torete" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {items.map((item) => (
-                            <SelectItem key={item.value} value={item.value}>
-                              {item.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                          <SelectTrigger
+                            id={field.name}
+                            className="w-full"
+                            aria-invalid={invalid}
+                            onBlur={field.handleBlur}
+                          >
+                            <SelectValue placeholder="Toro, novilla, vaca, ternero/a o torete" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {items.map((item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
 
-                      <FieldError errors={errors} />
-                    </Field>
-                  );
-                }}
-              </form.Field>
-            ) : null
-          }
+                        <FieldError errors={errors} />
+                      </Field>
+                    );
+                  }}
+                </form.Field>
+              );
+            }
+
+            if (tipoInventario === "ESPECIES_MENORES") {
+              const especiesItems = especiesDeInventario(tipoInventario).map(
+                (especie) => ({
+                  value: especie,
+                  label: ETIQUETA_ESPECIE_ANIMAL[especie],
+                }),
+              );
+
+              return (
+                <form.Field name="especie">
+                  {(field) => {
+                    const errors = fieldErrors(field.state.meta.errors);
+                    const invalid = errors.length > 0;
+
+                    return (
+                      <Field data-invalid={invalid}>
+                        <FieldLabel htmlFor={field.name} required>
+                          Especie
+                        </FieldLabel>
+
+                        <Select
+                          items={especiesItems}
+                          value={
+                            field.state.value === "" ? null : field.state.value
+                          }
+                          onValueChange={(valor) =>
+                            field.handleChange(
+                              (valor as EspecieAnimal | null) ?? "",
+                            )
+                          }
+                        >
+                          <SelectTrigger
+                            id={field.name}
+                            className="w-full"
+                            aria-invalid={invalid}
+                            onBlur={field.handleBlur}
+                          >
+                            <SelectValue placeholder="Chancho, gallina, pollo o cabra" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {especiesItems.map((item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <FieldError errors={errors} />
+                      </Field>
+                    );
+                  }}
+                </form.Field>
+              );
+            }
+
+            return null;
+          }}
         </form.Subscribe>
 
         <form.Field name="raza">

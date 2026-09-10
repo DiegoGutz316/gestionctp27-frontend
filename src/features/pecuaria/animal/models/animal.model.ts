@@ -54,6 +54,33 @@ export const ESPECIES_MENORES = [
   "CABRA",
 ] as const;
 
+export const TIPOS_INVENTARIO_ANIMAL = [
+  "GANADO_BOVINO",
+  "ESPECIES_MENORES",
+] as const;
+
+export type TipoInventarioAnimal = (typeof TIPOS_INVENTARIO_ANIMAL)[number];
+
+export const ETIQUETA_TIPO_INVENTARIO_ANIMAL: Record<
+  TipoInventarioAnimal,
+  string
+> = {
+  GANADO_BOVINO: "Inventario de bovinos",
+  ESPECIES_MENORES: "Especies menores",
+};
+
+export function tipoInventarioDeEspecie(especie: string): TipoInventarioAnimal {
+  return esGanadoBovino(especie) ? "GANADO_BOVINO" : "ESPECIES_MENORES";
+}
+
+export function especiesDeInventario(
+  tipo: TipoInventarioAnimal | "",
+): EspecieAnimal[] {
+  if (tipo === "GANADO_BOVINO") return ["VACA"];
+  if (tipo === "ESPECIES_MENORES") return [...ESPECIES_MENORES];
+  return [];
+}
+
 export function etiquetaCategoriaBovina(categoria: string | null | undefined): string {
   if (!categoria) return "—";
   return ETIQUETA_CATEGORIA_BOVINA[categoria as CategoriaBovina] ?? categoria;

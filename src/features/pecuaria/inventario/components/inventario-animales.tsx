@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useColegio } from "@/features/libro-caja/colegio/hooks/hooks";
+import { PecuariaVistasNav } from "@/features/pecuaria/components/pecuaria-vistas-nav";
 import { useAnimales } from "@/features/pecuaria/animal/hooks/hooks";
 import { getMensajeDeError } from "@/features/pecuaria/animal/servicios/animal.service";
 
@@ -151,6 +152,8 @@ export function InventarioAnimales({
             </Button>
           </div>
         </div>
+
+        <PecuariaVistasNav />
 
         {sinCategoriaBovina ? (
           <p className="text-sm text-muted-foreground">

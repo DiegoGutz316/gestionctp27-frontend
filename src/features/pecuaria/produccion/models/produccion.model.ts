@@ -19,20 +19,6 @@ export const UNIDAD_TIPO_PRODUCCION: Record<TipoProduccion, string> = {
   CARNE: "kg",
 };
 
-const PRODUCCION_POR_ESPECIE: Record<EspecieAnimal, TipoProduccion[]> = {
-  VACA: ["LECHE", "CARNE"],
-  CHANCHO: ["CARNE"],
-  GALLINA: ["HUEVOS", "CARNE"],
-  POLLO: ["CARNE"],
-  CABRA: ["LECHE", "CARNE"],
-};
-
-export function tiposProduccionDeEspecie(especie?: string): TipoProduccion[] {
-  if (!especie) return [];
-  const clave = especie.trim().toUpperCase() as EspecieAnimal;
-  return PRODUCCION_POR_ESPECIE[clave] ?? ["CARNE"];
-}
-
 export function etiquetaEspecieProduccion(especie: string): string {
   return ETIQUETA_ESPECIE_ANIMAL[especie as EspecieAnimal] ?? especie;
 }

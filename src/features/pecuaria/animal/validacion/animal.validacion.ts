@@ -3,7 +3,9 @@ import { z } from "zod";
 import {
   CATEGORIAS_BOVINAS,
   ESPECIES_ANIMAL,
+  ESPECIES_MENORES,
   ESTADOS_ANIMAL,
+  TIPOS_INVENTARIO_ANIMAL,
 } from "../models/animal.model";
 
 export const crearAnimalSchema = z
@@ -19,6 +21,10 @@ export const crearAnimalSchema = z
       .trim()
       .min(1, "El nombre del animal es obligatorio")
       .max(120, "El nombre no puede superar 120 caracteres"),
+
+    tipoInventario: z.enum(TIPOS_INVENTARIO_ANIMAL, {
+      error: "Seleccione si pertenece al inventario de bovinos o a especies menores",
+    }),
 
     especie: z.enum(ESPECIES_ANIMAL, {
       error: "Seleccione una especie",
@@ -49,15 +55,35 @@ export const crearAnimalSchema = z
     observaciones: z.string().trim().optional(),
   })
   .superRefine((datos, contexto) => {
-    if (datos.especie === "VACA" && !datos.categoriaBovina) {
+    if (datos.tipoInventario === "GANADO_BOVINO") {
+      if (datos.especie !== "VACA") {
+        contexto.addIssue({
+          code: "custom",
+          path: ["especie"],
+          message: "El inventario de bovinos corresponde a ganado bovino",
+        });
+      }
+      if (!datos.categoriaBovina) {
+        contexto.addIssue({
+          code: "custom",
+          path: ["categoriaBovina"],
+          message: "Seleccione si es toro, novilla, vaca, ternero/a o torete",
+        });
+      }
+    }
+
+    if (
+      datos.tipoInventario === "ESPECIES_MENORES" &&
+      !(ESPECIES_MENORES as readonly string[]).includes(datos.especie)
+    ) {
       contexto.addIssue({
         code: "custom",
-        path: ["categoriaBovina"],
-        message: "Seleccione si es toro, novilla, vaca, ternero/a o torete",
+        path: ["especie"],
+        message: "Seleccione chancho, gallina, pollo o cabra",
       });
     }
   })
-  .transform((datos) => ({
+  .transform(({ tipoInventario: _tipoInventario, ...datos }) => ({
     ...datos,
     categoriaBovina:
       datos.especie === "VACA" && datos.categoriaBovina
