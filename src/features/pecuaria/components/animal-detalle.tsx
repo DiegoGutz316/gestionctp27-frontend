@@ -17,15 +17,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
+import { formatearFecha } from "../formato";
 import { useAnimal } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/animal.service";
-
-/** Fecha en formato local; el backend la entrega como AAAA-MM-DD. */
-function formatearFecha(fecha: string): string {
-  const partes = fecha.split("-");
-  if (partes.length !== 3) return fecha;
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
+import { DesparasitacionesHistorial } from "./desparasitaciones-historial";
 
 function Dato({
   etiqueta,
@@ -170,6 +165,9 @@ export function AnimalDetalle({ id }: { id: number }) {
           )}
         </p>
       </div>
+
+      {/* Backlog 2.8: historial de desparasitaciones del animal. */}
+      <DesparasitacionesHistorial animalId={id} />
     </section>
   );
 }
