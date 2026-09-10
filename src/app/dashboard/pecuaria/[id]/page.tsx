@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { RequerirPermiso } from "@/features/auth/components/requerir-permiso";
 import { AnimalDetalle } from "@/features/pecuaria/components/animal-detalle";
@@ -19,6 +20,13 @@ export default async function DetalleAnimalPage({
 }>) {
   const { id } = await params;
   const animalId = Number(id);
+
+  // Un id que no sea entero positivo no corresponde a ningún animal: sin esto
+  // la consulta queda deshabilitada y la vista muestra un error de conexión
+  // que no es cierto, o se manda un valor fraccionario a la API.
+  if (!Number.isInteger(animalId) || animalId <= 0) {
+    notFound();
+  }
 
   return (
     <RequerirPermiso modulo="PECUARIA">
