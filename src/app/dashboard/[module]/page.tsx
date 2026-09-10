@@ -39,12 +39,16 @@ const modules: Record<string, ModuleDetails> = {
     modulo: "AGRICOLA",
   },
   pecuaria: {
-    title: "Área pecuaria",
-    description:
-      "Consulte y gestione las actividades, animales e insumos del área pecuaria.",
-    icon: Leaf,
-    modulo: "PECUARIA",
+  title: "Área pecuaria",
+  description:
+    "Consulte y gestione las actividades, animales e insumos del área pecuaria.",
+  icon: Leaf,
+  modulo: "PECUARIA",
+  action: {
+    label: "Registrar animal",
+    href: "/dashboard/pecuaria/nuevo",
   },
+},
 }
 
 export function generateStaticParams() {

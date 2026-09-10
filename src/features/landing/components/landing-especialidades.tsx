@@ -20,7 +20,7 @@ const ESPECIALIDADES: Especialidad[] = [
     descripcion:
       "Formación en manejo de cultivos, producción animal y procesos agropecuarios.",
     acento: "#52634D",
-    className: "lg:col-span-2 lg:row-span-2",
+    className: "",
     foto: "/landing/especialidades/produccion-agricola-pecuaria.jpg",
     fotoAlt: "Estudiante en labores de producción agrícola y pecuaria",
   },
@@ -29,7 +29,7 @@ const ESPECIALIDADES: Especialidad[] = [
     nombre: "Diseño y Desarrollo Digital",
     descripcion: "Desarrollo de software, diseño digital y tecnologías web.",
     acento: "#896A78",
-    className: "lg:col-span-2",
+    className: "",
     foto: "/landing/especialidades/diseno-desarrollo-digital.jpg",
     fotoAlt: "Persona trabajando en diseño y desarrollo digital",
   },
@@ -47,7 +47,7 @@ const ESPECIALIDADES: Especialidad[] = [
     nombre: "Agroindustria Alimentaria",
     descripcion: "Procesamiento y transformación de productos alimenticios.",
     acento: "#C7A35D",
-    className: "",
+    className: "lg:col-start-2",
     foto: "/landing/especialidades/agroindustria-alimentaria.jpg",
     fotoAlt: "Proceso de agroindustria alimentaria",
   },
@@ -56,7 +56,7 @@ const ESPECIALIDADES: Especialidad[] = [
     nombre: "Inspección de la Industria Alimentaria",
     descripcion: "Control de calidad e inocuidad en procesos alimentarios.",
     acento: "#252624",
-    className: "lg:col-span-2",
+    className: "lg:col-start-4",
     foto: "/landing/especialidades/inspeccion-industria-alimentaria.jpg",
     fotoAlt: "Inspección de calidad en la industria alimentaria",
   },
@@ -75,13 +75,13 @@ export function LandingEspecialidades() {
           </h2>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
           {ESPECIALIDADES.map((especialidad) => (
             <div
               key={especialidad.nombre}
-              className={`group relative flex flex-col overflow-hidden rounded-2xl border border-[#252624]/10 bg-[#F7F5F0] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-25px_rgba(37,38,36,0.25)] ${especialidad.className}`}
+              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#252624]/10 bg-[#F7F5F0] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-25px_rgba(37,38,36,0.25)] lg:col-span-2 ${especialidad.className}`}
             >
-              <div className="relative aspect-[16/10] w-full overflow-hidden">
+              <div className="relative h-[200px] w-full shrink-0 overflow-hidden">
                 <Image
                   src={especialidad.foto}
                   alt={especialidad.fotoAlt}
