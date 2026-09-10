@@ -14,4 +14,12 @@ export function crearDesparasitacion(
   );
 }
 
+export function listarDesparasitacionesDeAnimal(
+  animalId: number,
+) {
+  return api.get<DesparasitacionRespuesta[]>(
+    `/pecuaria/animales/${animalId}/desparasitaciones`,
+  );
+}
+
 export { getMensajeDeError } from "@/lib/api";
