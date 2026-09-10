@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import {
+  FileSpreadsheet,
   Home,
+  MilkIcon,
   PlusIcon,
 } from "lucide-react";
 
@@ -67,21 +69,59 @@ export function AnimalesGestion() {
           </p>
         </div>
 
-        <MostrarSiPuede
-          modulo="PECUARIA"
-          nivel="COMPLETO"
-        >
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
           <Button
+            variant="outline"
             className="w-full sm:w-auto"
             nativeButton={false}
             render={
-              <Link href="/dashboard/pecuaria/nuevo" />
+              <Link href="/dashboard/pecuaria/inventario/especies-menores" />
             }
           >
-            <PlusIcon data-icon="inline-start" />
-            Registrar animal
+            <FileSpreadsheet data-icon="inline-start" />
+            Inventario especies menores
           </Button>
-        </MostrarSiPuede>
+
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            nativeButton={false}
+            render={
+              <Link href="/dashboard/pecuaria/inventario/ganado-bovino" />
+            }
+          >
+            <FileSpreadsheet data-icon="inline-start" />
+            Inventario ganado bovino
+          </Button>
+
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            nativeButton={false}
+            render={
+              <Link href="/dashboard/pecuaria/produccion" />
+            }
+          >
+            <MilkIcon data-icon="inline-start" />
+            Producción
+          </Button>
+
+          <MostrarSiPuede
+            modulo="PECUARIA"
+            nivel="COMPLETO"
+          >
+            <Button
+              className="w-full sm:w-auto"
+              nativeButton={false}
+              render={
+                <Link href="/dashboard/pecuaria/nuevo" />
+              }
+            >
+              <PlusIcon data-icon="inline-start" />
+              Registrar animal
+            </Button>
+          </MostrarSiPuede>
+        </div>
       </div>
 
       <AnimalesTabla

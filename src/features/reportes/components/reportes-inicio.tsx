@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FileSpreadsheet, Home } from "lucide-react";
+import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -86,8 +87,8 @@ export function ReportesInicio() {
           Reportes
         </h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Genere el Informe Económico-UDP a partir del libro de caja de un
-          departamento.
+          Genere el Informe Económico-UDP y los inventarios pecuarios con las
+          plantillas del Ministerio de Educación Pública.
         </p>
       </div>
 
@@ -209,6 +210,65 @@ export function ReportesInicio() {
           ) : null}
         </CardContent>
       </Card>
+
+      <MostrarSiPuede modulo="PECUARIA" nivel="LECTURA">
+        <Card className="shadow-xs">
+          <CardHeader className="flex flex-row items-start gap-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-color-company">
+              <FileSpreadsheet className="size-5" />
+            </div>
+            <div className="space-y-1">
+              <CardTitle className="text-lg">
+                Inventario Especies Menores
+              </CardTitle>
+              <CardDescription>
+                Plantilla del MEP para chanchos, gallinas, pollos y cabras:
+                asiento, identificación, edad, raza y observaciones. Desde el
+                inventario puede imprimirlo o descargarlo en Excel.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="flex justify-end">
+            <Button
+              nativeButton={false}
+              render={
+                <Link href="/dashboard/pecuaria/inventario/especies-menores" />
+              }
+            >
+              Ver inventario
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xs">
+          <CardHeader className="flex flex-row items-start gap-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-color-company">
+              <FileSpreadsheet className="size-5" />
+            </div>
+            <div className="space-y-1">
+              <CardTitle className="text-lg">
+                Inventario Ganado Bovino-UDP
+              </CardTitle>
+              <CardDescription>
+                Plantilla del MEP con cantidad por toro, novilla, vaca,
+                ternero/a y torete, más raza y observaciones. Complete la
+                categoría al registrar cada vaca para que las columnas de
+                cantidad se llenen solas.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="flex justify-end">
+            <Button
+              nativeButton={false}
+              render={
+                <Link href="/dashboard/pecuaria/inventario/ganado-bovino" />
+              }
+            >
+              Ver inventario
+            </Button>
+          </CardContent>
+        </Card>
+      </MostrarSiPuede>
     </section>
   );
 }

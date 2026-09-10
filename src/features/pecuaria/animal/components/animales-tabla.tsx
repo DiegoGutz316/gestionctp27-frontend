@@ -3,7 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
+  HeartPulseIcon,
+  MilkIcon,
   PencilIcon,
+  PlusIcon,
   UserXIcon,
 } from "lucide-react";
 
@@ -23,6 +26,12 @@ import {
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
 import type { AnimalRespuesta } from "../validacion/animal.validacion";
+import {
+  ETIQUETA_ESTADO_ANIMAL,
+  esAnimalActivo,
+  etiquetaEspecie,
+  type EstadoAnimal,
+} from "../models/animal.model";
 import { AnimalDesactivarDialog } from "./animal-desactivar-dialog";
 
 type AnimalesTablaProps = {
@@ -145,9 +154,10 @@ export function AnimalesTabla({
           ) : null}
 
           {animales.map((animal) => {
-            const inactivo =
-              animal.estado.toUpperCase() ===
-              "INACTIVO";
+            const inactivo = !esAnimalActivo(animal.estado);
+            const etiquetaEstado =
+              ETIQUETA_ESTADO_ANIMAL[animal.estado as EstadoAnimal] ??
+              animal.estado;
 
             return (
               <TableRow
@@ -155,7 +165,12 @@ export function AnimalesTabla({
                 className="transition-colors hover:bg-muted/30"
               >
                 <TableCell className="font-medium">
-                  {animal.codigo}
+                  <Link
+                    href={`/dashboard/pecuaria/${animal.id}`}
+                    className="hover:underline"
+                  >
+                    {animal.codigo}
+                  </Link>
                 </TableCell>
 
                 <TableCell>
@@ -163,7 +178,7 @@ export function AnimalesTabla({
                 </TableCell>
 
                 <TableCell>
-                  {animal.especie}
+                  {etiquetaEspecie(animal.especie)}
                 </TableCell>
 
                 <TableCell>
@@ -179,18 +194,66 @@ export function AnimalesTabla({
                         : undefined
                     }
                   >
-                    {animal.estado}
+                    {etiquetaEstado}
                   </Badge>
                 </TableCell>
 
                 <TableCell className="text-right">
-                  <MostrarSiPuede
-                    modulo="PECUARIA"
-                    nivel="COMPLETO"
+                  <AccionesMenu
+                    aria-label={`Acciones de ${animal.nombre}`}
                   >
-                    <AccionesMenu
-                      aria-label={`Acciones de ${animal.nombre}`}
+                    <DropdownMenuItem
+                      render={
+                        <Link
+                          href={`/dashboard/pecuaria/${animal.id}`}
+                        />
+                      }
                     >
+                      <HeartPulseIcon />
+                      Ver ficha y salud
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      render={
+                        <Link
+                          href={`/dashboard/pecuaria/produccion?animalId=${animal.id}`}
+                        />
+                      }
+                    >
+                      <MilkIcon />
+                      Ver producción
+                    </DropdownMenuItem>
+
+                    <MostrarSiPuede
+                      modulo="PECUARIA"
+                      nivel="COMPLETO"
+                    >
+                      {!inactivo ? (
+                        <>
+                          <DropdownMenuItem
+                            render={
+                              <Link
+                                href={`/dashboard/pecuaria/produccion/nuevo?animalId=${animal.id}`}
+                              />
+                            }
+                          >
+                            <PlusIcon />
+                            Registrar producción
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            render={
+                              <Link
+                                href={`/dashboard/pecuaria/salud/nuevo?animalId=${animal.id}`}
+                              />
+                            }
+                          >
+                            <HeartPulseIcon />
+                            Registrar salud
+                          </DropdownMenuItem>
+                        </>
+                      ) : null}
+
                       <DropdownMenuItem
                         render={
                           <Link
@@ -215,8 +278,8 @@ export function AnimalesTabla({
                           Desactivar
                         </DropdownMenuItem>
                       ) : null}
-                    </AccionesMenu>
-                  </MostrarSiPuede>
+                    </MostrarSiPuede>
+                  </AccionesMenu>
                 </TableCell>
               </TableRow>
             );

@@ -74,6 +74,7 @@ export function useEditarAnimal(id: number) {
     },
   });
 }
+
 export function useDesactivarAnimal() {
   const queryClient = useQueryClient();
 

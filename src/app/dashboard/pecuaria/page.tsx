@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { RequerirPermiso } from "@/features/auth/components/requerir-permiso";
-import { AnimalesGestion } from "@/features/pecuaria/components/animales-gestion";
+import { AnimalesGestion } from "@/features/pecuaria/animal/components/animales-gestion";
 
 export const metadata: Metadata = {
   title: "Pecuaria | GestiónCTP27",
