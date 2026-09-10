@@ -76,9 +76,21 @@ export function DesparasitacionForm() {
     },
   });
 
+  // Un fallo de red también deja la lista vacía, así que hay que excluirlo
+  // expresamente: si no, la pantalla dice a la vez "no hay animales" y "no se
+  // pudo cargar", que se contradicen y culpan al usuario de un fallo del
+  // servidor.
+  const cargaFallo = animales.isError;
+
   // Sin animales activos no hay nada que desparasitar: es más útil decirlo que
   // ofrecer un selector vacío.
-  const sinAnimales = !animales.isLoading && lista.length === 0;
+  const sinAnimales =
+    !animales.isLoading && !cargaFallo && lista.length === 0;
+
+  // En los tres casos no hay animal que elegir, así que tampoco se puede
+  // registrar nada.
+  const sinSeleccionPosible =
+    animales.isLoading || cargaFallo || sinAnimales;
 
   return (
     <form
@@ -109,7 +121,7 @@ export function DesparasitacionForm() {
                   onValueChange={(valor) =>
                     field.handleChange((valor as string | null) ?? "")
                   }
-                  disabled={animales.isLoading || sinAnimales}
+                  disabled={sinSeleccionPosible}
                 >
                   <SelectTrigger
                     id={field.name}
@@ -121,7 +133,9 @@ export function DesparasitacionForm() {
                       placeholder={
                         animales.isLoading
                           ? "Cargando animales…"
-                          : "Seleccione un animal"
+                          : cargaFallo
+                            ? "No se pudo cargar"
+                            : "Seleccione un animal"
                       }
                     />
                   </SelectTrigger>
@@ -141,9 +155,10 @@ export function DesparasitacionForm() {
                   </p>
                 ) : null}
 
-                {animales.isError ? (
+                {cargaFallo ? (
                   <p className="text-sm text-destructive">
-                    No se pudo cargar la lista de animales.
+                    No se pudo cargar la lista de animales. Revise la conexión
+                    e inténtelo de nuevo.
                   </p>
                 ) : null}
 
@@ -248,7 +263,7 @@ export function DesparasitacionForm() {
           {(guardando) => (
             <Button
               type="submit"
-              disabled={guardando || sinAnimales}
+              disabled={guardando || cargaFallo || sinAnimales}
             >
               {guardando
                 ? "Guardando…"
