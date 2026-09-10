@@ -29,12 +29,14 @@ type AnimalesTablaProps = {
   cargando: boolean;
   error: boolean;
   animales: AnimalRespuesta[];
+  vacioConFiltros?: boolean;
 };
 
 export function AnimalesTabla({
   cargando,
   error,
   animales,
+  vacioConFiltros = false,
 }: AnimalesTablaProps) {
   const [
     animalADesactivar,
@@ -139,7 +141,9 @@ export function AnimalesTabla({
                 colSpan={6}
                 className="py-16 text-center text-sm text-muted-foreground"
               >
-                No hay animales registrados.
+                {vacioConFiltros
+                  ? "No hay animales que coincidan con la búsqueda."
+                  : "No hay animales registrados."}
               </TableCell>
             </TableRow>
           ) : null}
@@ -154,8 +158,15 @@ export function AnimalesTabla({
                 key={animal.id}
                 className="transition-colors hover:bg-muted/30"
               >
+                {/* Backlog 2.2: "El usuario puede seleccionar un animal para
+                    visualizar su información detallada". */}
                 <TableCell className="font-medium">
-                  {animal.codigo}
+                  <Link
+                    href={`/dashboard/pecuaria/${animal.id}`}
+                    className="hover:underline"
+                  >
+                    {animal.codigo}
+                  </Link>
                 </TableCell>
 
                 <TableCell>

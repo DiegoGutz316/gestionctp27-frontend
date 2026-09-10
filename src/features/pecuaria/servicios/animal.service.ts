@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 import type {
   AnimalRespuesta,
   CrearAnimal,
+  FiltrarAnimales,
 } from "../validacion/animal.validacion";
 
 export function crearAnimal(datos: CrearAnimal) {
@@ -12,9 +13,16 @@ export function crearAnimal(datos: CrearAnimal) {
   );
 }
 
-export function listarAnimales() {
+export function listarAnimales(
+  filtros: FiltrarAnimales = {},
+) {
   return api.get<AnimalRespuesta[]>(
     "/pecuaria/animales",
+    {
+      q: filtros.q,
+      incluirInactivos: filtros.incluirInactivos,
+      orden: filtros.orden,
+    },
   );
 }
 
