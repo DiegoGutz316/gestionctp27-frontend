@@ -14,17 +14,25 @@ import {
   obtenerAnimal,
 } from "../servicios/animal.service";
 
-import type { CrearAnimal } from "../validacion/animal.validacion";
+import type {
+  CrearAnimal,
+  FiltrarAnimales,
+} from "../validacion/animal.validacion";
 
 export const animalesQueryKey = [
   "pecuaria",
   "animales",
 ] as const;
 
-export function useAnimales() {
+export function useAnimales(
+  filtros: FiltrarAnimales = {},
+) {
   return useQuery({
-    queryKey: animalesQueryKey,
-    queryFn: listarAnimales,
+    queryKey: [...animalesQueryKey, filtros],
+    queryFn: () => listarAnimales(filtros),
+    // Al cambiar de filtro se conservan los datos previos, para que la tabla
+    // no parpadee entre consultas.
+    placeholderData: (anterior) => anterior,
   });
 }
 

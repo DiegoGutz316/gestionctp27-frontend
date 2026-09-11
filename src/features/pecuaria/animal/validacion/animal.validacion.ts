@@ -8,6 +8,34 @@ import {
   TIPOS_INVENTARIO_ANIMAL,
 } from "../models/animal.model";
 
+/** Criterios de orden del listado. Replica `OrdenAnimales` del backend. */
+export const ORDENES_ANIMALES = ["NOMBRE", "CODIGO", "ESTADO"] as const;
+
+export type OrdenAnimales = (typeof ORDENES_ANIMALES)[number];
+
+export const ETIQUETA_ORDEN_ANIMALES: Record<OrdenAnimales, string> = {
+  NOMBRE: "Nombre",
+  CODIGO: "Código",
+  ESTADO: "Estado",
+};
+
+/**
+ * Filtros del listado. `q` busca en código, nombre y estado; `incluirInactivos`
+ * permite ver animales dados de baja, que por defecto quedan fuera.
+ */
+export const filtrarAnimalesSchema = z.object({
+  q: z
+    .string()
+    .trim()
+    .min(1, "Ingrese un texto de búsqueda")
+    .max(120, "La búsqueda no puede superar 120 caracteres")
+    .optional(),
+  incluirInactivos: z.boolean().optional(),
+  orden: z.enum(ORDENES_ANIMALES).optional(),
+});
+
+export type FiltrarAnimales = z.output<typeof filtrarAnimalesSchema>;
+
 export const crearAnimalSchema = z
   .object({
     codigo: z

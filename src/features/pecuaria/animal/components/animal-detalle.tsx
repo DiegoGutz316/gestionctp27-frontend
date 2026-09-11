@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/table";
 
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+import { DesparasitacionesHistorial } from "@/features/pecuaria/components/desparasitaciones-historial";
+import { VacunasHistorial } from "@/features/pecuaria/components/vacunas-historial";
 import { useHistorialSalud } from "@/features/pecuaria/salud/hooks/hooks";
 import {
   ETIQUETA_CONDICION_SALUD,
@@ -203,6 +205,10 @@ export function AnimalDetalle({ id }: { id: number }) {
       {datos.observaciones ? (
         <p className="text-sm text-muted-foreground">{datos.observaciones}</p>
       ) : null}
+
+      <VacunasHistorial animalId={id} />
+
+      <DesparasitacionesHistorial animalId={id} />
 
       <div className="flex flex-col gap-3">
         <h2 className="text-base font-semibold tracking-tight">
