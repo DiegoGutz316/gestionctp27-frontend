@@ -6,7 +6,6 @@ import {
 } from "@/features/pecuaria/animal/models/animal.model";
 
 import {
-  FILAS_MINIMAS_INVENTARIO,
   observacionInventario,
   type PieInventarioMep,
 } from "../models/inventario.model";
@@ -14,15 +13,6 @@ import {
   EncabezadoInventarioMep,
   FirmasInventarioMep,
 } from "./inventario-mep";
-
-function celdasVacias(cantidad: number) {
-  return Array.from({ length: cantidad }, (_, indice) => (
-    <td
-      key={`vacio-${indice}`}
-      className="h-7 border border-black px-1 py-0.5"
-    />
-  ));
-}
 
 export function InventarioEspeciesMenores({
   animales,
@@ -33,8 +23,6 @@ export function InventarioEspeciesMenores({
   pie: PieInventarioMep;
   onPieChange: (pie: PieInventarioMep) => void;
 }) {
-  const filasVacias = Math.max(0, FILAS_MINIMAS_INVENTARIO - animales.length);
-
   return (
     <article
       className="informe-udp w-full bg-white text-black"
@@ -92,14 +80,6 @@ export function InventarioEspeciesMenores({
               <td className="border border-black px-1 py-1 text-left align-middle">
                 {observacionInventario(animal)}
               </td>
-            </tr>
-          ))}
-          {Array.from({ length: filasVacias }, (_, indice) => (
-            <tr key={`fila-vacia-${indice}`}>
-              <td className="border border-black px-1 py-1 text-center align-middle">
-                {animales.length + indice + 1}
-              </td>
-              {celdasVacias(4)}
             </tr>
           ))}
           <FirmasInventarioMep

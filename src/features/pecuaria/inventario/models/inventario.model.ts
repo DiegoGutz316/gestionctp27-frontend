@@ -71,4 +71,3 @@ export function cantidadPorCategoria(
   return animal.categoriaBovina === categoria ? 1 : 0;
 }
 
-export const FILAS_MINIMAS_INVENTARIO = 10;

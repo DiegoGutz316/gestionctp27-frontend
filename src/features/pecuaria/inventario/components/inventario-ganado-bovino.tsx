@@ -6,7 +6,6 @@ import {
 } from "@/features/pecuaria/animal/models/animal.model";
 
 import {
-  FILAS_MINIMAS_INVENTARIO,
   cantidadPorCategoria,
   observacionInventario,
   type PieInventarioMep,
@@ -29,7 +28,6 @@ export function InventarioGanadoBovino({
   pie: PieInventarioMep;
   onPieChange: (pie: PieInventarioMep) => void;
 }) {
-  const filasVacias = Math.max(0, FILAS_MINIMAS_INVENTARIO - animales.length);
   const totales = {
     TORO: 0,
     NOVILLA: 0,
@@ -149,19 +147,6 @@ export function InventarioGanadoBovino({
               <td className="border border-black px-1 py-1 text-left align-middle">
                 {observacionInventario(animal)}
               </td>
-            </tr>
-          ))}
-          {Array.from({ length: filasVacias }, (_, indice) => (
-            <tr key={`fila-vacia-${indice}`}>
-              <td className="border border-black px-1 py-1 text-center align-middle">
-                {animales.length + indice + 1}
-              </td>
-              {Array.from({ length: 8 }, (_, col) => (
-                <td
-                  key={`vacio-${col}`}
-                  className="h-7 border border-black px-1 py-0.5"
-                />
-              ))}
             </tr>
           ))}
           <tr>

@@ -14,7 +14,6 @@ import {
 } from "@/features/pecuaria/animal/models/animal.model";
 
 import {
-  FILAS_MINIMAS_INVENTARIO,
   cantidadPorCategoria,
   observacionInventario,
   type PieInventarioMep,
@@ -392,34 +391,21 @@ function construirEspeciesMenores(
     "Observaciones",
   ]);
 
-  const filasVacias = Math.max(
-    0,
-    FILAS_MINIMAS_INVENTARIO - animales.length,
-  );
-  const totalFilas = animales.length + filasVacias;
-
-  for (let indice = 0; indice < totalFilas; indice += 1) {
+  for (let indice = 0; indice < animales.length; indice += 1) {
     const fila = filaEncabezado + 1 + indice;
     const animal = animales[indice];
     pintarCeldaDato(hoja, fila, 1, indice + 1);
-    if (animal) {
-      pintarCeldaDato(hoja, fila, 2, animal.nombre);
-      const edad = edadEnAnios(animal.fechaNacimiento);
-      pintarCeldaDato(hoja, fila, 3, edad);
-      hoja.getCell(fila, 3).numFmt = "0.0";
-      pintarCeldaDato(hoja, fila, 4, animal.raza);
-      pintarCeldaDato(hoja, fila, 5, observacionInventario(animal), "left");
-    } else {
-      pintarCeldaDato(hoja, fila, 2, null);
-      pintarCeldaDato(hoja, fila, 3, null);
-      pintarCeldaDato(hoja, fila, 4, null);
-      pintarCeldaDato(hoja, fila, 5, null);
-    }
+    pintarCeldaDato(hoja, fila, 2, animal.nombre);
+    const edad = edadEnAnios(animal.fechaNacimiento);
+    pintarCeldaDato(hoja, fila, 3, edad);
+    hoja.getCell(fila, 3).numFmt = "0.0";
+    pintarCeldaDato(hoja, fila, 4, animal.raza);
+    pintarCeldaDato(hoja, fila, 5, observacionInventario(animal), "left");
   }
 
   const ultimaFila = pintarPie(
     hoja,
-    filaEncabezado + 1 + totalFilas + 1,
+    filaEncabezado + animales.length + 2,
     ultimaCol,
     pie,
   );
@@ -500,11 +486,6 @@ function construirGanadoBovino(
   hoja.getRow(filaGrupo).height = 18;
   hoja.getRow(filaSub).height = 22;
 
-  const filasVacias = Math.max(
-    0,
-    FILAS_MINIMAS_INVENTARIO - animales.length,
-  );
-  const totalFilas = animales.length + filasVacias;
   const totales = {
     TORO: 0,
     NOVILLA: 0,
@@ -513,27 +494,21 @@ function construirGanadoBovino(
     TORETE: 0,
   };
 
-  for (let indice = 0; indice < totalFilas; indice += 1) {
+  for (let indice = 0; indice < animales.length; indice += 1) {
     const fila = filaSub + 1 + indice;
     const animal = animales[indice];
     pintarCeldaDato(hoja, fila, 1, indice + 1);
-    if (animal) {
-      pintarCeldaDato(hoja, fila, 2, animal.nombre);
-      CATEGORIAS_BOVINAS.forEach((categoria, colIndice) => {
-        const cantidad = cantidadPorCategoria(animal, categoria);
-        totales[categoria] += cantidad;
-        pintarCeldaDato(hoja, fila, 3 + colIndice, cantidad > 0 ? cantidad : null);
-      });
-      pintarCeldaDato(hoja, fila, 8, animal.raza);
-      pintarCeldaDato(hoja, fila, 9, observacionInventario(animal), "left");
-    } else {
-      for (let col = 2; col <= ultimaCol; col += 1) {
-        pintarCeldaDato(hoja, fila, col, null);
-      }
-    }
+    pintarCeldaDato(hoja, fila, 2, animal.nombre);
+    CATEGORIAS_BOVINAS.forEach((categoria, colIndice) => {
+      const cantidad = cantidadPorCategoria(animal, categoria);
+      totales[categoria] += cantidad;
+      pintarCeldaDato(hoja, fila, 3 + colIndice, cantidad > 0 ? cantidad : null);
+    });
+    pintarCeldaDato(hoja, fila, 8, animal.raza);
+    pintarCeldaDato(hoja, fila, 9, observacionInventario(animal), "left");
   }
 
-  const filaTotales = filaSub + 1 + totalFilas;
+  const filaTotales = filaSub + 1 + animales.length;
   hoja.mergeCells(filaTotales, 1, filaTotales, 2);
   const etiquetaTotales = hoja.getCell(filaTotales, 1);
   etiquetaTotales.value = "TOTALES";
