@@ -195,7 +195,6 @@ export function CamaCultivoForm() {
                 <Input
                   id={field.name}
                   placeholder="Ej: Requiere revisión de riego"
-                  maxLength={500}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}

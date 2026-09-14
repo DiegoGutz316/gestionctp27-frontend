@@ -202,7 +202,6 @@ export function CamaCultivoEditarForm({
 
                 <Input
                   id={field.name}
-                  maxLength={500}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
