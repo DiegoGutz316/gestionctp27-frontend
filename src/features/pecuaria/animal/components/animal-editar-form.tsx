@@ -68,7 +68,11 @@ export function AnimalEditarForm({
   const valoresIniciales = {
     codigo: animal.codigo,
     nombre: animal.nombre,
-    tipoInventario: tipoInventarioDeEspecie(animal.especie),
+    // El selector puede quedarse sin valor, igual que en el formulario de
+    // registro, asi que el campo tambien admite vacio.
+    tipoInventario: tipoInventarioDeEspecie(animal.especie) as
+      | TipoInventarioAnimal
+      | "",
     especie: ESPECIES_ANIMAL.includes(animal.especie as EspecieAnimal)
       ? (animal.especie as EspecieAnimal)
       : "",

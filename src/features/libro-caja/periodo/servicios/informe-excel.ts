@@ -195,7 +195,8 @@ function construirInforme(
   const hoja = workbook.addWorksheet("Hoja1", {
     views: [{ showGridLines: true, zoomScale: 69 }],
     pageSetup: {
-      paperSize: 1,
+      // 9 = A4. Carta (1) no aparece en el tipo PaperSize que declara exceljs.
+      paperSize: 9,
       orientation: "portrait",
       fitToPage: true,
       fitToWidth: 1,
