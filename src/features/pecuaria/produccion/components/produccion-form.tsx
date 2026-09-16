@@ -51,6 +51,12 @@ export function ProduccionForm() {
     value: String(animal.id),
     label: `${animal.codigo} — ${animal.nombre} (${etiquetaEspecieProduccion(animal.especie)})`,
   }));
+  const animalPreseleccionado = activos.find(
+    (animal) => String(animal.id) === animalInicial,
+  );
+  const etiquetaAnimalPreseleccionado = animalPreseleccionado
+    ? `${animalPreseleccionado.codigo} — ${animalPreseleccionado.nombre} (${etiquetaEspecieProduccion(animalPreseleccionado.especie)})`
+    : "";
   const tiposItems = TIPOS_PRODUCCION.map((tipo) => ({
     value: tipo,
     label: `${ETIQUETA_TIPO_PRODUCCION[tipo]} (${UNIDAD_TIPO_PRODUCCION[tipo]})`,
@@ -103,30 +109,41 @@ export function ProduccionForm() {
                   Animal
                 </FieldLabel>
 
-                <Select
-                  items={animalesItems}
-                  value={field.state.value === "" ? null : field.state.value}
-                  onValueChange={(valor) =>
-                    field.handleChange((valor as string | null) ?? "")
-                  }
-                >
-                  <SelectTrigger
+                {animalPreseleccionado ? (
+                  <Input
                     id={field.name}
-                    className="w-full"
+                    value={etiquetaAnimalPreseleccionado}
+                    readOnly
+                    aria-readonly="true"
                     aria-invalid={invalid}
-                    disabled={animales.isLoading}
-                    onBlur={field.handleBlur}
+                    className="bg-muted/40"
+                  />
+                ) : (
+                  <Select
+                    items={animalesItems}
+                    value={field.state.value === "" ? null : field.state.value}
+                    onValueChange={(valor) =>
+                      field.handleChange((valor as string | null) ?? "")
+                    }
                   >
-                    <SelectValue placeholder="Seleccione un animal activo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {animalesItems.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <SelectTrigger
+                      id={field.name}
+                      className="w-full"
+                      aria-invalid={invalid}
+                      disabled={animales.isLoading}
+                      onBlur={field.handleBlur}
+                    >
+                      <SelectValue placeholder="Seleccione un animal activo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {animalesItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
 
                 <FieldError errors={errors} />
               </Field>
