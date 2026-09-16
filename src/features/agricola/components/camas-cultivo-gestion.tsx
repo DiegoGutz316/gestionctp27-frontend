@@ -19,6 +19,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
 import { useCamasCultivo } from "../hooks/cama-cultivo-hooks";
+import { AgricolaVistasNav } from "./agricola-vistas-nav";
 import { CamasCultivoTabla } from "./camas-cultivo-tabla";
 
 export function CamasCultivoGestion() {
@@ -84,6 +85,8 @@ export function CamasCultivoGestion() {
           </Button>
         </MostrarSiPuede>
       </div>
+
+      <AgricolaVistasNav />
 
       <div className="relative min-w-0 flex-1">
         <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
