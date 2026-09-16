@@ -6,7 +6,9 @@ import { z } from "zod";
  */
 export const ESTADOS_CAMA_CULTIVO = [
   "DISPONIBLE",
-  "EN_USO",
+  "EN_PREPARACION",
+  "SEMBRADA",
+  "EN_DESCANSO",
   "MANTENIMIENTO",
 ] as const;
 
@@ -16,8 +18,10 @@ export const ETIQUETA_ESTADO_CAMA_CULTIVO: Record<
   EstadoCamaCultivo,
   string
 > = {
-  DISPONIBLE: "Disponible",
-  EN_USO: "En uso",
+  DISPONIBLE: "Disponible para siembra",
+  EN_PREPARACION: "En preparación",
+  SEMBRADA: "Sembrada",
+  EN_DESCANSO: "En descanso",
   MANTENIMIENTO: "Mantenimiento",
 };
 
