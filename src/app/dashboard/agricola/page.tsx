@@ -9,7 +9,10 @@ export const metadata: Metadata = {
 
 export default function AgricolaPage() {
   return (
-    <RequerirPermiso modulo="AGRICOLA" nivel="LECTURA">
+    <RequerirPermiso
+      modulo="AGRICOLA"
+      nivel="LECTURA"
+    >
       <CamasCultivoGestion />
     </RequerirPermiso>
   );
