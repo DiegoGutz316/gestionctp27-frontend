@@ -1,11 +1,9 @@
 "use client";
 
-import {
-  usePathname,
-  useRouter,
-} from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 const vistas = [
   {
@@ -28,7 +26,6 @@ const vistas = [
 
 export function AgricolaVistasNav() {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <nav
@@ -47,26 +44,23 @@ export function AgricolaVistasNav() {
               );
 
         return (
-          <Button
+          <Link
             key={vista.href}
-            type="button"
-            variant={
-              activa
-                ? "default"
-                : "outline"
-            }
-            size="sm"
-            onClick={() =>
-              router.push(vista.href)
-            }
+            href={vista.href}
             aria-current={
               activa
                 ? "page"
                 : undefined
             }
+            className={buttonVariants({
+              variant: activa
+                ? "default"
+                : "outline",
+              size: "sm",
+            })}
           >
             {vista.etiqueta}
-          </Button>
+          </Link>
         );
       })}
     </nav>
