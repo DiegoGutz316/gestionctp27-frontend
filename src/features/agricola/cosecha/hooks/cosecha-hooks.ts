@@ -28,7 +28,7 @@ export function useRegistrarCosecha() {
   return useMutation({
     mutationFn: registrarCosecha,
 
-    // La clave queda lista para el backlog 3.7, que agrega la consulta.
+    // Actualiza cualquier consulta del historial tras registrar una cosecha.
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: cosechasQueryKey }),
   });
