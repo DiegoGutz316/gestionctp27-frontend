@@ -20,6 +20,10 @@ const vistas = [
     href: "/dashboard/agricola/tratamientos",
     etiqueta: "Tratamientos",
   },
+  {
+    href: "/dashboard/agricola/cosechas",
+    etiqueta: "Cosechas",
+  },
 ] as const;
 
 export function AgricolaVistasNav() {

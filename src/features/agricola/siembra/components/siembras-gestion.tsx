@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, PlusIcon, SearchIcon, WheatIcon } from "lucide-react";
+import { Home, PlusIcon, SearchIcon } from "lucide-react";
 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
@@ -47,15 +47,9 @@ export function SiembrasGestion() {
           <p className="mt-0.5 text-sm text-muted-foreground">{consulta.isLoading ? "Cargando siembras…" : `${siembras.length} siembra${siembras.length === 1 ? "" : "s"} encontrada${siembras.length === 1 ? "" : "s"}`}</p>
         </div>
         <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            {/* Backlog 3.6: acceso al registro de cosechas. */}
-            <Button variant="outline" className="w-full sm:w-auto" nativeButton={false} render={<Link href="/dashboard/agricola/cosechas/nueva" />}>
-              <WheatIcon data-icon="inline-start" />Registrar cosecha
-            </Button>
-            <Button className="w-full sm:w-auto" nativeButton={false} render={<Link href="/dashboard/agricola/siembras/nueva" />}>
-              <PlusIcon data-icon="inline-start" />Registrar siembra
-            </Button>
-          </div>
+          <Button className="w-full sm:w-auto" nativeButton={false} render={<Link href="/dashboard/agricola/siembras/nueva" />}>
+            <PlusIcon data-icon="inline-start" />Registrar siembra
+          </Button>
         </MostrarSiPuede>
       </div>
 

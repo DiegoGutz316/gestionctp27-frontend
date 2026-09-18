@@ -99,7 +99,7 @@ export function CosechaForm() {
           `Cosecha de ${cosecha.siembra.tipoCultivo} registrada correctamente.`,
         );
 
-        router.push("/dashboard/agricola/siembras");
+        router.push("/dashboard/agricola/cosechas");
       } catch (error) {
         toast.error(getMensajeDeError(error));
       }

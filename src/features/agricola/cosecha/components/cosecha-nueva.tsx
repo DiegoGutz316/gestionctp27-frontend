@@ -38,9 +38,9 @@ export function CosechaNueva() {
 
           <BreadcrumbItem>
             <BreadcrumbLink
-              render={<Link href="/dashboard/agricola/siembras" />}
+              render={<Link href="/dashboard/agricola/cosechas" />}
             >
-              Siembras
+              Cosechas
             </BreadcrumbLink>
           </BreadcrumbItem>
 

@@ -76,3 +76,9 @@ export const cosechaSchema = z.object({
 });
 
 export type CosechaRespuesta = z.infer<typeof cosechaSchema>;
+
+/** Backlog 3.7: los dos filtros son opcionales y se combinan. */
+export type ConsultarCosechas = {
+  cultivo?: string;
+  fecha?: string;
+};
