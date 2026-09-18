@@ -37,16 +37,29 @@ export function CosechasTabla({
   cosechas,
   hayFiltros,
 }: Props) {
+  const hayDatos = cosechas.length > 0;
+
+  // Una actualización en segundo plano puede fallar teniendo datos ya
+  // cargados: TanStack Query los conserva y marca `isError`. Si el error
+  // ganara, un fallo pasajero escondería un historial perfectamente usable,
+  // así que con filas disponibles se muestran y el fallo se avisa aparte.
   const estado = cargando
     ? "cargando"
-    : mensajeError
-      ? "error"
-      : cosechas.length === 0
-        ? "vacio"
-        : "datos";
+    : hayDatos
+      ? "datos"
+      : mensajeError
+        ? "error"
+        : "vacio";
 
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+      {mensajeError && hayDatos ? (
+        <p className="border-b bg-destructive/5 px-4 py-2 text-sm text-destructive">
+          No se pudo actualizar el historial ({mensajeError}). Se muestran los
+          últimos datos cargados.
+        </p>
+      ) : null}
+
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">

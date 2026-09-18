@@ -79,7 +79,7 @@ export function CosechasGestion() {
           <p className="mt-0.5 text-sm text-muted-foreground">
             {consulta.isLoading
               ? "Cargando cosechas…"
-              : consulta.isError
+              : consulta.isError && cosechas.length === 0
                 ? "No se pudo consultar el historial."
                 : `${cosechas.length} cosecha${
                     cosechas.length === 1 ? "" : "s"
