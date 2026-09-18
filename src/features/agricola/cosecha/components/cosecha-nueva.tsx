@@ -58,7 +58,7 @@ export function CosechaNueva() {
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Registre la produccion obtenida de una siembra.
+          Registre la producción obtenida de una siembra.
         </p>
       </div>
 
