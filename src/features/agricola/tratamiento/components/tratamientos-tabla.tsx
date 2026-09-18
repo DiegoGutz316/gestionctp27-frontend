@@ -44,7 +44,7 @@ export function TratamientosTabla({
               Fecha
             </TableHead>
 
-            <TableHead className="text-right">
+            <TableHead className="text-center">
               Cantidad
             </TableHead>
 
@@ -75,7 +75,7 @@ export function TratamientosTabla({
                 </TableCell>
 
                 <TableCell>
-                  <Skeleton className="ml-auto h-4 w-16" />
+                  <Skeleton className="mx-auto h-4 w-16" />
                 </TableCell>
 
                 <TableCell>
@@ -147,7 +147,7 @@ export function TratamientosTabla({
                   )}
                 </TableCell>
 
-                <TableCell className="text-right tabular-nums">
+                <TableCell className="text-center tabular-nums">
                   {formatearCantidad(
                     tratamiento.cantidad,
                   )}
