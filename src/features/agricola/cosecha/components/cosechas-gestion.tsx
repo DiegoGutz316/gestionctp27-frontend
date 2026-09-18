@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Home, SearchIcon, WheatIcon } from "lucide-react";
 
+import { ControlesPaginacion } from "@/components/controles-paginacion";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -28,6 +30,7 @@ import { CosechasTabla } from "./cosechas-tabla";
 export function CosechasGestion() {
   const [cultivo, setCultivo] = useState("");
   const [fecha, setFecha] = useState("");
+  const [pagina, setPagina] = useState(1);
 
   // Se espera a que el usuario deje de escribir para no consultar por tecla.
   const cultivoDebounced = useDebouncedValue(cultivo.trim(), 300);
@@ -35,9 +38,12 @@ export function CosechasGestion() {
   const consulta = useCosechas({
     cultivo: cultivoDebounced || undefined,
     fecha: fecha || undefined,
+    pagina,
   });
 
-  const cosechas = consulta.data ?? [];
+  const cosechas = consulta.data?.datos ?? [];
+  const meta = consulta.data?.meta;
+  const total = meta?.total ?? 0;
   const hayFiltros = Boolean(cultivoDebounced || fecha);
 
   return (
@@ -81,9 +87,9 @@ export function CosechasGestion() {
               ? "Cargando cosechas…"
               : consulta.isError && cosechas.length === 0
                 ? "No se pudo consultar el historial."
-                : `${cosechas.length} cosecha${
-                    cosechas.length === 1 ? "" : "s"
-                  } encontrada${cosechas.length === 1 ? "" : "s"}`}
+                : `${total} cosecha${
+                    total === 1 ? "" : "s"
+                  } encontrada${total === 1 ? "" : "s"}`}
           </p>
         </div>
 
@@ -110,7 +116,10 @@ export function CosechasGestion() {
             <Input
               id="filtro-cultivo"
               value={cultivo}
-              onChange={(event) => setCultivo(event.target.value)}
+              onChange={(event) => {
+                setCultivo(event.target.value);
+                setPagina(1);
+              }}
               placeholder="Buscar por cultivo…"
               className="pl-9"
               maxLength={120}
@@ -127,7 +136,10 @@ export function CosechasGestion() {
               type="date"
               max={fechaHoyCR()}
               value={fecha}
-              onChange={(event) => setFecha(event.target.value)}
+              onChange={(event) => {
+                setFecha(event.target.value);
+                setPagina(1);
+              }}
             />
 
             {hayFiltros ? (
@@ -137,6 +149,7 @@ export function CosechasGestion() {
                 onClick={() => {
                   setCultivo("");
                   setFecha("");
+                  setPagina(1);
                 }}
               >
                 Limpiar
@@ -154,6 +167,10 @@ export function CosechasGestion() {
         cosechas={cosechas}
         hayFiltros={hayFiltros}
       />
+
+      {meta && total > 0 ? (
+        <ControlesPaginacion meta={meta} onPaginaChange={setPagina} />
+      ) : null}
     </section>
   );
 }
