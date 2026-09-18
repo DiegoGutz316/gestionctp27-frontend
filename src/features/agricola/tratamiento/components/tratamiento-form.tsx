@@ -47,6 +47,15 @@ export function TratamientoForm() {
     }),
   );
 
+  const siembraDe = (
+    siembraId: string,
+  ) =>
+    (siembras.data ?? []).find(
+      (siembra) =>
+        String(siembra.id) ===
+        siembraId,
+    );
+
   const form = useForm({
     defaultValues: {
       siembraId: "",
@@ -57,9 +66,36 @@ export function TratamientoForm() {
     },
 
     validators: {
-      onSubmit: zodValidator(
-        registrarTratamientoSchema,
-      ),
+      onSubmit: ({ value }) => {
+        const errores = zodValidator(
+          registrarTratamientoSchema,
+        )({ value });
+
+        if (errores) return errores;
+
+        // El esquema no puede comprobarlo por su cuenta: el minimo depende de
+        // la siembra elegida. Sin esto se registran tratamientos anteriores a
+        // la siembra, que el backend tambien rechaza.
+        const siembra = siembraDe(
+          value.siembraId,
+        );
+
+        if (
+          siembra &&
+          value.fecha <
+            siembra.fechaSiembra
+        ) {
+          return {
+            fields: {
+              fecha: `El tratamiento no puede ser anterior a la siembra (${formatearFechaSiembra(
+                siembra.fechaSiembra,
+              )}).`,
+            },
+          };
+        }
+
+        return undefined;
+      },
     },
 
     onSubmit: async ({ value }) => {
@@ -260,28 +296,45 @@ export function TratamientoForm() {
                     Fecha del tratamiento
                   </FieldLabel>
 
-                  <Input
-                    id={field.name}
-                    type="date"
-                    max={fechaHoyLocal()}
-                    aria-invalid={
-                      invalid
-                    }
-                    value={
-                      field.state.value
-                    }
-                    onBlur={
-                      field.handleBlur
-                    }
-                    onChange={(
-                      event,
+                  <form.Subscribe
+                    selector={(
+                      estado,
                     ) =>
-                      field.handleChange(
-                        event.target
-                          .value,
-                      )
+                      estado.values
+                        .siembraId
                     }
-                  />
+                  >
+                    {(siembraId) => (
+                      <Input
+                        id={field.name}
+                        type="date"
+                        min={
+                          siembraDe(
+                            siembraId,
+                          )?.fechaSiembra
+                        }
+                        max={fechaHoyLocal()}
+                        aria-invalid={
+                          invalid
+                        }
+                        value={
+                          field.state
+                            .value
+                        }
+                        onBlur={
+                          field.handleBlur
+                        }
+                        onChange={(
+                          event,
+                        ) =>
+                          field.handleChange(
+                            event.target
+                              .value,
+                          )
+                        }
+                      />
+                    )}
+                  </form.Subscribe>
 
                   <FieldError
                     errors={errors}
