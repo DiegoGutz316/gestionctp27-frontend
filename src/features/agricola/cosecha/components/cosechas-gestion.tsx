@@ -32,6 +32,12 @@ import {
 import { getMensajeDeError } from "../servicios/cosecha.service";
 import { CosechasTabla } from "./cosechas-tabla";
 
+/**
+ * Piso del filtro de fechas. El colegio no tiene cosechas anteriores, y sirve
+ * para descartar los años a medio escribir.
+ */
+const FECHA_MINIMA = "1900-01-01";
+
 export function CosechasGestion() {
   const [cultivo, setCultivo] = useState("");
   const [desde, setDesde] = useState("");
@@ -49,9 +55,32 @@ export function CosechasGestion() {
 
   const hoy = fechaHoyCR();
 
-  // Los campos nativos ya acotan el calendario, pero el usuario puede escribir
-  // la fecha a mano, así que el orden se comprueba igual.
-  const rangoInvalido = Boolean(desde && hasta && desde > hasta);
+  const invertido = Boolean(desde && hasta && desde > hasta);
+
+  /**
+   * El `min`/`max` de los campos nativos no impide escribir: Chrome deja el
+   * valor puesto y solo lo marca inválido, así que hay que comprobarlo aquí.
+   *
+   * El piso no es un capricho: al teclear el año dígito a dígito el campo pasa
+   * por años como 0002 o 0202, que son fechas pasadas válidas para el
+   * servidor, y cada tecla salía en una consulta que no significaba nada.
+   */
+  const fueraDeRango = (valor: string) =>
+    Boolean(valor) && (valor > hoy || valor < FECHA_MINIMA);
+
+  /**
+   * Qué anda mal en las fechas, si algo anda mal. Mientras haya un problema
+   * no se consulta: el backend rechaza estas fechas con un 400 y el usuario
+   * vería un error de servidor en vez de entender qué escribió mal.
+   */
+  const problemaFechas =
+    (desde && desde > hoy) || (hasta && hasta > hoy)
+      ? "Las fechas no pueden ser futuras."
+      : (desde && desde < FECHA_MINIMA) || (hasta && hasta < FECHA_MINIMA)
+        ? `Ingrese un año a partir de ${FECHA_MINIMA.slice(0, 4)}.`
+        : invertido
+          ? "La fecha inicial no puede ser posterior a la fecha final."
+          : null;
 
   const consulta = useCosechas(
     {
@@ -60,7 +89,7 @@ export function CosechasGestion() {
       hasta: hasta || undefined,
       pagina,
     },
-    { habilitada: !rangoInvalido },
+    { habilitada: !problemaFechas },
   );
 
   const cosechas = consulta.data?.datos ?? [];
@@ -144,8 +173,8 @@ export function CosechasGestion() {
           </h1>
 
           <p className="mt-0.5 text-sm text-muted-foreground">
-            {rangoInvalido
-              ? "Corrija el rango de fechas para ver el historial."
+            {problemaFechas
+              ? "Corrija las fechas para ver el historial."
               : consulta.isLoading
                 ? "Cargando cosechas…"
                 : consulta.isError && cosechas.length === 0
@@ -197,9 +226,10 @@ export function CosechasGestion() {
             <Input
               id="filtro-desde"
               type="date"
+              min={FECHA_MINIMA}
               max={hasta || hoy}
               value={desde}
-              aria-invalid={rangoInvalido}
+              aria-invalid={fueraDeRango(desde) || invertido}
               onChange={(event) => cambiarFecha(setDesde, event.target.value)}
             />
           </div>
@@ -210,18 +240,18 @@ export function CosechasGestion() {
             <Input
               id="filtro-hasta"
               type="date"
-              min={desde || undefined}
+              min={desde || FECHA_MINIMA}
               max={hoy}
               value={hasta}
-              aria-invalid={rangoInvalido}
+              aria-invalid={fueraDeRango(hasta) || invertido}
               onChange={(event) => cambiarFecha(setHasta, event.target.value)}
             />
           </div>
         </div>
 
-        {rangoInvalido ? (
+        {problemaFechas ? (
           <p role="alert" className="text-sm text-destructive">
-            La fecha inicial no puede ser posterior a la fecha final.
+            {problemaFechas}
           </p>
         ) : null}
 
@@ -260,9 +290,9 @@ export function CosechasGestion() {
         </div>
       </div>
 
-      {rangoInvalido ? (
+      {problemaFechas ? (
         <div className="rounded-xl border bg-card px-4 py-16 text-center text-sm text-muted-foreground shadow-sm">
-          Revise las fechas: la inicial debe ser anterior o igual a la final.
+          Revise las fechas del filtro para ver el historial.
         </div>
       ) : (
         <CosechasTabla
@@ -275,7 +305,7 @@ export function CosechasGestion() {
         />
       )}
 
-      {!rangoInvalido && meta && total > 0 ? (
+      {!problemaFechas && meta && total > 0 ? (
         <ControlesPaginacion meta={meta} onPaginaChange={setPagina} />
       ) : null}
     </section>
