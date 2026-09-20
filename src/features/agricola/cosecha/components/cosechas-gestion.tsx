@@ -24,27 +24,117 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { fechaHoyCR } from "@/lib/fechas";
 
 import { useCosechas } from "../hooks/cosecha-hooks";
+import {
+  rangosRapidos,
+  resolverAtajoActivo,
+  type RangoFechas,
+} from "../models/rangos-fecha";
 import { getMensajeDeError } from "../servicios/cosecha.service";
 import { CosechasTabla } from "./cosechas-tabla";
 
+/**
+ * Piso del filtro de fechas. El colegio no tiene cosechas anteriores, y sirve
+ * para descartar los años a medio escribir.
+ */
+const FECHA_MINIMA = "1900-01-01";
+
 export function CosechasGestion() {
   const [cultivo, setCultivo] = useState("");
-  const [fecha, setFecha] = useState("");
+  const [desde, setDesde] = useState("");
+  const [hasta, setHasta] = useState("");
   const [pagina, setPagina] = useState(1);
+
+  // Cuál de los atajos tocó la persona. Se guarda el id y no solo las fechas
+  // porque hay días en que dos atajos dan el mismo rango.
+  const [atajoSeleccionado, setAtajoSeleccionado] = useState<string | null>(
+    null,
+  );
 
   // Se espera a que el usuario deje de escribir para no consultar por tecla.
   const cultivoDebounced = useDebouncedValue(cultivo.trim(), 300);
 
-  const consulta = useCosechas({
-    cultivo: cultivoDebounced || undefined,
-    fecha: fecha || undefined,
-    pagina,
-  });
+  const hoy = fechaHoyCR();
+
+  const invertido = Boolean(desde && hasta && desde > hasta);
+
+  /**
+   * El `min`/`max` de los campos nativos no impide escribir: Chrome deja el
+   * valor puesto y solo lo marca inválido, así que hay que comprobarlo aquí.
+   *
+   * El piso no es un capricho: al teclear el año dígito a dígito el campo pasa
+   * por años como 0002 o 0202, que son fechas pasadas válidas para el
+   * servidor, y cada tecla salía en una consulta que no significaba nada.
+   */
+  const fueraDeRango = (valor: string) =>
+    Boolean(valor) && (valor > hoy || valor < FECHA_MINIMA);
+
+  /**
+   * Qué anda mal en las fechas, si algo anda mal. Mientras haya un problema
+   * no se consulta: el backend rechaza estas fechas con un 400 y el usuario
+   * vería un error de servidor en vez de entender qué escribió mal.
+   */
+  const problemaFechas =
+    (desde && desde > hoy) || (hasta && hasta > hoy)
+      ? "Las fechas no pueden ser futuras."
+      : (desde && desde < FECHA_MINIMA) || (hasta && hasta < FECHA_MINIMA)
+        ? `Ingrese un año a partir de ${FECHA_MINIMA.slice(0, 4)}.`
+        : invertido
+          ? "La fecha inicial no puede ser posterior a la fecha final."
+          : null;
+
+  const consulta = useCosechas(
+    {
+      cultivo: cultivoDebounced || undefined,
+      desde: desde || undefined,
+      hasta: hasta || undefined,
+      pagina,
+    },
+    { habilitada: !problemaFechas },
+  );
 
   const cosechas = consulta.data?.datos ?? [];
   const meta = consulta.data?.meta;
   const total = meta?.total ?? 0;
-  const hayFiltros = Boolean(cultivoDebounced || fecha);
+  const hayFiltros = Boolean(cultivoDebounced || desde || hasta);
+  const atajoActivo = resolverAtajoActivo(atajoSeleccionado, desde, hasta);
+
+  /** Escribir una fecha a mano deja de ser «el atajo que toqué». */
+  const cambiarFecha = (ponerFecha: (valor: string) => void, valor: string) => {
+    ponerFecha(valor);
+    setAtajoSeleccionado(null);
+    setPagina(1);
+  };
+
+  /**
+   * Los atajos funcionan como interruptor: volver a tocar el que está
+   * aplicado quita el filtro de fechas en vez de volver a ponerlo, que es lo
+   * que el usuario espera de un botón que se ve encendido.
+   *
+   * Solo se limpian las fechas. El cultivo es otro filtro y no se toca.
+   */
+  const alternarRango = (id: string, valores: RangoFechas) => {
+    if (atajoActivo === id) {
+      setDesde("");
+      setHasta("");
+      setAtajoSeleccionado(null);
+      setPagina(1);
+
+      return;
+    }
+
+    setDesde(valores.desde);
+    setHasta(valores.hasta);
+    setAtajoSeleccionado(id);
+    setPagina(1);
+  };
+
+  const limpiar = () => {
+    setCultivo("");
+    setDesde("");
+    setHasta("");
+    setAtajoSeleccionado(null);
+    setPagina(1);
+  };
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
@@ -83,13 +173,15 @@ export function CosechasGestion() {
           </h1>
 
           <p className="mt-0.5 text-sm text-muted-foreground">
-            {consulta.isLoading
-              ? "Cargando cosechas…"
-              : consulta.isError && cosechas.length === 0
-                ? "No se pudo consultar el historial."
-                : `${total} cosecha${
-                    total === 1 ? "" : "s"
-                  } encontrada${total === 1 ? "" : "s"}`}
+            {problemaFechas
+              ? "Corrija las fechas para ver el historial."
+              : consulta.isLoading
+                ? "Cargando cosechas…"
+                : consulta.isError && cosechas.length === 0
+                  ? "No se pudo consultar el historial."
+                  : `${total} cosecha${
+                      total === 1 ? "" : "s"
+                    } encontrada${total === 1 ? "" : "s"}`}
           </p>
         </div>
 
@@ -107,68 +199,113 @@ export function CosechasGestion() {
 
       <AgricolaVistasNav />
 
-      <div className="grid gap-4 rounded-xl border bg-card p-4 shadow-sm sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="filtro-cultivo">Cultivo</Label>
+      <div className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-sm">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="filtro-cultivo">Cultivo</Label>
 
-          <div className="relative">
-            <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative">
+              <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="filtro-cultivo"
+                value={cultivo}
+                onChange={(event) => {
+                  setCultivo(event.target.value);
+                  setPagina(1);
+                }}
+                placeholder="Buscar por cultivo…"
+                className="pl-9"
+                maxLength={120}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="filtro-desde">Desde</Label>
+
             <Input
-              id="filtro-cultivo"
-              value={cultivo}
-              onChange={(event) => {
-                setCultivo(event.target.value);
-                setPagina(1);
-              }}
-              placeholder="Buscar por cultivo…"
-              className="pl-9"
-              maxLength={120}
+              id="filtro-desde"
+              type="date"
+              min={FECHA_MINIMA}
+              max={hasta || hoy}
+              value={desde}
+              aria-invalid={fueraDeRango(desde) || invertido}
+              onChange={(event) => cambiarFecha(setDesde, event.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="filtro-hasta">Hasta</Label>
+
+            <Input
+              id="filtro-hasta"
+              type="date"
+              min={desde || FECHA_MINIMA}
+              max={hoy}
+              value={hasta}
+              aria-invalid={fueraDeRango(hasta) || invertido}
+              onChange={(event) => cambiarFecha(setHasta, event.target.value)}
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="filtro-fecha">Fecha de cosecha</Label>
+        {problemaFechas ? (
+          <p role="alert" className="text-sm text-destructive">
+            {problemaFechas}
+          </p>
+        ) : null}
 
-          <div className="flex gap-2">
-            <Input
-              id="filtro-fecha"
-              type="date"
-              max={fechaHoyCR()}
-              value={fecha}
-              onChange={(event) => {
-                setFecha(event.target.value);
-                setPagina(1);
-              }}
-            />
+        <div className="flex flex-wrap items-center gap-2 border-t pt-4">
+          <span className="mr-1 text-sm text-muted-foreground">Período:</span>
 
-            {hayFiltros ? (
+          {rangosRapidos.map((rango) => {
+            const activo = atajoActivo === rango.id;
+
+            return (
               <Button
+                key={rango.id}
                 type="button"
-                variant="outline"
-                onClick={() => {
-                  setCultivo("");
-                  setFecha("");
-                  setPagina(1);
-                }}
+                size="sm"
+                variant={activo ? "default" : "outline"}
+                aria-pressed={activo}
+                title={activo ? "Tocar de nuevo para quitar el filtro" : undefined}
+                onClick={() => alternarRango(rango.id, rango.calcular())}
               >
-                Limpiar
+                {rango.etiqueta}
               </Button>
-            ) : null}
-          </div>
+            );
+          })}
+
+          {hayFiltros ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="ml-auto"
+              onClick={limpiar}
+            >
+              Limpiar filtros
+            </Button>
+          ) : null}
         </div>
       </div>
 
-      <CosechasTabla
-        cargando={consulta.isLoading}
-        mensajeError={
-          consulta.isError ? getMensajeDeError(consulta.error) : null
-        }
-        cosechas={cosechas}
-        hayFiltros={hayFiltros}
-      />
+      {problemaFechas ? (
+        <div className="rounded-xl border bg-card px-4 py-16 text-center text-sm text-muted-foreground shadow-sm">
+          Revise las fechas del filtro para ver el historial.
+        </div>
+      ) : (
+        <CosechasTabla
+          cargando={consulta.isLoading}
+          mensajeError={
+            consulta.isError ? getMensajeDeError(consulta.error) : null
+          }
+          cosechas={cosechas}
+          hayFiltros={hayFiltros}
+        />
+      )}
 
-      {meta && total > 0 ? (
+      {!problemaFechas && meta && total > 0 ? (
         <ControlesPaginacion meta={meta} onPaginaChange={setPagina} />
       ) : null}
     </section>
