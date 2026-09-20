@@ -1,6 +1,32 @@
 import { z } from "zod";
 
+import { formatearCantidad } from "@/features/agricola/siembra/models/siembra.model";
 import { fechaHoyCR } from "@/lib/fechas";
+
+/**
+ * En qué se midió la cosecha. Va por cosecha y no por siembra: del mismo
+ * cultivo se puede pesar un corte y contar otro.
+ */
+export const UNIDADES_MEDIDA = ["KG", "UNIDADES"] as const;
+
+export type UnidadMedida = (typeof UNIDADES_MEDIDA)[number];
+
+export const ETIQUETA_UNIDAD_MEDIDA: Record<UnidadMedida, string> = {
+  KG: "Kilogramos",
+  UNIDADES: "Unidades",
+};
+
+/** Cómo se lee una cantidad con su unidad: «12,5 kg», «1 unidad», «120 unidades». */
+export function formatearCantidadConUnidad(
+  valor: number,
+  unidad: UnidadMedida,
+): string {
+  const cantidad = formatearCantidad(valor);
+
+  if (unidad === "KG") return `${cantidad} kg`;
+
+  return `${cantidad} ${valor === 1 ? "unidad" : "unidades"}`;
+}
 
 /** Limite de la columna numeric(12,2) del backend. */
 const CANTIDAD_MAXIMA = 9_999_999_999.99;
@@ -40,24 +66,44 @@ const cantidadObtenidaSchema = z
       ),
   );
 
-export const registrarCosechaSchema = z.object({
-  siembraId: z
-    .string({ error: "Seleccione una siembra" })
-    .min(1, "Seleccione una siembra")
-    .regex(/^\d+$/, "Seleccione una siembra válida")
-    .transform(Number)
-    .pipe(z.number().int().positive("Seleccione una siembra válida")),
+export const registrarCosechaSchema = z
+  .object({
+    siembraId: z
+      .string({ error: "Seleccione una siembra" })
+      .min(1, "Seleccione una siembra")
+      .regex(/^\d+$/, "Seleccione una siembra válida")
+      .transform(Number)
+      .pipe(z.number().int().positive("Seleccione una siembra válida")),
 
-  fecha: fechaCosechaSchema,
+    fecha: fechaCosechaSchema,
 
-  cantidadObtenida: cantidadObtenidaSchema,
+    cantidadObtenida: cantidadObtenidaSchema,
 
-  observaciones: z
-    .string()
-    .trim()
-    .max(500, "Las observaciones no pueden superar 500 caracteres")
-    .optional(),
-});
+    unidadMedida: z.enum(UNIDADES_MEDIDA, {
+      error: "Seleccione la unidad de medida",
+    }),
+
+    observaciones: z
+      .string()
+      .trim()
+      .max(500, "Las observaciones no pueden superar 500 caracteres")
+      .optional(),
+  })
+  // Los decimales dependen de la unidad, así que la regla no cabe en el campo:
+  // media lechuga no se cosecha, pero medio kilo de tomate sí. El backend
+  // valida lo mismo, y la base lo garantiza con un CHECK.
+  .superRefine((valores, ctx) => {
+    if (
+      valores.unidadMedida === "UNIDADES" &&
+      !Number.isInteger(valores.cantidadObtenida)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["cantidadObtenida"],
+        message: "Medida en unidades, la cantidad debe ser un número entero",
+      });
+    }
+  });
 
 export type RegistrarCosecha = z.output<typeof registrarCosechaSchema>;
 
@@ -70,6 +116,7 @@ export const cosechaSchema = z.object({
   }),
   fecha: z.string(),
   cantidadObtenida: z.number(),
+  unidadMedida: z.enum(UNIDADES_MEDIDA),
   observaciones: z.string().nullable(),
   creadoEn: z.string(),
   creadoPor: z.uuid(),
