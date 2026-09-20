@@ -15,10 +15,18 @@ export const cosechasQueryKey = ["agricola", "cosechas"] as const;
  * anterior haria que, al cambiar de filtro, se mostraran cosechas que no
  * corresponden a lo consultado. Mejor mostrar la carga.
  */
-export function useCosechas(filtros: ConsultarCosechas = {}) {
+export function useCosechas(
+  filtros: ConsultarCosechas = {},
+  opciones: { habilitada?: boolean } = {},
+) {
   return useQuery({
     queryKey: [...cosechasQueryKey, filtros],
     queryFn: () => consultarCosechas(filtros),
+
+    // Con un rango de fechas al revés no hay nada que consultar: el backend
+    // responderia 400 y la pantalla mostraria un error de servidor en vez de
+    // decir lo que pasa, que es que los dos extremos estan invertidos.
+    enabled: opciones.habilitada ?? true,
   });
 }
 

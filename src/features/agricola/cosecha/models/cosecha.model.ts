@@ -78,12 +78,16 @@ export const cosechaSchema = z.object({
 export type CosechaRespuesta = z.infer<typeof cosechaSchema>;
 
 /**
- * Backlog 3.7: los dos filtros son opcionales y se combinan. La consulta va
+ * Backlog 3.7: los filtros son opcionales y se combinan. La consulta va
  * paginada, porque el historial solo crece.
+ *
+ * La fecha se filtra por rango; `desde` y `hasta` son inclusivos y se pueden
+ * usar por separado. Un día exacto es el mismo valor en los dos.
  */
 export type ConsultarCosechas = {
   cultivo?: string;
-  fecha?: string;
+  desde?: string;
+  hasta?: string;
   pagina?: number;
   limite?: number;
 };
