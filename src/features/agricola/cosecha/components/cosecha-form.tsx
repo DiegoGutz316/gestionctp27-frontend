@@ -27,7 +27,12 @@ import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 
 import { useRegistrarCosecha } from "../hooks/cosecha-hooks";
-import { registrarCosechaSchema } from "../models/cosecha.model";
+import {
+  ETIQUETA_UNIDAD_MEDIDA,
+  formatearCantidadConUnidad,
+  registrarCosechaSchema,
+  UNIDADES_MEDIDA,
+} from "../models/cosecha.model";
 import { getMensajeDeError } from "../servicios/cosecha.service";
 
 export function CosechaForm() {
@@ -43,6 +48,11 @@ export function CosechaForm() {
     label: `${siembra.tipoCultivo} — ${siembra.cama.codigo} — ${formatearFechaSiembra(
       siembra.fechaSiembra,
     )}`,
+  }));
+
+  const unidadesItems = UNIDADES_MEDIDA.map((unidad) => ({
+    value: unidad,
+    label: ETIQUETA_UNIDAD_MEDIDA[unidad],
   }));
 
   const siembraDe = (siembraId: string) =>
@@ -61,6 +71,7 @@ export function CosechaForm() {
       siembraId: "",
       fecha: "",
       cantidadObtenida: "",
+      unidadMedida: "KG" as (typeof UNIDADES_MEDIDA)[number],
       observaciones: "",
     },
 
@@ -96,7 +107,10 @@ export function CosechaForm() {
         const cosecha = await registrar.mutateAsync(datos);
 
         toast.success(
-          `Cosecha de ${cosecha.siembra.tipoCultivo} registrada correctamente.`,
+          `Cosecha de ${cosecha.siembra.tipoCultivo} registrada: ${formatearCantidadConUnidad(
+            cosecha.cantidadObtenida,
+            cosecha.unidadMedida,
+          )}.`,
         );
 
         router.push("/dashboard/agricola/cosechas");
@@ -179,7 +193,7 @@ export function CosechaForm() {
           }}
         </form.Field>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           <form.Field name="fecha">
             {(field) => {
               const errors = fieldErrors(field.state.meta.errors);
@@ -227,15 +241,84 @@ export function CosechaForm() {
                     Cantidad obtenida
                   </FieldLabel>
 
-                  <Input
-                    id={field.name}
-                    inputMode="decimal"
-                    placeholder="Ej: 12.5"
-                    aria-invalid={invalid}
+                  {/* El campo se adapta a la unidad elegida: en unidades no
+                      tiene sentido ofrecer el teclado decimal. */}
+                  <form.Subscribe
+                    selector={(estado) => estado.values.unidadMedida}
+                  >
+                    {(unidad) => (
+                      <>
+                        <Input
+                          id={field.name}
+                          inputMode={
+                            unidad === "UNIDADES" ? "numeric" : "decimal"
+                          }
+                          placeholder={
+                            unidad === "UNIDADES" ? "Ej: 120" : "Ej: 12.5"
+                          }
+                          aria-invalid={invalid}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(event) =>
+                            field.handleChange(event.target.value)
+                          }
+                        />
+
+                        {!invalid ? (
+                          <p className="text-xs text-muted-foreground">
+                            {unidad === "UNIDADES"
+                              ? "Solo números enteros."
+                              : "Admite hasta 2 decimales."}
+                          </p>
+                        ) : null}
+                      </>
+                    )}
+                  </form.Subscribe>
+
+                  <FieldError errors={errors} />
+                </Field>
+              );
+            }}
+          </form.Field>
+
+          <form.Field name="unidadMedida">
+            {(field) => {
+              const errors = fieldErrors(field.state.meta.errors);
+              const invalid = errors.length > 0;
+
+              return (
+                <Field data-invalid={invalid}>
+                  <FieldLabel htmlFor={field.name} required>
+                    Unidad de medida
+                  </FieldLabel>
+
+                  <Select
+                    items={unidadesItems}
                     value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
+                    onValueChange={(valor) =>
+                      field.handleChange(
+                        (valor as (typeof UNIDADES_MEDIDA)[number] | null) ??
+                          "KG",
+                      )
+                    }
+                  >
+                    <SelectTrigger
+                      id={field.name}
+                      className="w-full"
+                      aria-invalid={invalid}
+                      onBlur={field.handleBlur}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      {unidadesItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
                   <FieldError errors={errors} />
                 </Field>

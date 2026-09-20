@@ -10,12 +10,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  formatearCantidad,
-  formatearFecha,
-} from "@/features/agricola/siembra/models/siembra.model";
+import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
 
-import type { CosechaRespuesta } from "../models/cosecha.model";
+import {
+  formatearCantidadConUnidad,
+  type CosechaRespuesta,
+} from "../models/cosecha.model";
 
 type Props = {
   cargando: boolean;
@@ -128,8 +128,11 @@ export function CosechasTabla({
                     {formatearFecha(cosecha.fecha)}
                   </TableCell>
 
-                  <TableCell className="text-right tabular-nums">
-                    {formatearCantidad(cosecha.cantidadObtenida)}
+                  <TableCell className="text-right whitespace-nowrap tabular-nums">
+                    {formatearCantidadConUnidad(
+                      cosecha.cantidadObtenida,
+                      cosecha.unidadMedida,
+                    )}
                   </TableCell>
 
                   <TableCell className="whitespace-normal break-words text-muted-foreground">
