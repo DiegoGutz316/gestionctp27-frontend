@@ -25,8 +25,8 @@ import { fechaHoyCR } from "@/lib/fechas";
 
 import { useCosechas } from "../hooks/cosecha-hooks";
 import {
-  rangoRapidoActivo,
   rangosRapidos,
+  resolverAtajoActivo,
   type RangoFechas,
 } from "../models/rangos-fecha";
 import { getMensajeDeError } from "../servicios/cosecha.service";
@@ -37,6 +37,12 @@ export function CosechasGestion() {
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
   const [pagina, setPagina] = useState(1);
+
+  // Cuál de los atajos tocó la persona. Se guarda el id y no solo las fechas
+  // porque hay días en que dos atajos dan el mismo rango.
+  const [atajoSeleccionado, setAtajoSeleccionado] = useState<string | null>(
+    null,
+  );
 
   // Se espera a que el usuario deje de escribir para no consultar por tecla.
   const cultivoDebounced = useDebouncedValue(cultivo.trim(), 300);
@@ -61,11 +67,12 @@ export function CosechasGestion() {
   const meta = consulta.data?.meta;
   const total = meta?.total ?? 0;
   const hayFiltros = Boolean(cultivoDebounced || desde || hasta);
-  const atajoActivo = rangoRapidoActivo(desde, hasta);
+  const atajoActivo = resolverAtajoActivo(atajoSeleccionado, desde, hasta);
 
-  const aplicarRango = ({ desde: nuevoDesde, hasta: nuevoHasta }: RangoFechas) => {
-    setDesde(nuevoDesde);
-    setHasta(nuevoHasta);
+  /** Escribir una fecha a mano deja de ser «el atajo que toqué». */
+  const cambiarFecha = (ponerFecha: (valor: string) => void, valor: string) => {
+    ponerFecha(valor);
+    setAtajoSeleccionado(null);
     setPagina(1);
   };
 
@@ -80,18 +87,23 @@ export function CosechasGestion() {
     if (atajoActivo === id) {
       setDesde("");
       setHasta("");
+      setAtajoSeleccionado(null);
       setPagina(1);
 
       return;
     }
 
-    aplicarRango(valores);
+    setDesde(valores.desde);
+    setHasta(valores.hasta);
+    setAtajoSeleccionado(id);
+    setPagina(1);
   };
 
   const limpiar = () => {
     setCultivo("");
     setDesde("");
     setHasta("");
+    setAtajoSeleccionado(null);
     setPagina(1);
   };
 
@@ -188,10 +200,7 @@ export function CosechasGestion() {
               max={hasta || hoy}
               value={desde}
               aria-invalid={rangoInvalido}
-              onChange={(event) => {
-                setDesde(event.target.value);
-                setPagina(1);
-              }}
+              onChange={(event) => cambiarFecha(setDesde, event.target.value)}
             />
           </div>
 
@@ -205,10 +214,7 @@ export function CosechasGestion() {
               max={hoy}
               value={hasta}
               aria-invalid={rangoInvalido}
-              onChange={(event) => {
-                setHasta(event.target.value);
-                setPagina(1);
-              }}
+              onChange={(event) => cambiarFecha(setHasta, event.target.value)}
             />
           </div>
         </div>

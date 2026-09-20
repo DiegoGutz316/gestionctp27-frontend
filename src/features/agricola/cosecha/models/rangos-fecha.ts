@@ -130,3 +130,35 @@ export function rangoRapidoActivo(desde: string, hasta: string): string | null {
 
   return coincide?.id ?? null;
 }
+
+/**
+ * Qué atajo se muestra como aplicado.
+ *
+ * Buscar solo por valor no alcanza: hay días en que dos atajos calculan el
+ * mismo rango —todos los lunes «Hoy» y «Semana actual», y durante todo enero
+ * «Mes actual» y «Este año»—, y entonces se marcaría el primero de la lista y
+ * no el que la persona tocó. Con el botón equivocado encendido, volver a tocar
+ * el suyo tampoco quitaba el filtro.
+ *
+ * Por eso manda el atajo elegido, y la búsqueda por valor queda para los
+ * rangos escritos a mano. El elegido se comprueba igual: si su rango dejó de
+ * coincidir —la pantalla quedó abierta y cambió el día, por ejemplo— deja de
+ * mandar.
+ */
+export function resolverAtajoActivo(
+  seleccionado: string | null,
+  desde: string,
+  hasta: string,
+): string | null {
+  if (!desde || !hasta) return null;
+
+  const elegido = rangosRapidos.find((rango) => rango.id === seleccionado);
+
+  if (elegido) {
+    const valores = elegido.calcular();
+
+    if (valores.desde === desde && valores.hasta === hasta) return elegido.id;
+  }
+
+  return rangoRapidoActivo(desde, hasta);
+}
