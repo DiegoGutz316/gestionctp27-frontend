@@ -72,6 +72,11 @@ export function CosechasGestion() {
   // según los datos es menos predecible que una fija.
   const camas = useCamasCultivo();
 
+  // Un fallo de red también deja la lista vacía. Si no se distinguen, el
+  // selector diría «Todas las camas» —como si el filtro estuviera listo y sin
+  // aplicar— cuando en realidad no se pudo cargar nada.
+  const camasSinCargar = camas.isLoading || camas.isError;
+
   const camasItems = [
     { value: TODAS_LAS_CAMAS, label: "Todas las camas" },
     ...(camas.data ?? []).map((cama) => ({
@@ -263,14 +268,23 @@ export function CosechasGestion() {
 
             <Select
               items={camasItems}
-              value={camaId === "" ? TODAS_LAS_CAMAS : camaId}
+              // Sin datos el valor se deja sin fijar a propósito: es lo que
+              // hace que el trigger muestre el marcador de posición en vez de
+              // una opción válida que aquí sería mentira.
+              value={
+                camaId !== ""
+                  ? camaId
+                  : camasSinCargar
+                    ? null
+                    : TODAS_LAS_CAMAS
+              }
               onValueChange={(valor) => {
                 const elegida = (valor as string | null) ?? TODAS_LAS_CAMAS;
 
                 setCamaId(elegida === TODAS_LAS_CAMAS ? "" : elegida);
                 setPagina(1);
               }}
-              disabled={camas.isLoading || camas.isError}
+              disabled={camasSinCargar}
             >
               <SelectTrigger id="filtro-cama" className="w-full">
                 <SelectValue
@@ -292,6 +306,12 @@ export function CosechasGestion() {
                 ))}
               </SelectContent>
             </Select>
+
+            {camas.isError ? (
+              <p className="text-sm text-destructive">
+                {getMensajeDeError(camas.error)}
+              </p>
+            ) : null}
           </div>
 
           <div className="space-y-2">
