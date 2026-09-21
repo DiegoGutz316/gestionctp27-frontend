@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { formatearCantidad } from "@/features/agricola/siembra/models/siembra.model";
 import { fechaHoyCR } from "@/lib/fechas";
+import type { ResultadoPaginado } from "@/lib/paginacion";
 
 /**
  * En qué se midió la cosecha. Va por cosecha y no por siembra: del mismo
@@ -113,6 +114,11 @@ export const cosechaSchema = z.object({
     id: z.number(),
     tipoCultivo: z.string(),
     fechaSiembra: z.string(),
+    cama: z.object({
+      id: z.number(),
+      codigo: z.string(),
+      ubicacion: z.string(),
+    }),
   }),
   fecha: z.string(),
   cantidadObtenida: z.number(),
@@ -133,8 +139,35 @@ export type CosechaRespuesta = z.infer<typeof cosechaSchema>;
  */
 export type ConsultarCosechas = {
   cultivo?: string;
+
+  // Por id y no por el código «CAMA-001»: un id no admite variantes de
+  // escritura, que es justo el problema que tiene el filtro de cultivo.
+  camaId?: number;
+
   desde?: string;
   hasta?: string;
   pagina?: number;
   limite?: number;
 };
+
+/**
+ * Lo cosechado en todo el filtro, no en la página visible.
+ *
+ * Va agrupado por unidad porque kilos y unidades no se pueden sumar en un
+ * mismo número: 50 kg de tomate y 120 lechugas no son 170 de nada.
+ */
+export type TotalPorUnidad = {
+  unidadMedida: UnidadMedida;
+  cantidad: number;
+};
+
+export type ResultadoCosechas = ResultadoPaginado<CosechaRespuesta> & {
+  totales: TotalPorUnidad[];
+};
+
+/** «52,25 kg · 124 unidades», o vacío si no hay nada que totalizar. */
+export function resumirTotales(totales: TotalPorUnidad[]): string {
+  return totales
+    .map((total) => formatearCantidadConUnidad(total.cantidad, total.unidadMedida))
+    .join(" · ");
+}
