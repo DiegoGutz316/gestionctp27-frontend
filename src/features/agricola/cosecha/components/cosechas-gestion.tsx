@@ -17,13 +17,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { AgricolaVistasNav } from "@/features/agricola/components/agricola-vistas-nav";
+import { useCamasCultivo } from "@/features/agricola/hooks/cama-cultivo-hooks";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { fechaHoyCR } from "@/lib/fechas";
 
 import { useCosechas } from "../hooks/cosecha-hooks";
+import { resumirTotales } from "../models/cosecha.model";
 import {
   rangosRapidos,
   resolverAtajoActivo,
@@ -38,8 +47,16 @@ import { CosechasTabla } from "./cosechas-tabla";
  */
 const FECHA_MINIMA = "1900-01-01";
 
+/**
+ * Opción «sin filtrar» del selector de camas. Sin ella, una vez elegida una
+ * cama solo se podría quitar con «Limpiar filtros», que borra también el
+ * cultivo y las fechas. Mismo recurso que usa la consulta de producción.
+ */
+const TODAS_LAS_CAMAS = "TODAS";
+
 export function CosechasGestion() {
   const [cultivo, setCultivo] = useState("");
+  const [camaId, setCamaId] = useState("");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
   const [pagina, setPagina] = useState(1);
@@ -49,6 +66,19 @@ export function CosechasGestion() {
   const [atajoSeleccionado, setAtajoSeleccionado] = useState<string | null>(
     null,
   );
+
+  // Las camas salen del endpoint que ya usa la pantalla de camas. Se listan
+  // todas, incluidas las que aún no tienen cosechas: una lista que cambia
+  // según los datos es menos predecible que una fija.
+  const camas = useCamasCultivo();
+
+  const camasItems = [
+    { value: TODAS_LAS_CAMAS, label: "Todas las camas" },
+    ...(camas.data ?? []).map((cama) => ({
+      value: String(cama.id),
+      label: `${cama.codigo} — ${cama.ubicacion}`,
+    })),
+  ];
 
   // Se espera a que el usuario deje de escribir para no consultar por tecla.
   const cultivoDebounced = useDebouncedValue(cultivo.trim(), 300);
@@ -85,6 +115,7 @@ export function CosechasGestion() {
   const consulta = useCosechas(
     {
       cultivo: cultivoDebounced || undefined,
+      camaId: camaId ? Number(camaId) : undefined,
       desde: desde || undefined,
       hasta: hasta || undefined,
       pagina,
@@ -95,7 +126,11 @@ export function CosechasGestion() {
   const cosechas = consulta.data?.datos ?? [];
   const meta = consulta.data?.meta;
   const total = meta?.total ?? 0;
-  const hayFiltros = Boolean(cultivoDebounced || desde || hasta);
+
+  // Lo cosechado en todo el filtro, no en la página visible: es la cifra que
+  // le importa a un docente, y contar registros no se la da.
+  const totales = resumirTotales(consulta.data?.totales ?? []);
+  const hayFiltros = Boolean(cultivoDebounced || camaId || desde || hasta);
   const atajoActivo = resolverAtajoActivo(atajoSeleccionado, desde, hasta);
 
   /** Escribir una fecha a mano deja de ser «el atajo que toqué». */
@@ -130,6 +165,7 @@ export function CosechasGestion() {
 
   const limpiar = () => {
     setCultivo("");
+    setCamaId("");
     setDesde("");
     setHasta("");
     setAtajoSeleccionado(null);
@@ -181,7 +217,9 @@ export function CosechasGestion() {
                   ? "No se pudo consultar el historial."
                   : `${total} cosecha${
                       total === 1 ? "" : "s"
-                    } encontrada${total === 1 ? "" : "s"}`}
+                    } encontrada${total === 1 ? "" : "s"}${
+                      totales ? ` · ${totales}` : ""
+                    }`}
           </p>
         </div>
 
@@ -200,7 +238,7 @@ export function CosechasGestion() {
       <AgricolaVistasNav />
 
       <div className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-2">
             <Label htmlFor="filtro-cultivo">Cultivo</Label>
 
@@ -218,6 +256,42 @@ export function CosechasGestion() {
                 maxLength={120}
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="filtro-cama">Cama de cultivo</Label>
+
+            <Select
+              items={camasItems}
+              value={camaId === "" ? TODAS_LAS_CAMAS : camaId}
+              onValueChange={(valor) => {
+                const elegida = (valor as string | null) ?? TODAS_LAS_CAMAS;
+
+                setCamaId(elegida === TODAS_LAS_CAMAS ? "" : elegida);
+                setPagina(1);
+              }}
+              disabled={camas.isLoading || camas.isError}
+            >
+              <SelectTrigger id="filtro-cama" className="w-full">
+                <SelectValue
+                  placeholder={
+                    camas.isLoading
+                      ? "Cargando camas…"
+                      : camas.isError
+                        ? "No se pudo cargar"
+                        : "Todas las camas"
+                  }
+                />
+              </SelectTrigger>
+
+              <SelectContent>
+                {camasItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

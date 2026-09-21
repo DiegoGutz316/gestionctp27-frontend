@@ -64,6 +64,7 @@ export function CosechasTabla({
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead>Cultivo</TableHead>
+            <TableHead className="w-44">Cama de cultivo</TableHead>
             <TableHead className="w-40">Fecha de cosecha</TableHead>
             <TableHead className="w-40 text-right">Cantidad obtenida</TableHead>
             <TableHead>Observaciones</TableHead>
@@ -74,6 +75,9 @@ export function CosechasTabla({
           {estado === "cargando"
             ? Array.from({ length: 4 }).map((_, indice) => (
                 <TableRow key={`esqueleto-${indice}`}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-24" />
                   </TableCell>
@@ -93,7 +97,7 @@ export function CosechasTabla({
           {estado === "error" ? (
             <TableRow>
               <TableCell
-                colSpan={4}
+                colSpan={5}
                 className="py-16 text-center text-sm whitespace-normal text-destructive"
               >
                 {mensajeError}
@@ -104,7 +108,7 @@ export function CosechasTabla({
           {estado === "vacio" ? (
             <TableRow>
               <TableCell
-                colSpan={4}
+                colSpan={5}
                 className="py-16 text-center text-sm whitespace-normal text-muted-foreground"
               >
                 {hayFiltros
@@ -121,6 +125,15 @@ export function CosechasTabla({
                     {cosecha.siembra.tipoCultivo}
                     <span className="block text-xs text-muted-foreground">
                       Sembrada el {formatearFecha(cosecha.siembra.fechaSiembra)}
+                    </span>
+                  </TableCell>
+
+                  <TableCell>
+                    <span className="font-medium whitespace-nowrap">
+                      {cosecha.siembra.cama.codigo}
+                    </span>
+                    <span className="block text-xs text-muted-foreground">
+                      {cosecha.siembra.cama.ubicacion}
                     </span>
                   </TableCell>
 

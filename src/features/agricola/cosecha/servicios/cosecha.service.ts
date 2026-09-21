@@ -1,10 +1,10 @@
 import { api } from "@/lib/api";
-import type { ResultadoPaginado } from "@/lib/paginacion";
 
 import type {
   ConsultarCosechas,
   CosechaRespuesta,
   RegistrarCosecha,
+  ResultadoCosechas,
 } from "../models/cosecha.model";
 
 export function registrarCosecha(datos: RegistrarCosecha) {
@@ -12,10 +12,7 @@ export function registrarCosecha(datos: RegistrarCosecha) {
 }
 
 export function consultarCosechas(filtros: ConsultarCosechas = {}) {
-  return api.get<ResultadoPaginado<CosechaRespuesta>>(
-    "/agricola/cosechas",
-    filtros,
-  );
+  return api.get<ResultadoCosechas>("/agricola/cosechas", filtros);
 }
 
 export { getMensajeDeError } from "@/lib/api";
