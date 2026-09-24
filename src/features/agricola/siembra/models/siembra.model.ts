@@ -62,6 +62,7 @@ export const siembraSchema = z.object({
   tipoCultivo: z.string(),
   fechaSiembra: z.string(),
   cantidadSembrada: z.number(),
+  finalizadaEn: z.string().nullable().optional(),
   creadoEn: z.string(),
   creadoPor: z.uuid(),
 });

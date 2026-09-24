@@ -27,11 +27,11 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
 import { useCamasCultivo } from "../hooks/cama-cultivo-hooks";
+import { INVERNADEROS } from "../validacion/cama-cultivo.validacion";
 import { AgricolaVistasNav } from "./agricola-vistas-nav";
 import { CamasCultivoTabla } from "./camas-cultivo-tabla";
 
 const TODAS_LAS_CAMAS = "TODAS";
-const INVERNADEROS = ["Invernadero 1", "Invernadero 2"] as const;
 
 export function CamasCultivoGestion() {
   const [busqueda, setBusqueda] = useState("");

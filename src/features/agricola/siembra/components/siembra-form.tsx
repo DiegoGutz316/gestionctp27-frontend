@@ -20,9 +20,12 @@ export function SiembraForm() {
   const router = useRouter();
   const camas = useCamasCultivo();
   const registrar = useRegistrarSiembra();
-  const camasItems = (camas.data ?? []).map((cama) => ({
+  const camasDisponibles = (camas.data ?? []).filter(
+    (cama) => cama.estado === "DISPONIBLE",
+  );
+  const camasItems = camasDisponibles.map((cama) => ({
     value: String(cama.id),
-    label: `${cama.codigo} — ${cama.ubicacion}`,
+    label: `${/^cama\b/i.test(cama.codigo.trim()) ? cama.codigo.trim() : `Cama ${cama.codigo.trim()}`} — ${cama.ubicacion}`,
   }));
 
   const form = useForm({
@@ -78,7 +81,7 @@ export function SiembraForm() {
                 </Select>
                 {camas.isError ? <p className="text-sm text-destructive">No se pudieron cargar las camas de cultivo.</p> : null}
                 {!camas.isLoading && !camas.isError && camasItems.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Debe registrar una cama de cultivo antes de crear una siembra.</p>
+                  <p className="text-sm text-muted-foreground">No hay camas disponibles. Registre una cama o finalice la siembra que la ocupa.</p>
                 ) : null}
                 <FieldError errors={errors} />
               </Field>

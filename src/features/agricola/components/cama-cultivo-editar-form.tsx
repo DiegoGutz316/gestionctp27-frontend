@@ -28,15 +28,13 @@ import { useEditarCamaCultivo } from "../hooks/cama-cultivo-hooks";
 import { getMensajeDeError } from "../servicios/cama-cultivo.service";
 import {
   crearCamaCultivoSchema,
-  ESTADOS_CAMA_CULTIVO,
-  ETIQUETA_ESTADO_CAMA_CULTIVO,
+  INVERNADEROS,
   type CamaCultivoRespuesta,
-  type CrearCamaCultivoInput,
 } from "../validacion/cama-cultivo.validacion";
 
-const itemsEstado = ESTADOS_CAMA_CULTIVO.map((valor) => ({
+const itemsUbicacion = INVERNADEROS.map((valor) => ({
   value: valor,
-  label: ETIQUETA_ESTADO_CAMA_CULTIVO[valor],
+  label: valor,
 }));
 
 export function CamaCultivoEditarForm({
@@ -47,10 +45,9 @@ export function CamaCultivoEditarForm({
   const router = useRouter();
   const editarCamaCultivo = useEditarCamaCultivo(cama.id);
 
-  const valoresIniciales: CrearCamaCultivoInput = {
+  const valoresIniciales = {
     codigo: cama.codigo,
     ubicacion: cama.ubicacion,
-    estado: cama.estado,
     observaciones: cama.observaciones ?? "",
   };
 
@@ -97,7 +94,7 @@ export function CamaCultivoEditarForm({
             return (
               <Field data-invalid={invalid}>
                 <FieldLabel htmlFor={field.name} required>
-                  Código
+                  Número de cama
                 </FieldLabel>
 
                 <Input
@@ -128,41 +125,17 @@ export function CamaCultivoEditarForm({
                   Ubicación
                 </FieldLabel>
 
-                <Input
-                  id={field.name}
-                  maxLength={120}
-                  aria-invalid={invalid}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) =>
-                    field.handleChange(event.target.value)
-                  }
-                />
-
-                <FieldError errors={errors} />
-              </Field>
-            );
-          }}
-        </form.Field>
-
-        <form.Field name="estado">
-          {(field) => {
-            const errors = fieldErrors(field.state.meta.errors);
-            const invalid = errors.length > 0;
-
-            return (
-              <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name} required>
-                  Estado
-                </FieldLabel>
-
                 <Select
-                  items={itemsEstado}
-                  value={field.state.value}
-                  onValueChange={(valor) =>
-                    field.handleChange(
-                      valor as typeof field.state.value,
+                  items={itemsUbicacion}
+                  value={
+                    (INVERNADEROS as readonly string[]).includes(
+                      field.state.value,
                     )
+                      ? field.state.value
+                      : null
+                  }
+                  onValueChange={(valor) =>
+                    field.handleChange((valor as string | null) ?? "")
                   }
                 >
                   <SelectTrigger
@@ -171,11 +144,11 @@ export function CamaCultivoEditarForm({
                     aria-invalid={invalid}
                     onBlur={field.handleBlur}
                   >
-                    <SelectValue placeholder="Seleccione un estado" />
+                    <SelectValue placeholder="Invernadero 1 o 2" />
                   </SelectTrigger>
 
                   <SelectContent>
-                    {itemsEstado.map((item) => (
+                    {itemsUbicacion.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
                       </SelectItem>

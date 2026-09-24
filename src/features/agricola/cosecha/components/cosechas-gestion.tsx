@@ -27,6 +27,7 @@ import {
 
 import { AgricolaVistasNav } from "@/features/agricola/components/agricola-vistas-nav";
 import { useCamasCultivo } from "@/features/agricola/hooks/cama-cultivo-hooks";
+import { INVERNADEROS } from "@/features/agricola/validacion/cama-cultivo.validacion";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { fechaHoyCR } from "@/lib/fechas";
@@ -49,8 +50,6 @@ const FECHA_MINIMA = "1900-01-01";
  * cultivo y las fechas. Mismo recurso que usa la consulta de producción.
  */
 const TODAS_LAS_CAMAS = "TODAS";
-
-const INVERNADEROS = ["Invernadero 1", "Invernadero 2"] as const;
 
 /** Rango escrito a mano. No calcula fechas: las pone la persona en Desde y Hasta. */
 const PERIODO_PERSONALIZADO = "personalizado";
@@ -189,16 +188,6 @@ export function CosechasGestion() {
     setPagina(1);
   };
 
-  const limpiar = () => {
-    setCultivo("");
-    setUbicacion("");
-    setCamaId("");
-    setDesde("");
-    setHasta("");
-    setPeriodo(PERIODO_PERSONALIZADO);
-    setPagina(1);
-  };
-
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
       <Breadcrumb>
@@ -264,10 +253,12 @@ export function CosechasGestion() {
 
       <AgricolaVistasNav />
 
-      <div className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          <div className="space-y-2">
-            <Label htmlFor="filtro-cultivo">Cultivo</Label>
+      <div className="rounded-xl border bg-card p-4 shadow-sm">
+        <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,1fr)]">
+          <div className="flex min-w-0 flex-col gap-2">
+            <Label htmlFor="filtro-cultivo" className="h-5 leading-5">
+              Cultivo
+            </Label>
 
             <div className="relative">
               <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -279,14 +270,16 @@ export function CosechasGestion() {
                   setPagina(1);
                 }}
                 placeholder="Buscar por cultivo…"
-                className="pl-9"
+                className="h-9 pl-9"
                 maxLength={120}
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="filtro-ubicacion">Ubicación</Label>
+          <div className="flex min-w-0 flex-col gap-2">
+            <Label htmlFor="filtro-ubicacion" className="h-5 leading-5">
+              Ubicación
+            </Label>
 
             <Select
               items={ubicacionesItems}
@@ -312,7 +305,7 @@ export function CosechasGestion() {
                 setPagina(1);
               }}
             >
-              <SelectTrigger id="filtro-ubicacion" className="w-full">
+              <SelectTrigger id="filtro-ubicacion" className="h-9 w-full">
                 <SelectValue placeholder="Invernadero 1 o 2" />
               </SelectTrigger>
 
@@ -326,8 +319,10 @@ export function CosechasGestion() {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="filtro-cama">Cama de cultivo</Label>
+          <div className="flex min-w-0 flex-col gap-2">
+            <Label htmlFor="filtro-cama" className="h-5 leading-5">
+              Cama de cultivo
+            </Label>
 
             <Select
               items={camasItems}
@@ -349,7 +344,7 @@ export function CosechasGestion() {
               }}
               disabled={camasSinCargar}
             >
-              <SelectTrigger id="filtro-cama" className="w-full">
+              <SelectTrigger id="filtro-cama" className="h-9 w-full">
                 <SelectValue
                   placeholder={
                     camas.isLoading
@@ -369,20 +364,17 @@ export function CosechasGestion() {
                 ))}
               </SelectContent>
             </Select>
-
-            {camas.isError ? (
-              <p className="text-sm text-destructive">
-                {getMensajeDeError(camas.error)}
-              </p>
-            ) : null}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="filtro-desde">Desde</Label>
+          <div className="flex min-w-0 flex-col gap-2">
+            <Label htmlFor="filtro-desde" className="h-5 leading-5">
+              Desde
+            </Label>
 
             <Input
               id="filtro-desde"
               type="date"
+              className="h-9 max-h-9 w-full min-w-0 py-0 leading-9 [&::-webkit-datetime-edit]:p-0 [&::-webkit-datetime-edit-fields-wrapper]:p-0"
               min={FECHA_MINIMA}
               max={hasta || hoy}
               value={desde}
@@ -391,12 +383,15 @@ export function CosechasGestion() {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="filtro-hasta">Hasta</Label>
+          <div className="flex min-w-0 flex-col gap-2">
+            <Label htmlFor="filtro-hasta" className="h-5 leading-5">
+              Hasta
+            </Label>
 
             <Input
               id="filtro-hasta"
               type="date"
+              className="h-9 max-h-9 w-full min-w-0 py-0 leading-9 [&::-webkit-datetime-edit]:p-0 [&::-webkit-datetime-edit-fields-wrapper]:p-0"
               min={desde || FECHA_MINIMA}
               max={hoy}
               value={hasta}
@@ -405,8 +400,10 @@ export function CosechasGestion() {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="filtro-periodo">Período</Label>
+          <div className="flex min-w-0 flex-col gap-2">
+            <Label htmlFor="filtro-periodo" className="h-5 leading-5">
+              Período
+            </Label>
 
             <Select
               items={periodosItems}
@@ -415,7 +412,7 @@ export function CosechasGestion() {
                 aplicarPeriodo((valor as string | null) ?? PERIODO_PERSONALIZADO);
               }}
             >
-              <SelectTrigger id="filtro-periodo" className="w-full">
+              <SelectTrigger id="filtro-periodo" className="h-9 w-full">
                 <SelectValue />
               </SelectTrigger>
 
@@ -430,18 +427,16 @@ export function CosechasGestion() {
           </div>
         </div>
 
-        {problemaFechas ? (
-          <p role="alert" className="text-sm text-destructive">
-            {problemaFechas}
+        {camas.isError ? (
+          <p className="mt-3 text-sm text-destructive">
+            {getMensajeDeError(camas.error)}
           </p>
         ) : null}
 
-        {hayFiltros ? (
-          <div className="flex justify-end">
-            <Button type="button" size="sm" variant="ghost" onClick={limpiar}>
-              Limpiar filtros
-            </Button>
-          </div>
+        {problemaFechas ? (
+          <p role="alert" className="mt-3 text-sm text-destructive">
+            {problemaFechas}
+          </p>
         ) : null}
       </div>
 

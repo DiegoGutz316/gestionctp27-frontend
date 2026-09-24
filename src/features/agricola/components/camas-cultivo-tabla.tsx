@@ -21,6 +21,10 @@ import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { ETIQUETA_ESTADO_CAMA_CULTIVO } from "../validacion/cama-cultivo.validacion";
 import type { CamaCultivoRespuesta } from "../validacion/cama-cultivo.validacion";
 
+function nombreDeCama(codigo: string): string {
+  return /^cama\b/i.test(codigo.trim()) ? codigo.trim() : `Cama ${codigo.trim()}`;
+}
+
 type CamasCultivoTablaProps = {
   cargando: boolean;
   error: boolean;
@@ -39,8 +43,9 @@ export function CamasCultivoTabla({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
-            <TableHead>Código</TableHead>
+            <TableHead>Cama</TableHead>
             <TableHead>Ubicación</TableHead>
+            <TableHead>Cultivo actual</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
@@ -57,6 +62,9 @@ export function CamasCultivoTabla({
                   <Skeleton className="h-4 w-28" />
                 </TableCell>
                 <TableCell>
+                  <Skeleton className="h-4 w-24" />
+                </TableCell>
+                <TableCell>
                   <Skeleton className="h-5 w-16" />
                 </TableCell>
                 <TableCell>
@@ -68,7 +76,7 @@ export function CamasCultivoTabla({
           {error ? (
             <TableRow>
               <TableCell
-                colSpan={4}
+                colSpan={5}
                 className="py-16 text-center text-sm text-destructive"
               >
                 No se pudieron cargar las camas de cultivo. Verifique la
@@ -80,7 +88,7 @@ export function CamasCultivoTabla({
           {!cargando && !error && camas.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={4}
+                colSpan={5}
                 className="py-16 text-center text-sm text-muted-foreground"
               >
                 {vacioConFiltros
@@ -100,11 +108,13 @@ export function CamasCultivoTabla({
                   href={`/dashboard/agricola/${cama.id}`}
                   className="hover:underline"
                 >
-                  {cama.codigo}
+                  {nombreDeCama(cama.codigo)}
                 </Link>
               </TableCell>
 
               <TableCell>{cama.ubicacion}</TableCell>
+
+              <TableCell>{cama.cultivoActual?.trim() || "—"}</TableCell>
 
               <TableCell>
                 <Badge variant="secondary">
