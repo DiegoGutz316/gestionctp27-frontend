@@ -33,11 +33,7 @@ import { fechaHoyCR } from "@/lib/fechas";
 
 import { useCosechas } from "../hooks/cosecha-hooks";
 import { resumirTotales } from "../models/cosecha.model";
-import {
-  rangosRapidos,
-  resolverAtajoActivo,
-  type RangoFechas,
-} from "../models/rangos-fecha";
+import { rangosRapidos } from "../models/rangos-fecha";
 import { getMensajeDeError } from "../servicios/cosecha.service";
 import { CosechasTabla } from "./cosechas-tabla";
 
@@ -54,18 +50,16 @@ const FECHA_MINIMA = "1900-01-01";
  */
 const TODAS_LAS_CAMAS = "TODAS";
 
+/** Rango escrito a mano. No calcula fechas: las pone la persona en Desde y Hasta. */
+const PERIODO_PERSONALIZADO = "personalizado";
+
 export function CosechasGestion() {
   const [cultivo, setCultivo] = useState("");
   const [camaId, setCamaId] = useState("");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
+  const [periodo, setPeriodo] = useState(PERIODO_PERSONALIZADO);
   const [pagina, setPagina] = useState(1);
-
-  // Cuál de los atajos tocó la persona. Se guarda el id y no solo las fechas
-  // porque hay días en que dos atajos dan el mismo rango.
-  const [atajoSeleccionado, setAtajoSeleccionado] = useState<string | null>(
-    null,
-  );
 
   // Las camas salen del endpoint que ya usa la pantalla de camas. Se listan
   // todas, incluidas las que aún no tienen cosechas: una lista que cambia
@@ -136,35 +130,43 @@ export function CosechasGestion() {
   // le importa a un docente, y contar registros no se la da.
   const totales = resumirTotales(consulta.data?.totales ?? []);
   const hayFiltros = Boolean(cultivoDebounced || camaId || desde || hasta);
-  const atajoActivo = resolverAtajoActivo(atajoSeleccionado, desde, hasta);
 
-  /** Escribir una fecha a mano deja de ser «el atajo que toqué». */
+  const periodosItems = [
+    { value: PERIODO_PERSONALIZADO, label: "Personalizado" },
+    ...rangosRapidos.map((rango) => ({
+      value: rango.id,
+      label: rango.etiqueta,
+    })),
+  ];
+
+  /** Escribir una fecha a mano deja el período en Personalizado. */
   const cambiarFecha = (ponerFecha: (valor: string) => void, valor: string) => {
     ponerFecha(valor);
-    setAtajoSeleccionado(null);
+    setPeriodo(PERIODO_PERSONALIZADO);
     setPagina(1);
   };
 
   /**
-   * Los atajos funcionan como interruptor: volver a tocar el que está
-   * aplicado quita el filtro de fechas en vez de volver a ponerlo, que es lo
-   * que el usuario espera de un botón que se ve encendido.
-   *
-   * Solo se limpian las fechas. El cultivo es otro filtro y no se toca.
+   * Un período predefinido rellena Desde y Hasta con el mismo cálculo que
+   * usaban los atajos. Personalizado no toca las fechas: las escribe la persona.
    */
-  const alternarRango = (id: string, valores: RangoFechas) => {
-    if (atajoActivo === id) {
-      setDesde("");
-      setHasta("");
-      setAtajoSeleccionado(null);
+  const aplicarPeriodo = (id: string) => {
+    if (id === PERIODO_PERSONALIZADO) {
+      setPeriodo(PERIODO_PERSONALIZADO);
       setPagina(1);
 
       return;
     }
 
+    const rango = rangosRapidos.find((item) => item.id === id);
+
+    if (!rango) return;
+
+    const valores = rango.calcular();
+
     setDesde(valores.desde);
     setHasta(valores.hasta);
-    setAtajoSeleccionado(id);
+    setPeriodo(id);
     setPagina(1);
   };
 
@@ -173,7 +175,7 @@ export function CosechasGestion() {
     setCamaId("");
     setDesde("");
     setHasta("");
-    setAtajoSeleccionado(null);
+    setPeriodo(PERIODO_PERSONALIZADO);
     setPagina(1);
   };
 
@@ -243,7 +245,7 @@ export function CosechasGestion() {
       <AgricolaVistasNav />
 
       <div className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <div className="space-y-2">
             <Label htmlFor="filtro-cultivo">Cultivo</Label>
 
@@ -341,6 +343,30 @@ export function CosechasGestion() {
               onChange={(event) => cambiarFecha(setHasta, event.target.value)}
             />
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="filtro-periodo">Período</Label>
+
+            <Select
+              items={periodosItems}
+              value={periodo}
+              onValueChange={(valor) => {
+                aplicarPeriodo((valor as string | null) ?? PERIODO_PERSONALIZADO);
+              }}
+            >
+              <SelectTrigger id="filtro-periodo" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+
+              <SelectContent>
+                {periodosItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {problemaFechas ? (
@@ -349,39 +375,13 @@ export function CosechasGestion() {
           </p>
         ) : null}
 
-        <div className="flex flex-wrap items-center gap-2 border-t pt-4">
-          <span className="mr-1 text-sm text-muted-foreground">Período:</span>
-
-          {rangosRapidos.map((rango) => {
-            const activo = atajoActivo === rango.id;
-
-            return (
-              <Button
-                key={rango.id}
-                type="button"
-                size="sm"
-                variant={activo ? "default" : "outline"}
-                aria-pressed={activo}
-                title={activo ? "Tocar de nuevo para quitar el filtro" : undefined}
-                onClick={() => alternarRango(rango.id, rango.calcular())}
-              >
-                {rango.etiqueta}
-              </Button>
-            );
-          })}
-
-          {hayFiltros ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="ml-auto"
-              onClick={limpiar}
-            >
+        {hayFiltros ? (
+          <div className="flex justify-end">
+            <Button type="button" size="sm" variant="ghost" onClick={limpiar}>
               Limpiar filtros
             </Button>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
 
       {problemaFechas ? (

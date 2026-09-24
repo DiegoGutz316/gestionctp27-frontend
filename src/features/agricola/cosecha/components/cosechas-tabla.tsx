@@ -66,7 +66,7 @@ export function CosechasTabla({
             <TableHead>Cultivo</TableHead>
             <TableHead className="w-44">Cama de cultivo</TableHead>
             <TableHead className="w-40">Fecha de cosecha</TableHead>
-            <TableHead className="w-40 text-right">Cantidad obtenida</TableHead>
+            <TableHead className="w-40 text-center">Cantidad obtenida</TableHead>
             <TableHead>Observaciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -85,7 +85,7 @@ export function CosechasTabla({
                     <Skeleton className="h-4 w-24" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="ml-auto h-4 w-16" />
+                    <Skeleton className="mx-auto h-4 w-16" />
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-48" />
@@ -141,7 +141,7 @@ export function CosechasTabla({
                     {formatearFecha(cosecha.fecha)}
                   </TableCell>
 
-                  <TableCell className="text-right whitespace-nowrap tabular-nums">
+                  <TableCell className="text-center whitespace-nowrap tabular-nums">
                     {formatearCantidadConUnidad(
                       cosecha.cantidadObtenida,
                       cosecha.unidadMedida,
