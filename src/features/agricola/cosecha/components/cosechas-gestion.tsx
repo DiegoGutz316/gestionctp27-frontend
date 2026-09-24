@@ -50,11 +50,14 @@ const FECHA_MINIMA = "1900-01-01";
  */
 const TODAS_LAS_CAMAS = "TODAS";
 
+const INVERNADEROS = ["Invernadero 1", "Invernadero 2"] as const;
+
 /** Rango escrito a mano. No calcula fechas: las pone la persona en Desde y Hasta. */
 const PERIODO_PERSONALIZADO = "personalizado";
 
 export function CosechasGestion() {
   const [cultivo, setCultivo] = useState("");
+  const [ubicacion, setUbicacion] = useState("");
   const [camaId, setCamaId] = useState("");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
@@ -71,9 +74,22 @@ export function CosechasGestion() {
   // aplicar— cuando en realidad no se pudo cargar nada.
   const camasSinCargar = camas.isLoading || camas.isError;
 
+  const listaCamas = camas.data ?? [];
+
+  const ubicacionesItems = INVERNADEROS.map((nombre) => ({
+    value: nombre,
+    label: nombre,
+  }));
+
+  const camasDeLaUbicacion = ubicacion
+    ? listaCamas.filter(
+        (cama) => cama.ubicacion.toLowerCase() === ubicacion.toLowerCase(),
+      )
+    : listaCamas;
+
   const camasItems = [
     { value: TODAS_LAS_CAMAS, label: "Todas las camas" },
-    ...(camas.data ?? []).map((cama) => ({
+    ...camasDeLaUbicacion.map((cama) => ({
       value: String(cama.id),
       label: `${cama.codigo} — ${cama.ubicacion}`,
     })),
@@ -114,6 +130,7 @@ export function CosechasGestion() {
   const consulta = useCosechas(
     {
       cultivo: cultivoDebounced || undefined,
+      ubicacion: ubicacion || undefined,
       camaId: camaId ? Number(camaId) : undefined,
       desde: desde || undefined,
       hasta: hasta || undefined,
@@ -129,7 +146,9 @@ export function CosechasGestion() {
   // Lo cosechado en todo el filtro, no en la página visible: es la cifra que
   // le importa a un docente, y contar registros no se la da.
   const totales = resumirTotales(consulta.data?.totales ?? []);
-  const hayFiltros = Boolean(cultivoDebounced || camaId || desde || hasta);
+  const hayFiltros = Boolean(
+    cultivoDebounced || ubicacion || camaId || desde || hasta,
+  );
 
   const periodosItems = [
     { value: PERIODO_PERSONALIZADO, label: "Personalizado" },
@@ -172,6 +191,7 @@ export function CosechasGestion() {
 
   const limpiar = () => {
     setCultivo("");
+    setUbicacion("");
     setCamaId("");
     setDesde("");
     setHasta("");
@@ -245,7 +265,7 @@ export function CosechasGestion() {
       <AgricolaVistasNav />
 
       <div className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <div className="space-y-2">
             <Label htmlFor="filtro-cultivo">Cultivo</Label>
 
@@ -263,6 +283,47 @@ export function CosechasGestion() {
                 maxLength={120}
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="filtro-ubicacion">Ubicación</Label>
+
+            <Select
+              items={ubicacionesItems}
+              value={ubicacion !== "" ? ubicacion : null}
+              onValueChange={(valor) => {
+                const siguiente = (valor as string | null) ?? "";
+
+                setUbicacion(siguiente);
+
+                if (siguiente && camaId) {
+                  const cama = listaCamas.find(
+                    (item) => String(item.id) === camaId,
+                  );
+
+                  if (
+                    cama &&
+                    cama.ubicacion.toLowerCase() !== siguiente.toLowerCase()
+                  ) {
+                    setCamaId("");
+                  }
+                }
+
+                setPagina(1);
+              }}
+            >
+              <SelectTrigger id="filtro-ubicacion" className="w-full">
+                <SelectValue placeholder="Invernadero 1 o 2" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {ubicacionesItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

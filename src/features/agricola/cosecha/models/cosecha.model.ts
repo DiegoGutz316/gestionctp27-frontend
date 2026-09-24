@@ -144,6 +144,9 @@ export type ConsultarCosechas = {
   // escritura, que es justo el problema que tiene el filtro de cultivo.
   camaId?: number;
 
+  /** Ubicación de la cama, por ejemplo «Invernadero 1». */
+  ubicacion?: string;
+
   desde?: string;
   hasta?: string;
   pagina?: number;

@@ -33,6 +33,13 @@ export const filtrarCamasCultivoSchema = z.object({
     .min(1, "Ingrese un texto de búsqueda")
     .max(120, "La búsqueda no puede superar 120 caracteres")
     .optional(),
+  ubicacion: z
+    .string()
+    .trim()
+    .min(1, "Seleccione una ubicación válida")
+    .max(120, "La ubicación no puede superar 120 caracteres")
+    .optional(),
+  camaId: z.number().int().positive().optional(),
 });
 
 export type FiltrarCamasCultivo = z.output<typeof filtrarCamasCultivoSchema>;

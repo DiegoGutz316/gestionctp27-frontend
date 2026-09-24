@@ -15,6 +15,8 @@ export function listarCamasCultivo(
 ) {
   return api.get<CamaCultivoRespuesta[]>("/agricola/camas", {
     q: filtros.q,
+    ubicacion: filtros.ubicacion,
+    camaId: filtros.camaId,
   });
 }
 
