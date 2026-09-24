@@ -7,7 +7,9 @@ import type {
   ResultadoCosechas,
 } from "../models/cosecha.model";
 
-export function registrarCosecha(datos: RegistrarCosecha) {
+export function registrarCosecha(
+  datos: RegistrarCosecha & { cerrarCiclo?: boolean },
+) {
   return api.post<CosechaRespuesta>("/agricola/cosechas", datos);
 }
 

@@ -1,9 +1,17 @@
 import { api } from "@/lib/api";
 
-import type { ConsultarSiembras, RegistrarSiembra, SiembraRespuesta } from "../models/siembra.model";
+import type {
+  ConsultarSiembras,
+  MotivoFinalizacion,
+  RegistrarSiembra,
+  SiembraRespuesta,
+} from "../models/siembra.model";
 
-export function finalizarSiembra(id: number) {
-  return api.patch<SiembraRespuesta>(`/agricola/siembras/${id}/finalizar`);
+export function finalizarSiembra(
+  id: number,
+  datos: { motivo: MotivoFinalizacion; detalle?: string },
+) {
+  return api.patch<SiembraRespuesta>(`/agricola/siembras/${id}/finalizar`, datos);
 }
 
 export function registrarSiembra(datos: RegistrarSiembra) {

@@ -2,6 +2,9 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { camasCultivoQueryKey } from "@/features/agricola/hooks/cama-cultivo-hooks";
+import { siembrasQueryKey } from "@/features/agricola/siembra/hooks/siembra-hooks";
+
 import type { ConsultarCosechas } from "../models/cosecha.model";
 import {
   consultarCosechas,
@@ -37,7 +40,10 @@ export function useRegistrarCosecha() {
     mutationFn: registrarCosecha,
 
     // Actualiza cualquier consulta del historial tras registrar una cosecha.
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: cosechasQueryKey }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: cosechasQueryKey });
+      await queryClient.invalidateQueries({ queryKey: siembrasQueryKey });
+      await queryClient.invalidateQueries({ queryKey: camasCultivoQueryKey });
+    },
   });
 }

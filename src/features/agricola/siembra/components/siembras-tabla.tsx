@@ -1,15 +1,20 @@
 "use client";
 
-import { toast } from "sonner";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
-import { useFinalizarSiembra } from "../hooks/siembra-hooks";
-import { formatearCantidad, formatearFecha, type SiembraRespuesta } from "../models/siembra.model";
-import { getMensajeDeError } from "../servicios/siembra.service";
+import { FinalizarSiembraDialog } from "./finalizar-siembra-dialog";
+import {
+  ETIQUETA_MOTIVO_FINALIZACION,
+  formatearCantidad,
+  formatearFecha,
+  type MotivoFinalizacion,
+  type SiembraRespuesta,
+} from "../models/siembra.model";
 
 type Props = {
   cargando: boolean;
@@ -19,16 +24,9 @@ type Props = {
 };
 
 export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) {
-  const finalizar = useFinalizarSiembra();
-
-  const cerrarCiclo = async (id: number) => {
-    try {
-      await finalizar.mutateAsync(id);
-      toast.success("La siembra finalizó y la cama volvió a estar disponible.");
-    } catch (errorCierre) {
-      toast.error(getMensajeDeError(errorCierre));
-    }
-  };
+  const [siembraAbierta, setSiembraAbierta] = useState<SiembraRespuesta | null>(
+    null,
+  );
 
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
@@ -69,17 +67,25 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
               <TableCell className="text-right tabular-nums">{formatearCantidad(siembra.cantidadSembrada)}</TableCell>
               <TableCell className="text-right">
                 {siembra.finalizadaEn ? (
-                  <span className="text-sm text-muted-foreground">Finalizada</span>
+                  <span className="text-sm text-muted-foreground">
+                    Finalizada
+                    {siembra.motivoFinalizacion
+                      ? ` · ${
+                          ETIQUETA_MOTIVO_FINALIZACION[
+                            siembra.motivoFinalizacion as MotivoFinalizacion
+                          ] ?? siembra.motivoDetalle ?? "Sin cosecha"
+                        }`
+                      : ""}
+                  </span>
                 ) : (
                   <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
                     <Button
                       type="button"
                       size="sm"
                       variant="outline"
-                      disabled={finalizar.isPending}
-                      onClick={() => void cerrarCiclo(siembra.id)}
+                      onClick={() => setSiembraAbierta(siembra)}
                     >
-                      Finalizar
+                      Finalizar ciclo
                     </Button>
                   </MostrarSiPuede>
                 )}
@@ -88,6 +94,14 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
           ))}
         </TableBody>
       </Table>
+
+      <FinalizarSiembraDialog
+        siembra={siembraAbierta}
+        open={siembraAbierta !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) setSiembraAbierta(null);
+        }}
+      />
     </div>
   );
 }

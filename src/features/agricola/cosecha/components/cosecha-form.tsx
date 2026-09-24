@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 
@@ -37,13 +37,17 @@ import { getMensajeDeError } from "../servicios/cosecha.service";
 
 export function CosechaForm() {
   const router = useRouter();
+  const params = useSearchParams();
+  const siembraFija = params.get("siembraId") ?? "";
+  const cerrarCiclo = params.get("cerrarCiclo") === "1";
 
   const siembras = useSiembras();
   const registrar = useRegistrarCosecha();
 
   const lista = siembras.data ?? [];
+  const activas = lista.filter((siembra) => !siembra.finalizadaEn);
 
-  const siembrasItems = lista.map((siembra) => ({
+  const siembrasItems = activas.map((siembra) => ({
     value: String(siembra.id),
     label: `${siembra.tipoCultivo} — ${siembra.cama.codigo} — ${formatearFechaSiembra(
       siembra.fechaSiembra,
@@ -62,13 +66,13 @@ export function CosechaForm() {
   // pantalla diría que no hay siembras cuando el problema es del servidor.
   const cargaFallo = siembras.isError;
 
-  const sinSiembras = !siembras.isLoading && !cargaFallo && lista.length === 0;
+  const sinSiembras = !siembras.isLoading && !cargaFallo && activas.length === 0;
 
   const sinSeleccionPosible = siembras.isLoading || cargaFallo || sinSiembras;
 
   const form = useForm({
     defaultValues: {
-      siembraId: "",
+      siembraId: siembraFija,
       fecha: "",
       cantidadObtenida: "",
       unidadMedida: "KG" as (typeof UNIDADES_MEDIDA)[number],
@@ -104,13 +108,18 @@ export function CosechaForm() {
       try {
         const datos = registrarCosechaSchema.parse(value);
 
-        const cosecha = await registrar.mutateAsync(datos);
+        const cosecha = await registrar.mutateAsync({
+          ...datos,
+          cerrarCiclo,
+        });
 
         toast.success(
-          `Cosecha de ${cosecha.siembra.tipoCultivo} registrada: ${formatearCantidadConUnidad(
-            cosecha.cantidadObtenida,
-            cosecha.unidadMedida,
-          )}.`,
+          cerrarCiclo
+            ? `Cosecha registrada y ciclo finalizado. La cama volvió a estar disponible.`
+            : `Cosecha de ${cosecha.siembra.tipoCultivo} registrada: ${formatearCantidadConUnidad(
+                cosecha.cantidadObtenida,
+                cosecha.unidadMedida,
+              )}.`,
         );
 
         router.push("/dashboard/agricola/cosechas");
@@ -130,6 +139,30 @@ export function CosechaForm() {
       noValidate
     >
       <FieldGroup>
+        {siembraFija && siembraDe(siembraFija) ? (
+          <div className="grid gap-3 rounded-lg border bg-muted/30 p-3 text-sm sm:grid-cols-2">
+            <p>
+              <span className="block text-muted-foreground">Cultivo</span>
+              <span className="font-medium">{siembraDe(siembraFija)?.tipoCultivo}</span>
+            </p>
+            <p>
+              <span className="block text-muted-foreground">Cama de cultivo</span>
+              <span className="font-medium">{siembraDe(siembraFija)?.cama.codigo}</span>
+            </p>
+            <p>
+              <span className="block text-muted-foreground">Ubicación</span>
+              <span className="font-medium">{siembraDe(siembraFija)?.cama.ubicacion}</span>
+            </p>
+            <p>
+              <span className="block text-muted-foreground">Fecha de siembra</span>
+              <span className="font-medium">
+                {formatearFechaSiembra(siembraDe(siembraFija)?.fechaSiembra ?? "")}
+              </span>
+            </p>
+          </div>
+        ) : null}
+
+        {!siembraFija ? (
         <form.Field name="siembraId">
           {(field) => {
             const errors = fieldErrors(field.state.meta.errors);
@@ -177,7 +210,7 @@ export function CosechaForm() {
 
                 {sinSiembras ? (
                   <p className="text-sm text-muted-foreground">
-                    No hay siembras registradas.
+                    No hay siembras activas.
                   </p>
                 ) : null}
 
@@ -192,6 +225,7 @@ export function CosechaForm() {
             );
           }}
         </form.Field>
+        ) : null}
 
         <div className="grid gap-4 sm:grid-cols-3">
           <form.Field name="fecha">
@@ -357,7 +391,11 @@ export function CosechaForm() {
         >
           {(guardando) => (
             <Button type="submit" disabled={guardando || sinSeleccionPosible}>
-              {guardando ? "Guardando…" : "Registrar cosecha"}
+              {guardando
+                ? "Guardando…"
+                : cerrarCiclo
+                  ? "Registrar cosecha y finalizar"
+                  : "Registrar cosecha"}
             </Button>
           )}
         </form.Subscribe>

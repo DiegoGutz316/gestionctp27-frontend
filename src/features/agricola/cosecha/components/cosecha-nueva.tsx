@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
 
@@ -72,7 +73,9 @@ export function CosechaNueva() {
         </CardHeader>
 
         <CardContent>
-          <CosechaForm />
+          <Suspense fallback={null}>
+            <CosechaForm />
+          </Suspense>
         </CardContent>
       </Card>
     </section>

@@ -63,11 +63,31 @@ export const siembraSchema = z.object({
   fechaSiembra: z.string(),
   cantidadSembrada: z.number(),
   finalizadaEn: z.string().nullable().optional(),
+  motivoFinalizacion: z.string().nullable().optional(),
+  motivoDetalle: z.string().nullable().optional(),
   creadoEn: z.string(),
   creadoPor: z.uuid(),
 });
 
 export type SiembraRespuesta = z.infer<typeof siembraSchema>;
+export const MOTIVOS_FINALIZACION = [
+  "PERDIDA",
+  "PLAGA",
+  "CLIMA",
+  "ELIMINACION",
+  "OTRO",
+] as const;
+
+export type MotivoFinalizacion = (typeof MOTIVOS_FINALIZACION)[number];
+
+export const ETIQUETA_MOTIVO_FINALIZACION: Record<MotivoFinalizacion, string> = {
+  PERDIDA: "Pérdida del cultivo",
+  PLAGA: "Plaga o enfermedad",
+  CLIMA: "Daño climático",
+  ELIMINACION: "Eliminación anticipada",
+  OTRO: "Otro",
+};
+
 export type ConsultarSiembras = { cultivo?: string; fecha?: string };
 
 export function formatearFecha(valor: string): string {
