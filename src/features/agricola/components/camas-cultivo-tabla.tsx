@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { PencilIcon } from "lucide-react";
+
+import { useState } from "react";
+import { PencilIcon, Trash2Icon } from "lucide-react";
 
 import { AccionesMenu } from "@/components/acciones-menu";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +27,8 @@ function nombreDeCama(codigo: string): string {
   return /^cama\b/i.test(codigo.trim()) ? codigo.trim() : `Cama ${codigo.trim()}`;
 }
 
+import { CamaCultivoEliminarDialog } from "./cama-cultivo-eliminar-dialog";
+
 type CamasCultivoTablaProps = {
   cargando: boolean;
   error: boolean;
@@ -38,6 +42,10 @@ export function CamasCultivoTabla({
   camas,
   vacioConFiltros = false,
 }: CamasCultivoTablaProps) {
+  // El diálogo vive fuera del menú: si se montara dentro, se desmontaría al
+  // cerrarse el desplegable y no llegaría a verse.
+  const [camaAEliminar, setCamaAEliminar] =
+    useState<CamaCultivoRespuesta | null>(null);
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <Table>
@@ -137,6 +145,14 @@ export function CamasCultivoTabla({
                       <PencilIcon />
                       Editar
                     </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => setCamaAEliminar(cama)}
+                    >
+                      <Trash2Icon />
+                      Eliminar
+                    </DropdownMenuItem>
                   </AccionesMenu>
                 </MostrarSiPuede>
               </TableCell>
@@ -144,6 +160,14 @@ export function CamasCultivoTabla({
           ))}
         </TableBody>
       </Table>
+
+      <CamaCultivoEliminarDialog
+        cama={camaAEliminar}
+        open={camaAEliminar !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) setCamaAEliminar(null);
+        }}
+      />
     </div>
   );
 }
