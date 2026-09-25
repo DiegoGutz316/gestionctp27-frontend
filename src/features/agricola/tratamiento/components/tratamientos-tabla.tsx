@@ -42,7 +42,6 @@ export function TratamientosTabla({
             <TableHead>Fecha</TableHead>
             <TableHead className="text-center">Cantidad</TableHead>
             <TableHead>Observaciones</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -50,7 +49,7 @@ export function TratamientosTabla({
           {cargando
             ? Array.from({ length: 4 }).map((_, index) => (
                 <TableRow key={`skeleton-${index}`}>
-                  {Array.from({ length: 8 }).map((__, celda) => (
+                  {Array.from({ length: 7 }).map((__, celda) => (
                     <TableCell key={celda}>
                       <Skeleton className="h-4 w-20" />
                     </TableCell>
@@ -62,7 +61,7 @@ export function TratamientosTabla({
           {error ? (
             <TableRow>
               <TableCell
-                colSpan={8}
+                colSpan={7}
                 className="py-16 text-center text-sm text-destructive"
               >
                 No se pudieron cargar los tratamientos. Verifique la conexión
@@ -74,7 +73,7 @@ export function TratamientosTabla({
           {!cargando && !error && tratamientos.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={8}
+                colSpan={7}
                 className="py-16 text-center text-sm text-muted-foreground"
               >
                 {hayFiltros
@@ -113,9 +112,6 @@ export function TratamientosTabla({
                     {tratamiento.observaciones?.trim()
                       ? tratamiento.observaciones
                       : "—"}
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    —
                   </TableCell>
                 </TableRow>
               ))

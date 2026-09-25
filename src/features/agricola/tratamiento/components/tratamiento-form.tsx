@@ -43,9 +43,19 @@ export function TratamientoForm() {
     [siembras.data],
   );
 
-  const camasItems = activas.map((siembra) => ({
-    value: String(siembra.cama.id),
-    label: `${nombreDeCama(siembra.cama.codigo)} — ${siembra.cama.ubicacion}`,
+  /**
+   * Una cama puede tener más de una siembra activa, así que la lista de
+   * siembras trae camas repetidas: el desplegable mostraba la misma cama dos
+   * veces y React avisaba de claves duplicadas. Se agrupan por id conservando
+   * el orden en que aparecen.
+   */
+  const camasUnicas = [
+    ...new Map(activas.map((siembra) => [siembra.cama.id, siembra.cama])).values(),
+  ];
+
+  const camasItems = camasUnicas.map((cama) => ({
+    value: String(cama.id),
+    label: `${nombreDeCama(cama.codigo)} — ${cama.ubicacion}`,
   }));
 
   const tiposItems = TIPOS_TRATAMIENTO.map((valor) => ({
