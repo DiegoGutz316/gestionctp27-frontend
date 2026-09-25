@@ -20,6 +20,11 @@ export function listarCamasCultivo(
   });
 }
 
+/** Solo camas sin siembras: el backend responde 409 si está en uso. */
+export function eliminarCamaCultivo(id: number) {
+  return api.delete<void>(`/agricola/camas/${id}`);
+}
+
 export function obtenerCamaCultivo(id: number) {
   return api.get<CamaCultivoRespuesta>(`/agricola/camas/${id}`);
 }

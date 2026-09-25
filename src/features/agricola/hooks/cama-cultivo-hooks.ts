@@ -9,6 +9,7 @@ import {
 import {
   crearCamaCultivo,
   editarCamaCultivo,
+  eliminarCamaCultivo,
   listarCamasCultivo,
   obtenerCamaCultivo,
 } from "../servicios/cama-cultivo.service";
@@ -70,5 +71,17 @@ export function useEditarCamaCultivo(id: number) {
         queryKey: camasCultivoQueryKey,
       });
     },
+  });
+}
+
+export function useEliminarCamaCultivo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: eliminarCamaCultivo,
+
+    // El listado y el detalle dejan de ser válidos: la cama ya no existe.
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: camasCultivoQueryKey }),
   });
 }
