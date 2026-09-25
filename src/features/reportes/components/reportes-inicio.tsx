@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FileSpreadsheet, Home } from "lucide-react";
+import { FileSpreadsheet, Home, Leaf, Sprout } from "lucide-react";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import {
   Breadcrumb,
@@ -265,6 +265,58 @@ export function ReportesInicio() {
               }
             >
               Ver inventario
+            </Button>
+          </CardContent>
+        </Card>
+      </MostrarSiPuede>
+
+      <MostrarSiPuede modulo="REPORTES" nivel="LECTURA">
+        <Card className="shadow-xs">
+          <CardHeader className="flex flex-row items-start gap-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-color-company">
+              <Leaf className="size-5" />
+            </div>
+            <div className="space-y-1">
+              <CardTitle className="text-lg">
+                Reporte de producción pecuaria
+              </CardTitle>
+              <CardDescription>
+                Producción de un animal en un período, con el detalle de cada
+                registro y los totales por tipo de producción.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="flex justify-end">
+            <Button
+              nativeButton={false}
+              render={<Link href="/dashboard/reportes/produccion-pecuaria" />}
+            >
+              Ver reporte
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xs">
+          <CardHeader className="flex flex-row items-start gap-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-color-company">
+              <Sprout className="size-5" />
+            </div>
+            <div className="space-y-1">
+              <CardTitle className="text-lg">
+                Reporte de producción agrícola
+              </CardTitle>
+              <CardDescription>
+                Siembras, cosechas y tratamientos de un período, filtrables por
+                cultivo y cama, con el total cosechado por unidad de medida.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="flex justify-end">
+            <Button
+              nativeButton={false}
+              render={<Link href="/dashboard/reportes/produccion-agricola" />}
+            >
+              Ver reporte
             </Button>
           </CardContent>
         </Card>
