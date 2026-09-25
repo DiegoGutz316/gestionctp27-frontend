@@ -71,11 +71,23 @@ export function TratamientosGestion() {
     label: nombre,
   }));
 
+  /**
+   * Varias siembras activas pueden compartir cama, así que la lista de
+   * siembras trae camas repetidas: el desplegable mostraba la misma cama dos
+   * veces y React avisaba de claves duplicadas. Se agrupan por id conservando
+   * el orden en que aparecen.
+   */
+  const camasUnicas = [
+    ...new Map(
+      camasDeLaUbicacion.map((siembra) => [siembra.cama.id, siembra.cama]),
+    ).values(),
+  ];
+
   const camasItems = [
     { value: TODAS_LAS_CAMAS, label: "Todas las camas" },
-    ...camasDeLaUbicacion.map((siembra) => ({
-      value: String(siembra.cama.id),
-      label: `${nombreDeCama(siembra.cama.codigo)} — ${siembra.cama.ubicacion}`,
+    ...camasUnicas.map((cama) => ({
+      value: String(cama.id),
+      label: `${nombreDeCama(cama.codigo)} — ${cama.ubicacion}`,
     })),
   ];
 
