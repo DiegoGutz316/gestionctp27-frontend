@@ -65,9 +65,7 @@ export function TratamientoNuevo() {
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Registre fertilizantes o
-          tratamientos aplicados a una
-          siembra.
+          Registre un tratamiento sobre la siembra activa de una cama.
         </p>
       </div>
 
@@ -78,9 +76,8 @@ export function TratamientoNuevo() {
           </CardTitle>
 
           <CardDescription>
-            Seleccione la siembra e
-            indique el producto, fecha y
-            cantidad aplicada.
+            Elija una cama con siembra activa e indique el producto, la
+            cantidad y la fecha de aplicación.
           </CardDescription>
         </CardHeader>
 

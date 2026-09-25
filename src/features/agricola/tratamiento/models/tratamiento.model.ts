@@ -81,54 +81,64 @@ const cantidadSchema = z
       ),
   );
 
-export const registrarTratamientoSchema =
-  z.object({
-    siembraId: z
-      .string({
-        error: "Seleccione una siembra",
-      })
-      .min(
-        1,
-        "Seleccione una siembra",
-      )
-      .regex(
-        /^\d+$/,
-        "Seleccione una siembra válida",
-      )
-      .transform(Number)
-      .pipe(
-        z
-          .number()
-          .int()
-          .positive(
-            "Seleccione una siembra válida",
-          ),
-      ),
+export const TIPOS_TRATAMIENTO = [
+  "FERTILIZANTE",
+  "FUNGICIDA",
+  "INSECTICIDA",
+  "HERBICIDA",
+  "OTRO",
+] as const;
 
-    producto: z
-      .string({
-        error:
-          "El producto aplicado es obligatorio",
-      })
-      .trim()
-      .min(
-        1,
-        "El producto aplicado es obligatorio",
-      )
-      .max(
-        120,
-        "El producto aplicado no puede superar 120 caracteres",
-      ),
+export type TipoTratamiento = (typeof TIPOS_TRATAMIENTO)[number];
 
-    fecha: fechaTratamientoSchema,
+export const ETIQUETA_TIPO_TRATAMIENTO: Record<TipoTratamiento, string> = {
+  FERTILIZANTE: "Fertilizante",
+  FUNGICIDA: "Fungicida",
+  INSECTICIDA: "Insecticida",
+  HERBICIDA: "Herbicida",
+  OTRO: "Otro",
+};
 
-    cantidad: cantidadSchema,
+export const UNIDADES_TRATAMIENTO = ["KG", "G", "L", "ML", "UNIDADES"] as const;
 
-    observaciones: z
-      .string()
-      .trim()
-      .optional(),
-  });
+export type UnidadTratamiento = (typeof UNIDADES_TRATAMIENTO)[number];
+
+export const ETIQUETA_UNIDAD_TRATAMIENTO: Record<UnidadTratamiento, string> = {
+  KG: "kg",
+  G: "g",
+  L: "L",
+  ML: "ml",
+  UNIDADES: "unidades",
+};
+
+export const registrarTratamientoSchema = z.object({
+  siembraId: z
+    .string({ error: "Seleccione una cama con siembra activa" })
+    .min(1, "Seleccione una cama con siembra activa")
+    .regex(/^\d+$/, "Seleccione una cama con siembra activa")
+    .transform(Number)
+    .pipe(z.number().int().positive("Seleccione una cama con siembra activa")),
+
+  tipo: z.enum(TIPOS_TRATAMIENTO, {
+    error: "Seleccione un tipo de tratamiento",
+  }),
+
+  producto: z
+    .string({ error: "El producto aplicado es obligatorio" })
+    .trim()
+    .min(1, "El producto aplicado es obligatorio")
+    .max(120, "El producto aplicado no puede superar 120 caracteres"),
+
+  fecha: fechaTratamientoSchema,
+
+  cantidad: cantidadSchema,
+
+  unidad: z.enum(UNIDADES_TRATAMIENTO, {
+    error: "Seleccione una unidad",
+  }),
+
+  observaciones: z.string().trim().optional(),
+});
 
 export type RegistrarTratamiento =
   z.output<
@@ -146,13 +156,22 @@ export const tratamientoSchema = z.object({
   siembra: z.object({
     id: z.number(),
     tipoCultivo: z.string(),
+    cama: z.object({
+      id: z.number(),
+      codigo: z.string(),
+      ubicacion: z.string(),
+    }),
   }),
+
+  tipo: z.enum(TIPOS_TRATAMIENTO),
 
   producto: z.string(),
 
   fecha: z.string(),
 
   cantidad: z.number(),
+
+  unidad: z.enum(UNIDADES_TRATAMIENTO),
 
   observaciones: z
     .string()
@@ -167,8 +186,15 @@ export type TratamientoRespuesta =
   z.infer<typeof tratamientoSchema>;
 
 export type ConsultarTratamientos = {
-  cultivo: string;
+  ubicacion?: string;
+  camaId?: number;
+  tipo?: TipoTratamiento;
+  cultivo?: string;
 };
+
+export function nombreDeCama(codigo: string): string {
+  return /^cama\b/i.test(codigo.trim()) ? codigo.trim() : `Cama ${codigo.trim()}`;
+}
 
 export function formatearFecha(
   valor: string,

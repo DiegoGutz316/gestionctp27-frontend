@@ -4,6 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Google Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/google-sans.woff2") format("woff2");
+}
+
 .scrollbar-none {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -62,6 +70,7 @@
 }
 
 :root {
+  --font-google-sans: "Google Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --radius: 1rem;
 
   /* Base general */
