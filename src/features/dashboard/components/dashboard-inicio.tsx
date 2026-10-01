@@ -15,6 +15,8 @@ import type { ProductoRespuesta } from "@/features/inventario/producto/validacio
 import { useUsuarios } from "@/features/usuarios/hooks/hooks";
 
 import { DashboardActividad } from "./dashboard-actividad";
+import { DashboardAvisos } from "@/features/comunicacion/components/dashboard-avisos";
+
 import { DashboardCarga } from "./dashboard-carga";
 import { DashboardMetricas } from "./dashboard-metricas";
 import { DashboardResumen } from "./dashboard-resumen";
@@ -341,6 +343,12 @@ export function DashboardInicio() {
         <span className="h-1 w-4 rounded-full bg-[#ad8fa3]" />
       </div>
       </section>
+
+      {/* =====================================================
+          AVISOS INSTITUCIONALES (Backlog 5.6)
+          ===================================================== */}
+
+      <DashboardAvisos />
 
       {/* =====================================================
           MÉTRICAS
