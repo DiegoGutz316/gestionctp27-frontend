@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 
 import {
   descargarReporte,
+  getMensajeDeError,
   type FiltrosExportacion,
   type FormatoExportacion,
   type TipoReporteExportable,
@@ -53,10 +54,12 @@ export function BotonesExportacionReporte({
           : "Reporte Excel descargado correctamente.",
       );
     } catch (error) {
+      // El cliente central lanza ApiError con su código, así que el mensaje
+      // sale traducido igual que en el resto de la aplicación.
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "No se pudo exportar el reporte.",
+        getMensajeDeError(error, {
+          404: "No hay datos para exportar en ese período.",
+        }),
       );
     } finally {
       setExportando(null);

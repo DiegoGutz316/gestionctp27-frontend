@@ -126,12 +126,51 @@ export function getMensajeDeError(
   );
 }
 
+/**
+ * Descarga un archivo del backend (PDF, Excel) devolviendo la `Response`.
+ *
+ * `apiFetch` no sirve para esto porque asume JSON: lee el cuerpo como texto y
+ * lo parsea. Aquí hace falta el binario, y además la cabecera
+ * `Content-Disposition` con el nombre del archivo.
+ *
+ * Lo que sí comparte con el resto del cliente es lo que importa: la URL base,
+ * la cookie de sesión y el mismo `ApiError` con su código de estado, para que
+ * `getMensajeDeError` traduzca el fallo igual que en cualquier otra llamada.
+ */
+export async function apiDescargar(
+  path: string,
+  params?: ApiQueryParams,
+  options: ApiRequestOptions = {},
+): Promise<Response> {
+  const response = await fetch(`${API_URL}${buildUrl(path, params)}`, {
+    ...options,
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+
+    throw new ApiError(
+      response.status,
+      body || `Error ${response.status} al llamar a ${path}`,
+    );
+  }
+
+  return response;
+}
+
 export const api = {
   get: <T>(
     path: string,
     params?: ApiQueryParams,
     options?: ApiRequestOptions,
   ) => apiFetch<T>(buildUrl(path, params), options),
+  descargar: (
+    path: string,
+    params?: ApiQueryParams,
+    options?: ApiRequestOptions,
+  ) => apiDescargar(path, params, options),
   post: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
     apiFetch<T>(path, {
       ...options,
