@@ -20,7 +20,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -59,6 +63,8 @@ import {
   type FiltrosReporteProduccionPecuaria,
 } from "../validacion/reportes.validacion";
 
+import { BotonesExportacionReporte } from "./botones-exportacion-reporte";
+
 const FILTROS_SIN_APLICAR: FiltrosReporteProduccionPecuaria = {
   animalId: 0,
   fechaInicio: "",
@@ -78,17 +84,29 @@ export function ReporteProduccionPecuaria() {
 
   // Un reporte histórico también es válido para un animal dado de baja: el
   // backend solo exige que el animal exista.
-  const animales = useAnimales({ incluirInactivos: true });
-  const animalesItems = (animales.data ?? []).map((animal) => ({
+  const animales = useAnimales({
+    incluirInactivos: true,
+  });
+
+  const animalesItems = (
+    animales.data ?? []
+  ).map((animal) => ({
     value: String(animal.id),
-    label: `${animal.codigo} — ${animal.nombre} (${etiquetaEspecieProduccion(animal.especie)})${
-      esAnimalActivo(animal.estado) ? "" : " · Inactivo"
+    label: `${animal.codigo} — ${animal.nombre} (${etiquetaEspecieProduccion(
+      animal.especie,
+    )})${
+      esAnimalActivo(animal.estado)
+        ? ""
+        : " · Inactivo"
     }`,
   }));
 
   const cargaFallo = animales.isError;
+
   const sinAnimales =
-    !animales.isLoading && !cargaFallo && animalesItems.length === 0;
+    !animales.isLoading &&
+    !cargaFallo &&
+    animalesItems.length === 0;
 
   const form = useForm({
     defaultValues: {
@@ -98,15 +116,23 @@ export function ReporteProduccionPecuaria() {
     },
 
     validators: {
-      onSubmit: zodValidator(filtrosReporteProduccionPecuariaSchema),
+      onSubmit: zodValidator(
+        filtrosReporteProduccionPecuariaSchema,
+      ),
     },
 
     onSubmit: ({ value }) => {
-      const nuevos = filtrosReporteProduccionPecuariaSchema.parse(value);
+      const nuevos =
+        filtrosReporteProduccionPecuariaSchema.parse(
+          value,
+        );
 
       // Mismos filtros: la clave de la consulta no cambia y no se volvería a
       // pedir nada, así que el botón parecería no hacer nada.
-      if (JSON.stringify(nuevos) === JSON.stringify(aplicados)) {
+      if (
+        JSON.stringify(nuevos) ===
+        JSON.stringify(aplicados)
+      ) {
         void reporte.refetch();
         return;
       }
@@ -124,7 +150,9 @@ export function ReporteProduccionPecuaria() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink
-              render={<Link href="/dashboard" />}
+              render={
+                <Link href="/dashboard" />
+              }
               className="flex items-center gap-1.5"
             >
               <Home className="size-3.5" />
@@ -135,7 +163,11 @@ export function ReporteProduccionPecuaria() {
           <BreadcrumbSeparator />
 
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href="/dashboard/reportes" />}>
+            <BreadcrumbLink
+              render={
+                <Link href="/dashboard/reportes" />
+              }
+            >
               Reportes
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -143,7 +175,9 @@ export function ReporteProduccionPecuaria() {
           <BreadcrumbSeparator />
 
           <BreadcrumbItem>
-            <BreadcrumbPage>Producción pecuaria</BreadcrumbPage>
+            <BreadcrumbPage>
+              Producción pecuaria
+            </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -152,9 +186,12 @@ export function ReporteProduccionPecuaria() {
         <h1 className="text-2xl font-semibold tracking-tight text-color-company">
           Reporte de producción pecuaria
         </h1>
+
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Consulte la producción de un animal en un período y sus totales por
-          tipo de producción.
+          Consulte la producción de un
+          animal en un período y sus
+          totales por tipo de
+          producción.
         </p>
       </div>
 
@@ -162,6 +199,7 @@ export function ReporteProduccionPecuaria() {
         onSubmit={(event) => {
           event.preventDefault();
           event.stopPropagation();
+
           void form.handleSubmit();
         }}
         noValidate
@@ -170,30 +208,66 @@ export function ReporteProduccionPecuaria() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <form.Field name="animalId">
             {(field) => {
-              const errors = fieldErrors(field.state.meta.errors);
-              const invalid = errors.length > 0;
+              const errors =
+                fieldErrors(
+                  field.state.meta
+                    .errors,
+                );
+
+              const invalid =
+                errors.length > 0;
 
               return (
-                <Field data-invalid={invalid}>
-                  <FieldLabel htmlFor={field.name} required>
+                <Field
+                  data-invalid={
+                    invalid
+                  }
+                >
+                  <FieldLabel
+                    htmlFor={
+                      field.name
+                    }
+                    required
+                  >
                     Animal
                   </FieldLabel>
 
                   <Select
-                    items={animalesItems}
-                    value={field.state.value === "" ? null : field.state.value}
-                    onValueChange={(valor) =>
-                      field.handleChange((valor as string | null) ?? "")
+                    items={
+                      animalesItems
+                    }
+                    value={
+                      field.state
+                        .value === ""
+                        ? null
+                        : field.state
+                            .value
+                    }
+                    onValueChange={(
+                      valor,
+                    ) =>
+                      field.handleChange(
+                        (valor as
+                          | string
+                          | null) ??
+                          "",
+                      )
                     }
                     disabled={
-                      animales.isLoading || cargaFallo || sinAnimales
+                      animales.isLoading ||
+                      cargaFallo ||
+                      sinAnimales
                     }
                   >
                     <SelectTrigger
                       id={field.name}
                       className="w-full"
-                      aria-invalid={invalid}
-                      onBlur={field.handleBlur}
+                      aria-invalid={
+                        invalid
+                      }
+                      onBlur={
+                        field.handleBlur
+                      }
                     >
                       <SelectValue
                         placeholder={
@@ -207,27 +281,41 @@ export function ReporteProduccionPecuaria() {
                     </SelectTrigger>
 
                     <SelectContent>
-                      {animalesItems.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
+                      {animalesItems.map(
+                        (item) => (
+                          <SelectItem
+                            key={
+                              item.value
+                            }
+                            value={
+                              item.value
+                            }
+                          >
+                            {item.label}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectContent>
                   </Select>
 
                   {sinAnimales ? (
                     <p className="text-sm text-muted-foreground">
-                      No hay animales registrados.
+                      No hay animales
+                      registrados.
                     </p>
                   ) : null}
 
                   {cargaFallo ? (
                     <p className="text-sm text-destructive">
-                      {getMensajeDeError(animales.error)}
+                      {getMensajeDeError(
+                        animales.error,
+                      )}
                     </p>
                   ) : null}
 
-                  <FieldError errors={errors} />
+                  <FieldError
+                    errors={errors}
+                  />
                 </Field>
               );
             }}
@@ -235,12 +323,27 @@ export function ReporteProduccionPecuaria() {
 
           <form.Field name="fechaInicio">
             {(field) => {
-              const errors = fieldErrors(field.state.meta.errors);
-              const invalid = errors.length > 0;
+              const errors =
+                fieldErrors(
+                  field.state.meta
+                    .errors,
+                );
+
+              const invalid =
+                errors.length > 0;
 
               return (
-                <Field data-invalid={invalid}>
-                  <FieldLabel htmlFor={field.name} required>
+                <Field
+                  data-invalid={
+                    invalid
+                  }
+                >
+                  <FieldLabel
+                    htmlFor={
+                      field.name
+                    }
+                    required
+                  >
                     Fecha inicio
                   </FieldLabel>
 
@@ -248,13 +351,28 @@ export function ReporteProduccionPecuaria() {
                     id={field.name}
                     type="date"
                     max={hoy}
-                    aria-invalid={invalid}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    aria-invalid={
+                      invalid
+                    }
+                    value={
+                      field.state.value
+                    }
+                    onBlur={
+                      field.handleBlur
+                    }
+                    onChange={(
+                      event,
+                    ) =>
+                      field.handleChange(
+                        event.target
+                          .value,
+                      )
+                    }
                   />
 
-                  <FieldError errors={errors} />
+                  <FieldError
+                    errors={errors}
+                  />
                 </Field>
               );
             }}
@@ -262,12 +380,27 @@ export function ReporteProduccionPecuaria() {
 
           <form.Field name="fechaFin">
             {(field) => {
-              const errors = fieldErrors(field.state.meta.errors);
-              const invalid = errors.length > 0;
+              const errors =
+                fieldErrors(
+                  field.state.meta
+                    .errors,
+                );
+
+              const invalid =
+                errors.length > 0;
 
               return (
-                <Field data-invalid={invalid}>
-                  <FieldLabel htmlFor={field.name} required>
+                <Field
+                  data-invalid={
+                    invalid
+                  }
+                >
+                  <FieldLabel
+                    htmlFor={
+                      field.name
+                    }
+                    required
+                  >
                     Fecha fin
                   </FieldLabel>
 
@@ -275,13 +408,28 @@ export function ReporteProduccionPecuaria() {
                     id={field.name}
                     type="date"
                     max={hoy}
-                    aria-invalid={invalid}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    aria-invalid={
+                      invalid
+                    }
+                    value={
+                      field.state.value
+                    }
+                    onBlur={
+                      field.handleBlur
+                    }
+                    onChange={(
+                      event,
+                    ) =>
+                      field.handleChange(
+                        event.target
+                          .value,
+                      )
+                    }
                   />
 
-                  <FieldError errors={errors} />
+                  <FieldError
+                    errors={errors}
+                  />
                 </Field>
               );
             }}
@@ -289,12 +437,23 @@ export function ReporteProduccionPecuaria() {
         </div>
 
         <form.Subscribe
-          selector={(state) => state.isSubmitting || reporte.isFetching}
+          selector={(state) =>
+            state.isSubmitting ||
+            reporte.isFetching
+          }
         >
           {(generando) => (
             <div className="flex justify-end">
-              <Button type="submit" disabled={generando || cargaFallo}>
-                {generando ? "Generando…" : "Generar reporte"}
+              <Button
+                type="submit"
+                disabled={
+                  generando ||
+                  cargaFallo
+                }
+              >
+                {generando
+                  ? "Generando…"
+                  : "Generar reporte"}
               </Button>
             </div>
           )}
@@ -303,63 +462,120 @@ export function ReporteProduccionPecuaria() {
 
       {aplicados === null ? (
         <p className="rounded-xl border bg-muted/30 px-4 py-10 text-center text-sm text-muted-foreground">
-          Seleccione un animal y el período, y presione «Generar reporte».
+          Seleccione un animal y el
+          período, y presione «Generar
+          reporte».
         </p>
       ) : null}
 
-      {aplicados !== null && reporte.isLoading ? (
+      {aplicados !== null &&
+      reporte.isLoading ? (
         <div className="space-y-3">
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-48 w-full" />
         </div>
       ) : null}
 
-      {aplicados !== null && reporte.isError ? (
+      {aplicados !== null &&
+      reporte.isError ? (
         <p className="text-sm text-destructive">
-          {getMensajeDeError(reporte.error)}
+          {getMensajeDeError(
+            reporte.error,
+          )}
         </p>
       ) : null}
 
-      {aplicados !== null && datos ? (
+      {aplicados !== null &&
+      datos ? (
         <>
           <Card className="shadow-xs">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">
-                {datos.animal.codigo} — {datos.animal.nombre}
+                {datos.animal.codigo} —{" "}
+                {datos.animal.nombre}
               </CardTitle>
+
               <p className="text-sm text-muted-foreground">
-                {etiquetaEspecieProduccion(datos.animal.especie)} · Período del{" "}
-                {formatearFecha(datos.fechaInicio)} al{" "}
-                {formatearFecha(datos.fechaFin)}
+                {etiquetaEspecieProduccion(
+                  datos.animal
+                    .especie,
+                )}{" "}
+                · Período del{" "}
+                {formatearFecha(
+                  datos.fechaInicio,
+                )}{" "}
+                al{" "}
+                {formatearFecha(
+                  datos.fechaFin,
+                )}
               </p>
             </CardHeader>
           </Card>
 
-          {datos.registros.length === 0 ? (
+          <div className="flex justify-end">
+            <BotonesExportacionReporte
+              reporte="produccion-pecuaria"
+              filtros={{
+                animalId:
+                  aplicados.animalId,
+                fechaInicio:
+                  aplicados.fechaInicio,
+                fechaFin:
+                  aplicados.fechaFin,
+              }}
+            />
+          </div>
+
+          {datos.registros.length ===
+          0 ? (
             <p className="rounded-xl border bg-muted/30 px-4 py-10 text-center text-sm text-muted-foreground">
-              No se encontraron datos para los filtros seleccionados.
+              No se encontraron datos
+              para los filtros
+              seleccionados.
             </p>
           ) : (
             <>
-              {datos.totales.length > 0 ? (
+              {datos.totales.length >
+              0 ? (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {datos.totales.map((total) => (
-                    <Card key={total.tipoProduccion} className="shadow-xs">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
-                          Total {ETIQUETA_TIPO_PRODUCCION[total.tipoProduccion]}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-2xl font-semibold tabular-nums tracking-tight">
-                          {formatearCantidad(total.cantidad)}{" "}
-                          <span className="text-sm font-normal text-muted-foreground">
-                            {UNIDAD_TIPO_PRODUCCION[total.tipoProduccion]}
-                          </span>
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {datos.totales.map(
+                    (total) => (
+                      <Card
+                        key={
+                          total.tipoProduccion
+                        }
+                        className="shadow-xs"
+                      >
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Total{" "}
+                            {
+                              ETIQUETA_TIPO_PRODUCCION[
+                                total
+                                  .tipoProduccion
+                              ]
+                            }
+                          </CardTitle>
+                        </CardHeader>
+
+                        <CardContent>
+                          <p className="text-2xl font-semibold tabular-nums tracking-tight">
+                            {formatearCantidad(
+                              total.cantidad,
+                            )}{" "}
+                            <span className="text-sm font-normal text-muted-foreground">
+                              {
+                                UNIDAD_TIPO_PRODUCCION[
+                                  total
+                                    .tipoProduccion
+                                ]
+                              }
+                            </span>
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ),
+                  )}
                 </div>
               ) : null}
 
@@ -367,31 +583,75 @@ export function ReporteProduccionPecuaria() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/30 hover:bg-muted/30">
-                      <TableHead>Animal</TableHead>
-                      <TableHead>Tipo de producción</TableHead>
-                      <TableHead className="text-right">Cantidad</TableHead>
-                      <TableHead>Fecha</TableHead>
+                      <TableHead>
+                        Animal
+                      </TableHead>
+
+                      <TableHead>
+                        Tipo de producción
+                      </TableHead>
+
+                      <TableHead className="text-right">
+                        Cantidad
+                      </TableHead>
+
+                      <TableHead>
+                        Fecha
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
 
                   <TableBody>
-                    {datos.registros.map((registro) => (
-                      <TableRow key={registro.id}>
-                        <TableCell className="whitespace-normal">
-                          {datos.animal.codigo} — {datos.animal.nombre}
-                        </TableCell>
-                        <TableCell>
-                          {ETIQUETA_TIPO_PRODUCCION[registro.tipoProduccion]}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatearCantidad(registro.cantidad)}{" "}
-                          {UNIDAD_TIPO_PRODUCCION[registro.tipoProduccion]}
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap">
-                          {formatearFecha(registro.fecha)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {datos.registros.map(
+                      (registro) => (
+                        <TableRow
+                          key={
+                            registro.id
+                          }
+                        >
+                          <TableCell className="whitespace-normal">
+                            {
+                              datos
+                                .animal
+                                .codigo
+                            }{" "}
+                            —{" "}
+                            {
+                              datos
+                                .animal
+                                .nombre
+                            }
+                          </TableCell>
+
+                          <TableCell>
+                            {
+                              ETIQUETA_TIPO_PRODUCCION[
+                                registro
+                                  .tipoProduccion
+                              ]
+                            }
+                          </TableCell>
+
+                          <TableCell className="text-right tabular-nums">
+                            {formatearCantidad(
+                              registro.cantidad,
+                            )}{" "}
+                            {
+                              UNIDAD_TIPO_PRODUCCION[
+                                registro
+                                  .tipoProduccion
+                              ]
+                            }
+                          </TableCell>
+
+                          <TableCell className="whitespace-nowrap">
+                            {formatearFecha(
+                              registro.fecha,
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ),
+                    )}
                   </TableBody>
                 </Table>
               </div>

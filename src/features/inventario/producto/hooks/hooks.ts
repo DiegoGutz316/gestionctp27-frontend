@@ -9,6 +9,7 @@ import {
   crearProducto,
   editarProducto,
   listarProductos,
+  listarTodosLosProductos,
   obtenerProducto,
 } from "../servicios/producto.service";
 
@@ -22,6 +23,21 @@ export function useProductos(
     queryKey: [...productosQueryKey, filtros],
     queryFn: () => listarProductos(filtros),
     enabled: opciones.enabled ?? true,
+  });
+}
+
+/**
+ * Para selectores que necesitan el catálogo completo, no una página.
+ *
+ * Clave de caché propia: lo que devuelve es una lista, no una página con su
+ * meta, y mezclarlas haría que una invalide a la otra.
+ */
+export function useTodosLosProductos(
+  filtros: Omit<FiltrarProductos, "pagina" | "limite"> = {},
+) {
+  return useQuery({
+    queryKey: [...productosQueryKey, "todos", filtros],
+    queryFn: () => listarTodosLosProductos(filtros),
   });
 }
 

@@ -5,7 +5,10 @@ import { siembraSchema } from "@/features/agricola/siembra/models/siembra.model"
 import { tratamientoSchema } from "@/features/agricola/tratamiento/models/tratamiento.model";
 import { TIPOS_PRODUCCION } from "@/features/pecuaria/produccion/models/produccion.model";
 import { fechaHoyCR } from "@/lib/fechas";
-
+import {
+  TIPOS_PRODUCTO,
+  UNIDADES_MEDIDA as UNIDADES_MEDIDA_INVENTARIO,
+} from "@/features/inventario/producto/models/producto.model"; 
 /**
  * `z.iso.date()` y no una expresión regular: la regular solo mira la forma del
  * texto y deja pasar fechas que no existen en el calendario, como 2026-02-31.
@@ -87,6 +90,63 @@ export type FiltrosReporteProduccionAgricola = z.output<
   typeof filtrosReporteProduccionAgricolaSchema
 >;
 
+/** Reporte de inventario: producto y categoría opcionales; período obligatorio. */
+export const filtrosReporteInventarioSchema = z
+  .object({
+    productoId: z
+      .string()
+      .transform((valor) =>
+        valor === ""
+          ? undefined
+          : Number(valor),
+      )
+      .pipe(
+        z
+          .number()
+          .int(
+            "Seleccione un producto válido",
+          )
+          .positive(
+            "Seleccione un producto válido",
+          )
+          .optional(),
+      ),
+
+    tipoProducto: z
+      .union([
+        z.literal(""),
+        z.enum(TIPOS_PRODUCTO),
+      ])
+      .transform((valor) =>
+        valor === ""
+          ? undefined
+          : valor,
+      ),
+
+    fechaInicio:
+      fechaReporteSchema("inicial"),
+
+    fechaFin:
+      fechaReporteSchema("final"),
+  })
+  .refine(
+    (valores) =>
+      !valores.fechaInicio ||
+      !valores.fechaFin ||
+      valores.fechaInicio <=
+        valores.fechaFin,
+    {
+      path: ["fechaFin"],
+      message:
+        MENSAJE_RANGO_INVERTIDO,
+    },
+  );
+
+export type FiltrosReporteInventario =
+  z.output<
+    typeof filtrosReporteInventarioSchema
+  >;
+
 /**
  * Respuesta de GET /reportes/produccion-pecuaria. Es propia del reporte: los
  * registros no traen animalId ni auditoría, así que no sirve `produccionSchema`.
@@ -143,3 +203,39 @@ export const reporteProduccionAgricolaSchema = z.object({
 export type ReporteProduccionAgricolaRespuesta = z.infer<
   typeof reporteProduccionAgricolaSchema
 >;
+
+
+/**
+ * Respuesta de GET /reportes/inventario.
+ */
+export const reporteInventarioSchema =
+  z.object({
+    fechaInicio: z.string(),
+    fechaFin: z.string(),
+
+    registros: z.array(
+      z.object({
+        inventarioId: z.number(),
+        productoId: z.number(),
+        producto: z.string(),
+
+        categoria:
+          z.enum(TIPOS_PRODUCTO),
+
+        unidadMedida:
+          z.enum(
+            UNIDADES_MEDIDA_INVENTARIO,
+          ),
+
+        entradas: z.number(),
+        salidas: z.number(),
+        existenciaFinal: z.number(),
+        saldoActual: z.number(),
+      }),
+    ),
+  });
+
+export type ReporteInventarioRespuesta =
+  z.infer<
+    typeof reporteInventarioSchema
+  >;

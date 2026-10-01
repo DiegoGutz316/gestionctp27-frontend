@@ -3,11 +3,13 @@
 import { useQuery } from "@tanstack/react-query";
 
 import {
+  consultarReporteInventario,
   consultarReporteProduccionAgricola,
   consultarReporteProduccionPecuaria,
 } from "../servicios/reportes.service";
 
 import type {
+  FiltrosReporteInventario,
   FiltrosReporteProduccionAgricola,
   FiltrosReporteProduccionPecuaria,
 } from "../validacion/reportes.validacion";
@@ -41,5 +43,30 @@ export function useReporteProduccionAgricola(
     queryFn: () => consultarReporteProduccionAgricola(filtros),
     enabled:
       habilitada && filtros.fechaInicio !== "" && filtros.fechaFin !== "",
+  });
+}
+
+export const reporteInventarioQueryKey = [
+  "reportes",
+  "inventario",
+] as const;
+
+export function useReporteInventario(
+  filtros: FiltrosReporteInventario,
+  habilitada: boolean,
+) {
+  return useQuery({
+    queryKey: [
+      ...reporteInventarioQueryKey,
+      filtros,
+    ],
+    queryFn: () =>
+      consultarReporteInventario(
+        filtros,
+      ),
+    enabled:
+      habilitada &&
+      filtros.fechaInicio !== "" &&
+      filtros.fechaFin !== "",
   });
 }
