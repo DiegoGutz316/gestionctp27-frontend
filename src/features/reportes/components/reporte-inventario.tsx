@@ -37,7 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useProductos } from "@/features/inventario/producto/hooks/hooks";
+import { useTodosLosProductos } from "@/features/inventario/producto/hooks/hooks";
 import {
   ETIQUETA_TIPO_PRODUCTO,
   ETIQUETA_UNIDAD_MEDIDA,
@@ -86,9 +86,10 @@ export function ReporteInventario() {
       null,
     );
 
-  const productos = useProductos({
-    pagina: 1,
-    limite: 100,
+  // Todas las páginas, no solo la primera: el backend acota `limite` a 100 y
+  // con una sola consulta los productos del 101 en adelante no se podían
+  // elegir aunque existieran.
+  const productos = useTodosLosProductos({
     orden: "NOMBRE",
   });
 
@@ -104,7 +105,7 @@ export function ReporteInventario() {
       value: TODOS_PRODUCTOS,
       label: "Todos los productos",
     },
-    ...(productos.data?.datos ?? []).map(
+    ...(productos.data ?? []).map(
       (producto) => ({
         value: String(producto.id),
         label: producto.nombre,
