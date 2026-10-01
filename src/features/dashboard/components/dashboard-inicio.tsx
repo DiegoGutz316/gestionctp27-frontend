@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useIsFetching, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   LayoutDashboard,
@@ -9,6 +10,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/context/auth-context";
+import { avisosQueryKey } from "@/features/comunicacion/hooks/aviso-hooks";
 import { useProductos } from "@/features/inventario/producto/hooks/hooks";
 import { esStockBajo } from "@/features/inventario/producto/models/producto.model";
 import type { ProductoRespuesta } from "@/features/inventario/producto/validacion/producto.validacion";
@@ -23,9 +25,19 @@ import { DashboardResumen } from "./dashboard-resumen";
 
 export function DashboardInicio() {
   const { puede, usuario } = useAuth();
+  const queryClient = useQueryClient();
 
   const mostrarInventario = puede("INVENTARIO");
   const mostrarUsuarios = puede("USUARIOS");
+
+  // Sin LECTURA sobre REPORTES la consulta de avisos responde 403, así que no
+  // se monta: ni al entrar ni al refrescar se pide algo que va a ser negado.
+  const mostrarAvisos = puede("REPORTES");
+
+  // Backlog 5.6: los avisos los pide `DashboardAvisos` con su propia consulta,
+  // así que el panel no tiene su `refetch` a mano. Se sigue su estado por la
+  // clave para que «Actualizar datos» no se declare terminado antes de tiempo.
+  const avisosEnCurso = useIsFetching({ queryKey: avisosQueryKey }) > 0;
 
   const productos = useProductos(
     {
@@ -56,7 +68,7 @@ export function DashboardInicio() {
     (mostrarUsuarios && usuarios.isError);
 
   const actualizando =
-    productos.isFetching || usuarios.isFetching;
+    productos.isFetching || usuarios.isFetching || avisosEnCurso;
 
   const catalogo = useMemo(
     () => productos.data?.datos ?? [],
@@ -111,6 +123,14 @@ export function DashboardInicio() {
 
     if (mostrarUsuarios) {
       void usuarios.refetch();
+    }
+
+    // Un aviso lo publica otra persona: es justo lo que puede haber cambiado
+    // mientras el panel seguía abierto. Se invalida por clave en lugar de pedir
+    // el `refetch` a `DashboardAvisos`, porque así también queda obsoleto el
+    // listado completo, que es la otra pantalla que muestra lo mismo.
+    if (mostrarAvisos) {
+      void queryClient.invalidateQueries({ queryKey: avisosQueryKey });
     }
   }
 
@@ -348,7 +368,7 @@ export function DashboardInicio() {
           AVISOS INSTITUCIONALES (Backlog 5.6)
           ===================================================== */}
 
-      <DashboardAvisos />
+      {mostrarAvisos ? <DashboardAvisos /> : null}
 
       {/* =====================================================
           MÉTRICAS

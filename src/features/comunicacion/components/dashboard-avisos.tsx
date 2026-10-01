@@ -23,7 +23,11 @@ export function DashboardAvisos() {
   const avisos = consulta.data?.datos ?? [];
   const total = consulta.data?.meta?.total ?? 0;
 
-  if (consulta.isLoading || consulta.isError || avisos.length === 0) {
+  // Basta con mirar si hay algo que mostrar: cubre la carga inicial y el fallo
+  // sin datos. Lo que no debe pasar es que un refresco fallido haga desaparecer
+  // avisos que ya estaban en pantalla, y eso es alcanzable desde «Actualizar
+  // datos»; en ese caso se conservan los últimos conocidos, como en el listado.
+  if (avisos.length === 0) {
     return null;
   }
 
