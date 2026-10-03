@@ -41,7 +41,7 @@ export async function apiFetch<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const headers = new Headers(options.headers);
-  if (!headers.has("Content-Type")) {
+  if (!(options.body instanceof FormData) && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
 
@@ -183,6 +183,8 @@ export const api = {
       method: "PUT",
       body: JSON.stringify(body),
     }),
+  enviarArchivo: <T>(path: string, body: FormData) =>
+    apiFetch<T>(path, { method: "PUT", body }),
   patch: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
     apiFetch<T>(path, {
       ...options,

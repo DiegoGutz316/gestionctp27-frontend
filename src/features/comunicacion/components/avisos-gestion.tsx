@@ -20,10 +20,14 @@ import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
 import { useAvisos } from "../hooks/aviso-hooks";
 import { getMensajeDeError } from "../servicios/aviso.service";
+import type { AvisoRespuesta } from "../validacion/aviso.validacion";
+import { AvisoDesactivarDialog } from "./aviso-desactivar-dialog";
 import { AvisosLista } from "./avisos-lista";
 
 export function AvisosGestion() {
   const [pagina, setPagina] = useState(1);
+  const [avisoADesactivar, setAvisoADesactivar] =
+    useState<AvisoRespuesta | null>(null);
 
   const consulta = useAvisos({ pagina });
 
@@ -86,6 +90,15 @@ export function AvisosGestion() {
         cargando={consulta.isLoading}
         mensajeError={consulta.isError ? getMensajeDeError(consulta.error) : null}
         avisos={avisos}
+        onDesactivar={setAvisoADesactivar}
+      />
+
+      <AvisoDesactivarDialog
+        aviso={avisoADesactivar}
+        open={avisoADesactivar !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) setAvisoADesactivar(null);
+        }}
       />
 
       {meta && total > 0 ? (

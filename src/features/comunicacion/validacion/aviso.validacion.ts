@@ -59,6 +59,9 @@ export const avisoSchema = z.object({
   estado: z.enum(ESTADOS_AVISO),
   creadoEn: z.string(),
   creadoPor: z.uuid(),
+  actualizadoEn: z.string().nullable(),
+  actualizadoPor: z.uuid().nullable(),
+  tieneFlyer: z.boolean(),
 });
 
 export type AvisoRespuesta = z.infer<typeof avisoSchema>;

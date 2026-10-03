@@ -1,11 +1,16 @@
 "use client";
 
-import { CalendarDays, Megaphone } from "lucide-react";
+import Link from "next/link";
+import { Ban, CalendarDays, Megaphone, Pencil } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
+
+import { urlFlyerAviso } from "../servicios/aviso.service";
 
 import type { AvisoRespuesta } from "../validacion/aviso.validacion";
 
@@ -13,6 +18,7 @@ type Props = {
   cargando: boolean;
   mensajeError: string | null;
   avisos: AvisoRespuesta[];
+  onDesactivar: (aviso: AvisoRespuesta) => void;
 };
 
 /**
@@ -24,7 +30,12 @@ type Props = {
  * también deja la lista vacía, y confundirlos haría decir que no hay avisos
  * cuando en realidad no se pudieron consultar.
  */
-export function AvisosLista({ cargando, mensajeError, avisos }: Props) {
+export function AvisosLista({
+  cargando,
+  mensajeError,
+  avisos,
+  onDesactivar,
+}: Props) {
   const hayAvisos = avisos.length > 0;
 
   // Con datos ya cargados, un refresco fallido no debe esconderlos: se
@@ -94,11 +105,49 @@ export function AvisosLista({ cargando, mensajeError, avisos }: Props) {
             <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <h2 className="font-semibold tracking-tight">{aviso.titulo}</h2>
 
-              <span className="flex items-center gap-1.5 text-sm whitespace-nowrap text-muted-foreground">
-                <CalendarDays className="size-3.5" />
-                {formatearFecha(aviso.fecha)}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5 text-sm whitespace-nowrap text-muted-foreground">
+                  <CalendarDays className="size-3.5" />
+                  {formatearFecha(aviso.fecha)}
+                </span>
+
+                <MostrarSiPuede modulo="REPORTES" nivel="COMPLETO">
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href={`/dashboard/comunicacion/avisos/${aviso.id}/editar`}
+                        />
+                      }
+                    >
+                      <Pencil data-icon="inline-start" />
+                      Editar
+                    </Button>
+
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => onDesactivar(aviso)}
+                    >
+                      <Ban data-icon="inline-start" />
+                      Desactivar
+                    </Button>
+                  </div>
+                </MostrarSiPuede>
+              </div>
             </div>
+
+            {aviso.tieneFlyer ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={urlFlyerAviso(aviso.id)}
+                alt={`Flyer de ${aviso.titulo}`}
+                className="mt-3 max-h-64 w-full rounded-lg border object-contain"
+              />
+            ) : null}
 
             <p className="mt-2 text-sm whitespace-pre-line text-muted-foreground">
               {aviso.descripcion}

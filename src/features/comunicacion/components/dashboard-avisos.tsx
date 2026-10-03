@@ -1,11 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { CalendarDays, Megaphone } from "lucide-react";
+import { Ban, CalendarDays, Megaphone, Pencil } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+
+import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
 
 import { useAvisos } from "../hooks/aviso-hooks";
+import { urlFlyerAviso } from "../servicios/aviso.service";
+import type { AvisoRespuesta } from "../validacion/aviso.validacion";
+import { AvisoDesactivarDialog } from "./aviso-desactivar-dialog";
 
 /** Cuántos avisos caben en el panel sin tapar el resto del contenido. */
 const AVISOS_EN_EL_PANEL = 3;
@@ -19,6 +26,8 @@ const AVISOS_EN_EL_PANEL = 3;
  */
 export function DashboardAvisos() {
   const consulta = useAvisos({ pagina: 1, limite: AVISOS_EN_EL_PANEL });
+  const [avisoADesactivar, setAvisoADesactivar] =
+    useState<AvisoRespuesta | null>(null);
 
   const avisos = consulta.data?.datos ?? [];
   const total = consulta.data?.meta?.total ?? 0;
@@ -62,12 +71,56 @@ export function DashboardAvisos() {
               </span>
             </div>
 
+            {aviso.tieneFlyer ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={urlFlyerAviso(aviso.id)}
+                alt={`Flyer de ${aviso.titulo}`}
+                className="mt-2 max-h-48 w-full rounded-lg object-contain"
+              />
+            ) : null}
+
             <p className="mt-1 line-clamp-2 text-sm text-[#858985]">
               {aviso.descripcion}
             </p>
+
+            <MostrarSiPuede modulo="REPORTES" nivel="COMPLETO">
+              <div className="mt-2 flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  nativeButton={false}
+                  render={
+                    <Link
+                      href={`/dashboard/comunicacion/avisos/${aviso.id}/editar`}
+                    />
+                  }
+                >
+                  <Pencil data-icon="inline-start" />
+                  Editar
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setAvisoADesactivar(aviso)}
+                >
+                  <Ban data-icon="inline-start" />
+                  Desactivar
+                </Button>
+              </div>
+            </MostrarSiPuede>
           </li>
         ))}
       </ul>
+
+      <AvisoDesactivarDialog
+        aviso={avisoADesactivar}
+        open={avisoADesactivar !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) setAvisoADesactivar(null);
+        }}
+      />
     </section>
   );
 }
