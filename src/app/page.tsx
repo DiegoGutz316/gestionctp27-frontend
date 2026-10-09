@@ -9,7 +9,7 @@ import { LandingFooter } from "@/features/landing/components/landing-footer";
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-svh flex-col bg-[#F7F5F0]">
+    <div className="flex min-h-svh flex-col bg-[var(--landing-background)]">
       <LandingHeader />
       <main>
         <LandingHero />
