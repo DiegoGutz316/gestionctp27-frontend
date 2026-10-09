@@ -272,7 +272,9 @@ function CalendarioMes({
                 );
               }
 
-              const cantidad = porFecha.get(celda.clave)?.length ?? 0;
+              const eventos = porFecha.get(celda.clave) ?? [];
+              const cantidad = eventos.length;
+              const tituloActividad = eventos[0]?.titulo;
               const seleccionado = celda.clave === fechaSeleccionada;
               const esHoy = celda.clave === hoyClave;
 
@@ -281,28 +283,32 @@ function CalendarioMes({
                   <button
                     type="button"
                     aria-pressed={seleccionado}
-                    aria-label={etiquetaDia(celda.dia, tituloMes, cantidad, esHoy)}
+                    aria-label={etiquetaDia(
+                      celda.dia,
+                      tituloMes,
+                      cantidad,
+                      esHoy,
+                      tituloActividad,
+                    )}
                     onClick={() => onSeleccionarDia(celda.clave)}
-                    className="flex w-full items-center justify-center rounded-xl py-1 transition hover:bg-[#F7F5F0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40"
+                    className="flex h-full w-full flex-col items-center rounded-xl px-0.5 py-1 transition hover:bg-[#F7F5F0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40"
                   >
                     <span
                       className={cn(
-                        "relative flex size-9 items-center justify-center rounded-full text-sm text-[#252624]",
+                        "flex size-8 items-center justify-center rounded-full text-sm text-[#252624]",
                         seleccionado && "bg-[#52634D] font-medium text-[#F7F5F0]",
                         esHoy && !seleccionado && "ring-1 ring-[#52634D]/45",
                       )}
                     >
                       {celda.dia}
-                      {cantidad > 0 ? (
-                        <span
-                          className={cn(
-                            "absolute bottom-1 size-1 rounded-full",
-                            seleccionado ? "bg-[#F7F5F0]" : "bg-[#52634D]",
-                          )}
-                          aria-hidden
-                        />
-                      ) : null}
                     </span>
+                    {tituloActividad ? (
+                      <span
+                        className="mt-0.5 line-clamp-2 w-full text-center text-[9px] leading-tight font-medium text-[#52634D] sm:text-[10px]"
+                      >
+                        {tituloActividad}
+                      </span>
+                    ) : null}
                   </button>
                 </div>
               );
@@ -325,13 +331,14 @@ function etiquetaDia(
   tituloMes: string,
   cantidad: number,
   esHoy: boolean,
+  tituloActividad?: string,
 ): string {
   const actividades =
     cantidad === 0
       ? "Sin actividades"
       : cantidad === 1
-        ? "1 actividad"
-        : `${cantidad} actividades`;
+        ? tituloActividad || "1 actividad"
+        : `${cantidad} actividades. ${tituloActividad ?? ""}`.trim();
   return `${dia} de ${tituloMes}. ${actividades}${esHoy ? ". Hoy" : ""}`;
 }
 
