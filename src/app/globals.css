@@ -60,6 +60,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
+  --color-landing: var(--landing-background);
   --color-crema: var(--crema);
   --color-tinta: var(--tinta);
   --color-oliva: var(--oliva);
@@ -87,6 +88,8 @@
   --font-google-sans: "Google Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --radius: 1rem;
 
+  --landing-background: #eef2ea;
+  
   /* Base general */
   --background: #f6f7f5;
   --foreground: #222720;
@@ -203,6 +206,7 @@
   --sidebar-border: #3b473d;
   --sidebar-ring: #a3b58a;
 
+  --landing-background: #171c18;
   --crema: #171c18;
   --tinta: #f3f4ef;
   --oliva: #a3b58a;
