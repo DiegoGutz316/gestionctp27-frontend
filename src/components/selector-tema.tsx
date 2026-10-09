@@ -38,7 +38,7 @@ export function SelectorTema({ variante = "admin" }: SelectorTemaProps) {
           onClick={alternar}
           aria-label="Cambiar apariencia"
           className={cn(
-            "inline-flex size-9 items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2",
+            "inline-flex size-11 items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 md:size-9",
             variante === "landing"
               ? "text-tinta hover:bg-tinta/5 focus-visible:ring-oliva/40"
               : "text-foreground hover:bg-accent focus-visible:ring-ring",

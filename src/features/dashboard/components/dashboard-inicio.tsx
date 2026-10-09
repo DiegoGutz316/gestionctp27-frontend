@@ -190,8 +190,8 @@ export function DashboardInicio() {
           border
           border-[#e5e2dc] dark:border-border
           bg-[#fbfaf7] dark:bg-muted
-          px-7
-          py-7
+          px-4
+          py-6
           shadow-[0_14px_45px_rgba(41,39,35,0.07)]
           sm:px-8
           sm:py-8
@@ -292,12 +292,15 @@ export function DashboardInicio() {
               <h1
                 className="
                   mt-3
-                  text-[40px]
+                  text-[1.85rem]
                   font-semibold
-                  leading-[1]
-                  tracking-[-0.055em]
+                  leading-[1.05]
+                  tracking-[-0.045em]
                   text-[#292a28] dark:text-foreground
-                  sm:text-[46px]
+                  sm:text-[40px]
+                  sm:leading-[1]
+                  sm:tracking-[-0.055em]
+                  md:text-[46px]
                 "
               >
                 Panel de Control

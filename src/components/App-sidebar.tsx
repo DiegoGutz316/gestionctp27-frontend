@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -155,8 +155,12 @@ export function AppSidebar() {
   const router = useRouter()
 
   const { usuario, logout, puede } = useAuth()
-  const { state } = useSidebar()
+  const { state, setOpenMobile } = useSidebar()
   const colapsado = state === "collapsed"
+
+  useEffect(() => {
+    setOpenMobile(false)
+  }, [pathname, setOpenMobile])
 
   const nombre = usuario?.nombre ?? "Usuario"
   const correo = usuario?.correo ?? ""

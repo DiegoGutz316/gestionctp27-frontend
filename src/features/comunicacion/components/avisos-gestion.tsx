@@ -148,7 +148,7 @@ export function AvisosGestion() {
         </div>
 
         <div
-          className="flex gap-1 overflow-x-auto"
+          className="flex min-w-0 gap-1 overflow-x-auto overscroll-x-contain"
           role="group"
           aria-label="Filtrar por estado"
         >
@@ -163,7 +163,7 @@ export function AvisosGestion() {
                   setEstado(filtro.id);
                   setPagina(1);
                 }}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition ${
+                className={`shrink-0 rounded-md px-3 py-2.5 text-sm font-medium whitespace-nowrap transition md:py-1.5 ${
                   activo
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:text-foreground"

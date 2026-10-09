@@ -10,7 +10,7 @@ export function LandingHero() {
       id="inicio"
       className="relative overflow-hidden bg-landing"
     >
-      <div className="relative min-h-[650px]">
+      <div className="relative lg:min-h-[650px]">
         {/* =========================================
             IMAGEN DE FONDO
             ========================================= */}
@@ -51,9 +51,9 @@ export function LandingHero() {
         {/* =========================================
             CONTENIDO
             ========================================= */}
-        <div className="relative z-10 mx-auto flex min-h-[650px] max-w-7xl items-center px-5 pb-24 pt-16 sm:px-8 lg:pb-28 lg:pt-20">
-          <div className="max-w-[640px]">
-            <h1 className="text-[3.35rem] font-semibold leading-[0.97] tracking-[-0.05em] text-tinta sm:text-[4.2rem] lg:text-[4.8rem]">
+        <div className="relative z-10 mx-auto flex max-w-7xl items-center px-5 pb-20 pt-12 sm:px-8 sm:pt-16 lg:min-h-[650px] lg:pb-28 lg:pt-20">
+          <div className="min-w-0 max-w-[640px]">
+            <h1 className="text-[2rem] font-semibold leading-[1.02] tracking-[-0.04em] text-tinta min-[390px]:text-[2.35rem] sm:text-[3.35rem] sm:leading-[0.97] sm:tracking-[-0.05em] md:text-[4.2rem] lg:text-[4.8rem]">
               Colegio Técnico
 
               <span className="block">
@@ -72,8 +72,8 @@ export function LandingHero() {
               Santa Cruz, Guanacaste.
             </p>
 
-            <div className="mt-5 flex items-center gap-2 text-sm font-medium text-tinta/50">
-              <MapPin className="size-4 shrink-0 text-malva" />
+            <div className="mt-5 flex items-start gap-2 text-sm font-medium text-tinta/50">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-malva" />
 
               <span>
                 Veintisiete de Abril ·

@@ -216,7 +216,7 @@ function CalendarioMes({
   return (
     <div className={cn("rounded-2xl bg-tarjeta p-4 sm:p-6", SOMBRA)}>
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold tracking-tight text-tinta sm:text-xl">
+        <h3 className="min-w-0 text-lg font-semibold tracking-tight text-balance text-tinta sm:text-xl">
           {tituloMes}
         </h3>
         <div className="flex shrink-0 gap-2">
@@ -224,7 +224,7 @@ function CalendarioMes({
             type="button"
             onClick={onMesAnterior}
             aria-label="Mes anterior"
-            className="flex size-9 items-center justify-center rounded-full bg-crema text-oliva transition hover:bg-superficie focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40"
+            className="flex size-11 items-center justify-center rounded-full bg-crema text-oliva transition hover:bg-superficie focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40"
           >
             <ChevronLeft className="size-4" aria-hidden />
           </button>
@@ -232,7 +232,7 @@ function CalendarioMes({
             type="button"
             onClick={onMesSiguiente}
             aria-label="Mes siguiente"
-            className="flex size-9 items-center justify-center rounded-full bg-crema text-oliva transition hover:bg-superficie focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40"
+            className="flex size-11 items-center justify-center rounded-full bg-crema text-oliva transition hover:bg-superficie focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40"
           >
             <ChevronRight className="size-4" aria-hidden />
           </button>

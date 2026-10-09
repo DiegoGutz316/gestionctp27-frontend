@@ -20,15 +20,15 @@ export function LandingHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-tinta/10 bg-landing/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-        <Link href="#inicio" className="flex items-center gap-3">
+        <Link href="#inicio" className="flex min-w-0 items-center gap-2 sm:gap-3">
           <Image
             src="/escudo-ctp27.png"
             alt="Escudo CTP 27 de Abril"
             width={36}
             height={36}
-            className="h-9 w-9 object-contain"
+            className="h-9 w-9 shrink-0 object-contain"
           />
-          <span className="text-[15px] font-semibold tracking-tight text-tinta">
+          <span className="truncate text-sm font-semibold tracking-tight text-tinta sm:text-[15px]">
             Gestión CTP 27
           </span>
         </Link>
@@ -56,7 +56,7 @@ export function LandingHeader() {
           <button
             type="button"
             onClick={() => setMenuAbierto((v) => !v)}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-tinta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40 lg:hidden"
+            className="flex size-11 items-center justify-center rounded-full text-tinta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40 lg:hidden"
             aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuAbierto}
           >
@@ -73,7 +73,7 @@ export function LandingHeader() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuAbierto(false)}
-                className="rounded-lg px-2 py-3 text-sm text-tinta/80 hover:bg-tinta/5"
+                className="rounded-lg px-2 py-3 text-base text-tinta/80 hover:bg-tinta/5"
               >
                 {link.label}
               </a>
