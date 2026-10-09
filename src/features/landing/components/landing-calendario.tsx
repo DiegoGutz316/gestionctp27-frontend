@@ -85,7 +85,7 @@ export function LandingCalendario() {
   return (
     <section
       id="calendario"
-      className="scroll-mt-24 bg-crema py-24 sm:py-28"
+      className="scroll-mt-24 bg-landing py-24 sm:py-28"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Encabezado />

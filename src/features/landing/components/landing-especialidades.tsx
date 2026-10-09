@@ -64,7 +64,7 @@ const ESPECIALIDADES: Especialidad[] = [
 
 export function LandingEspecialidades() {
   return (
-    <section id="especialidades" className="bg-tarjeta py-24 sm:py-28">
+    <section id="especialidades" className="bg-landing py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="max-w-2xl">
           <span className="text-xs font-medium uppercase tracking-widest text-malva">
@@ -79,7 +79,7 @@ export function LandingEspecialidades() {
           {ESPECIALIDADES.map((especialidad) => (
             <div
               key={especialidad.nombre}
-              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-tinta/10 bg-crema transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-25px_rgba(37,38,36,0.25)] lg:col-span-2 ${especialidad.className}`}
+              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-tinta/10 bg-tarjeta transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-25px_rgba(37,38,36,0.25)] lg:col-span-2 ${especialidad.className}`}
             >
               <div className="relative h-[200px] w-full shrink-0 overflow-hidden">
                 <Image

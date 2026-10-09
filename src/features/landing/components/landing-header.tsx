@@ -18,7 +18,7 @@ export function LandingHeader() {
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-tinta/10 bg-crema/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-tinta/10 bg-landing/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
         <Link href="#inicio" className="flex items-center gap-3">
           <Image
@@ -49,7 +49,7 @@ export function LandingHeader() {
           <SelectorTema variante="landing" />
           <Link
             href="/login"
-            className="hidden rounded-full bg-oliva px-5 py-2.5 text-sm font-medium text-sobre-oliva transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40 focus-visible:ring-offset-2 focus-visible:ring-offset-crema active:brightness-95 lg:inline-flex"
+            className="hidden rounded-full bg-oliva px-5 py-2.5 text-sm font-medium text-sobre-oliva transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40 focus-visible:ring-offset-2 focus-visible:ring-offset-landing active:brightness-95 lg:inline-flex"
           >
             Ingresar
           </Link>
@@ -66,7 +66,7 @@ export function LandingHeader() {
       </div>
 
       {menuAbierto && (
-        <div className="border-t border-tinta/10 bg-crema px-5 pb-6 pt-2 lg:hidden">
+        <div className="border-t border-tinta/10 bg-landing px-5 pb-6 pt-2 lg:hidden">
           <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <a

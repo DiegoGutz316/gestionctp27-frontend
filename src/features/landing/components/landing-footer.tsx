@@ -6,7 +6,7 @@ const MAPS_URL = "https://maps.app.goo.gl/aNgqKiZekCDtEGKJA";
 
 export function LandingFooter() {
   return (
-    <footer id="footer-contacto" className="border-t border-tinta/10 bg-crema">
+    <footer id="footer-contacto" className="border-t border-tinta/10 bg-landing">
       <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">
