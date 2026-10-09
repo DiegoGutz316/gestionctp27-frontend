@@ -1,4 +1,4 @@
-import { Boxes, FileBarChart, Leaf, PawPrint, Users } from "lucide-react";
+import { Boxes, Leaf, Megaphone, PawPrint, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type Modulo = {
@@ -33,9 +33,9 @@ const MODULOS: Modulo[] = [
     className: "",
   },
   {
-    icono: FileBarChart,
-    nombre: "Reportes y comunicación",
-    descripcion: "Información consolidada para la toma de decisiones.",
+    icono: Megaphone,
+    nombre: "Avisos institucionales",
+    descripcion: "Comunicados y actividades visibles en la página del colegio.",
     acento: "#896A78",
     className: "",
   },

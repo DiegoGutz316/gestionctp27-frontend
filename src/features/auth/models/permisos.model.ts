@@ -57,5 +57,5 @@ export const ETIQUETA_MODULO: Record<ModuloSistema, string> = {
   AGRICOLA: "Gestión agrícola",
   INVENTARIO: "Inventario e insumos",
   LIBRO_CAJA: "Libro de caja",
-  REPORTES: "Reportes",
+  REPORTES: "Avisos institucionales",
 };

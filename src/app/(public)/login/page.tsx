@@ -84,7 +84,7 @@ export default function LoginPage() {
 
             <p className="mt-8 max-w-xl text-[15px] leading-8 text-white/60">
               Administre de forma sencilla los procesos agrícolas, pecuarios,
-              inventario, reportes y usuarios desde un solo lugar.
+              inventario y usuarios desde un solo lugar.
             </p>
 
             <div className="my-10 h-px max-w-xl bg-linear-to-r from-white/15 via-white/[0.08] to-transparent" />
