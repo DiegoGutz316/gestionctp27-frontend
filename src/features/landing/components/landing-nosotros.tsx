@@ -4,28 +4,28 @@ export function LandingNosotros() {
   return (
     <section
       id="nosotros"
-      className="relative overflow-hidden bg-[var(--landing-background)] py-24 sm:py-28"
+      className="relative overflow-hidden bg-landing py-24 sm:py-28"
     >
       {/* Decoración suave */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-40 top-1/2 size-[420px] -translate-y-1/2 rounded-full bg-[#C7A35D]/8 blur-[120px]"
+        className="pointer-events-none absolute -left-40 top-1/2 size-[420px] -translate-y-1/2 rounded-full bg-oro/10 blur-[120px]"
       />
 
       <div className="relative mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-16">
         {/* Texto */}
         <div>
-          <span className="text-xs font-medium uppercase tracking-widest text-[#896A78]">
+          <span className="text-xs font-medium uppercase tracking-widest text-malva">
             Nosotros
           </span>
 
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#252624] sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
             Nuestra historia
           </h2>
 
-          <div className="mt-5 h-px w-12 bg-[#C7A35D]" />
+          <div className="mt-5 h-px w-12 bg-oro" />
 
-          <p className="mt-6 text-base leading-relaxed text-[#252624]/65">
+          <p className="mt-6 text-base leading-relaxed text-tinta/65">
             El Colegio Técnico Profesional 27 de Abril inició sus labores en
             1974 como respuesta a la necesidad de brindar educación
             secundaria y formación técnica a los jóvenes de Veintisiete de
@@ -37,7 +37,7 @@ export function LandingNosotros() {
             crecimiento de sus comunidades.
           </p>
 
-          <p className="mt-4 text-base leading-relaxed text-[#252624]/65">
+          <p className="mt-4 text-base leading-relaxed text-tinta/65">
             A lo largo de su trayectoria, el CTP 27 de Abril ha evolucionado
             junto con las necesidades sociales, económicas y tecnológicas de
             la región. Su oferta educativa combina la formación académica con
@@ -55,10 +55,10 @@ export function LandingNosotros() {
         <div className="relative">
           <div
             aria-hidden
-            className="absolute -bottom-6 -right-6 hidden h-full w-full rounded-[28px] border border-[#52634D]/10 bg-[#52634D]/5 lg:block"
+            className="absolute -bottom-6 -right-6 hidden h-full w-full rounded-[28px] border border-oliva/10 bg-oliva/5 lg:block"
           />
 
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[28px] border border-[#252624]/8 bg-white shadow-[0_20px_55px_rgba(37,38,36,0.10)]">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[28px] border border-tinta/10 bg-tarjeta shadow-[0_20px_55px_rgba(37,38,36,0.10)]">
             <Image
               src="/landing/historia/ctp-historia.jpg"
               alt="Fotografía institucional del Colegio Técnico Profesional 27 de Abril"

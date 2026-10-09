@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const vistas = [
   {
@@ -29,7 +30,7 @@ export function AgricolaVistasNav() {
 
   return (
     <nav
-      className="flex flex-wrap gap-2"
+      className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0"
       aria-label="Vistas del área agrícola"
     >
       {vistas.map((vista) => {
@@ -52,12 +53,15 @@ export function AgricolaVistasNav() {
                 ? "page"
                 : undefined
             }
-            className={buttonVariants({
-              variant: activa
-                ? "default"
-                : "outline",
-              size: "sm",
-            })}
+            className={cn(
+              buttonVariants({
+                variant: activa
+                  ? "default"
+                  : "outline",
+                size: "sm",
+              }),
+              "h-11 shrink-0 md:h-8",
+            )}
           >
             {vista.etiqueta}
           </Link>

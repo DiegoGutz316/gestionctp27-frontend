@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
 import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/features/auth/context/auth-context";
@@ -24,11 +25,19 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {children}
-        <Toaster richColors closeButton />
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange={false}
+      storageKey="theme"
+    >
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          {children}
+          <Toaster richColors closeButton />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

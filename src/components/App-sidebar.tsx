@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -155,8 +155,12 @@ export function AppSidebar() {
   const router = useRouter()
 
   const { usuario, logout, puede } = useAuth()
-  const { state } = useSidebar()
+  const { state, setOpenMobile } = useSidebar()
   const colapsado = state === "collapsed"
+
+  useEffect(() => {
+    setOpenMobile(false)
+  }, [pathname, setOpenMobile])
 
   const nombre = usuario?.nombre ?? "Usuario"
   const correo = usuario?.correo ?? ""
@@ -219,8 +223,8 @@ export function AppSidebar() {
       collapsible="icon"
       className="
         border-r
-        border-[#e2e8df]
-        bg-[#fafcf9]
+        border-[#e2e8df] dark:border-border
+        bg-[#fafcf9] dark:bg-muted
       "
     >
       {/* =====================================================
@@ -245,8 +249,8 @@ export function AppSidebar() {
                 transition-all
                 duration-200
 
-                hover:border-[#e4e9e1]
-                hover:bg-white
+                hover:border-[#e4e9e1] dark:hover:border-border
+                hover:bg-white dark:hover:bg-accent
                 hover:shadow-[0_6px_18px_rgba(39,54,42,0.06)]
 
                 group-data-[collapsible=icon]:size-10!
@@ -268,8 +272,8 @@ export function AppSidebar() {
                   overflow-hidden
                   rounded-[14px]
                   border
-                  border-[#dde5d9]
-                  bg-white
+                  border-[#dde5d9] dark:border-border
+                  bg-white dark:bg-card
                   shadow-[0_4px_12px_rgba(34,49,37,0.08)]
 
                   group-data-[collapsible=icon]:size-8
@@ -312,7 +316,7 @@ export function AppSidebar() {
                     text-[15px]
                     font-semibold
                     tracking-[-0.02em]
-                    text-[#263129]
+                    text-[#263129] dark:text-primary
                   "
                 >
                   Gestión CTP 27
@@ -324,7 +328,7 @@ export function AppSidebar() {
                     truncate
                     text-[11px]
                     font-medium
-                    text-[#899287]
+                    text-[#899287] dark:text-foreground
                   "
                 >
                   Panel administrativo
@@ -390,13 +394,13 @@ export function AppSidebar() {
                   font-bold
                   uppercase
                   tracking-[0.12em]
-                  text-[#929b8f]
+                  text-[#929b8f] dark:text-foreground
 
                   transition-all
                   duration-200
 
-                  hover:bg-[#f1f4ef]
-                  hover:text-[#5d685b]
+                  hover:bg-[#f1f4ef] dark:hover:bg-accent
+                  hover:text-[#5d685b] dark:hover:text-foreground
                 "
               >
                 {section.label}
@@ -443,22 +447,22 @@ export function AppSidebar() {
                               border-transparent
                               px-2.5
 
-                              text-[#626c61]
+                              text-[#626c61] dark:text-foreground
 
                               transition-all
                               duration-200
 
-                              hover:border-[#e0e7dd]
-                              hover:bg-white
-                              hover:text-[#344337]
+                              hover:border-[#e0e7dd] dark:hover:border-border
+                              hover:bg-white dark:hover:bg-accent
+                              hover:text-[#344337] dark:hover:text-primary
                               hover:shadow-[0_5px_16px_rgba(40,57,43,0.055)]
 
-                              data-[active=true]:border-[#dce7d6]
+                              data-[active=true]:border-[#dce7d6] dark:data-[active=true]:border-border
                               data-[active=true]:bg-linear-to-r
                               data-[active=true]:from-[#e9f2e4]
                               data-[active=true]:to-[#f4f8f1]
                               data-[active=true]:font-semibold
-                              data-[active=true]:text-[#405c39]
+                              data-[active=true]:text-[#405c39] dark:data-[active=true]:text-primary
                               data-[active=true]:shadow-[0_5px_18px_rgba(76,105,64,0.08)]
 
                               group-data-[collapsible=icon]:size-10!
@@ -503,16 +507,16 @@ export function AppSidebar() {
                                 ${
                                   activo
                                     ? `
-                                      bg-[#dce9d5]
-                                      text-[#557548]
+                                      bg-[#dce9d5] dark:bg-secondary
+                                      text-[#557548] dark:text-primary
                                       shadow-[0_3px_8px_rgba(73,102,60,0.08)]
                                     `
                                     : `
-                                      bg-[#f3f5f1]
-                                      text-[#7d887a]
+                                      bg-[#f3f5f1] dark:bg-muted
+                                      text-[#7d887a] dark:text-foreground
 
-                                      group-hover/menu-item:bg-[#e9f0e5]
-                                      group-hover/menu-item:text-[#56704e]
+                                      group-hover/menu-item:bg-[#e9f0e5] dark:group-hover/menu-item:bg-accent
+                                      group-hover/menu-item:text-[#56704e] dark:group-hover/menu-item:text-primary
                                     `
                                 }
                               `}
@@ -547,8 +551,8 @@ export function AppSidebar() {
       <SidebarFooter
         className="
           border-t
-          border-[#e3e8e0]
-          bg-[#f8faf7]
+          border-[#e3e8e0] dark:border-border
+          bg-[#f8faf7] dark:bg-muted
           p-3
 
           group-data-[collapsible=icon]:items-center
@@ -566,8 +570,8 @@ export function AppSidebar() {
                       h-auto
                       rounded-[18px]
                       border
-                      border-[#e1e7de]
-                      bg-white
+                      border-[#e1e7de] dark:border-border
+                      bg-white dark:bg-card
                       px-2.5
                       py-2.5
 
@@ -576,12 +580,12 @@ export function AppSidebar() {
                       transition-all
                       duration-200
 
-                      hover:border-[#d6e0d2]
-                      hover:bg-white
+                      hover:border-[#d6e0d2] dark:hover:border-border
+                      hover:bg-white dark:hover:bg-accent
                       hover:shadow-[0_8px_24px_rgba(37,51,40,0.09)]
 
-                      data-open:border-[#cfddca]
-                      data-open:bg-white
+                      data-open:border-[#cfddca] dark:data-open:border-border
+                      data-open:bg-white dark:data-open:bg-card
                       data-open:text-sidebar-accent-foreground
                       data-open:shadow-[0_8px_24px_rgba(37,51,40,0.09)]
 
@@ -599,7 +603,7 @@ export function AppSidebar() {
                     size-10
                     rounded-[12px]
                     border
-                    border-[#d7e2d3]
+                    border-[#d7e2d3] dark:border-border
                     shadow-sm
 
                     group-data-[collapsible=icon]:size-8
@@ -643,7 +647,7 @@ export function AppSidebar() {
                       truncate
                       font-semibold
                       tracking-[-0.01em]
-                      text-[#303831]
+                      text-[#303831] dark:text-foreground
                     "
                   >
                     {nombre}
@@ -654,7 +658,7 @@ export function AppSidebar() {
                       mt-1
                       truncate
                       text-[10px]
-                      text-[#8b9489]
+                      text-[#8b9489] dark:text-foreground
                     "
                   >
                     {correo}
@@ -668,11 +672,11 @@ export function AppSidebar() {
                     items-center
                     justify-center
                     rounded-lg
-                    text-[#899386]
+                    text-[#899386] dark:text-foreground
 
                     transition
-                    hover:bg-[#f1f5ef]
-                    hover:text-[#526b4a]
+                    hover:bg-[#f1f5ef] dark:hover:bg-accent
+                    hover:text-[#526b4a] dark:hover:text-primary
 
                     group-data-[collapsible=icon]:hidden
                   "
@@ -690,8 +694,8 @@ export function AppSidebar() {
                   w-(--anchor-width)
                   min-w-64
                   rounded-[18px]
-                  border-[#dde5da]
-                  bg-white
+                  border-[#dde5da] dark:border-border
+                  bg-white dark:bg-card
                   p-2
 
                   shadow-[0_18px_55px_rgba(27,39,29,0.13)]
@@ -718,7 +722,7 @@ export function AppSidebar() {
                           size-11
                           rounded-[13px]
                           border
-                          border-[#d7e2d3]
+                          border-[#d7e2d3] dark:border-border
                         "
                       >
                         <AvatarFallback
@@ -748,7 +752,7 @@ export function AppSidebar() {
                           className="
                             truncate
                             font-semibold
-                            text-[#303831]
+                            text-[#303831] dark:text-foreground
                           "
                         >
                           {nombre}
@@ -759,7 +763,7 @@ export function AppSidebar() {
                             mt-1
                             truncate
                             text-xs
-                            text-[#879087]
+                            text-[#879087] dark:text-foreground
                           "
                         >
                           {correo}
@@ -769,7 +773,7 @@ export function AppSidebar() {
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
 
-                <DropdownMenuSeparator className="bg-[#edf0eb]" />
+                <DropdownMenuSeparator className="bg-[#edf0eb] dark:bg-secondary" />
 
                 <DropdownMenuItem
                   className="
@@ -778,15 +782,15 @@ export function AppSidebar() {
                     px-3
                     py-2.5
 
-                    text-[#505a51]
+                    text-[#505a51] dark:text-foreground
 
                     transition-colors
 
-                    hover:bg-[#f1f5ef]!
-                    hover:text-[#405c39]!
+                    hover:bg-[#f1f5ef]! dark:hover:bg-accent!
+                    hover:text-[#405c39]! dark:hover:text-primary!
                   "
                 >
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#f1f4ef] text-[#677463]">
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#f1f4ef] dark:bg-secondary text-[#677463] dark:text-foreground">
                     <CircleUserRound className="size-4" />
                   </span>
 
@@ -800,22 +804,22 @@ export function AppSidebar() {
                     px-3
                     py-2.5
 
-                    text-[#505a51]
+                    text-[#505a51] dark:text-foreground
 
                     transition-colors
 
-                    hover:bg-[#f1f5ef]!
-                    hover:text-[#405c39]!
+                    hover:bg-[#f1f5ef]! dark:hover:bg-accent!
+                    hover:text-[#405c39]! dark:hover:text-primary!
                   "
                 >
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#f1f4ef] text-[#677463]">
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#f1f4ef] dark:bg-secondary text-[#677463] dark:text-foreground">
                     <Settings className="size-4" />
                   </span>
 
                   Configuración
                 </DropdownMenuItem>
 
-                <DropdownMenuSeparator className="bg-[#edf0eb]" />
+                <DropdownMenuSeparator className="bg-[#edf0eb] dark:bg-secondary" />
 
                 <DropdownMenuItem
                   variant="destructive"
@@ -827,7 +831,7 @@ export function AppSidebar() {
                     py-2.5
                   "
                 >
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300">
                     <LogOut className="size-4" />
                   </span>
 

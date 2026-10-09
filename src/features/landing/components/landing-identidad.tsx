@@ -2,10 +2,10 @@ import Image from "next/image";
 
 export function LandingIdentidad() {
   return (
-    <section className="relative overflow-hidden bg-[var(--landing-background)] py-24 text-[#252624] sm:py-28">
+    <section className="relative overflow-hidden bg-landing py-24 text-tinta sm:py-28">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(37,38,36,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(37,38,36,0.035)_1px,transparent_1px)] bg-[size:64px_64px]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(37,38,36,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(37,38,36,0.035)_1px,transparent_1px)] bg-[size:64px_64px] dark:bg-[linear-gradient(to_right,rgba(243,244,239,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(243,244,239,0.035)_1px,transparent_1px)]"
       />
 
       <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
@@ -18,12 +18,12 @@ export function LandingIdentidad() {
         />
 
         <div className="mt-10 grid gap-8 sm:grid-cols-2 sm:gap-8">
-          <div className="flex h-full flex-col rounded-2xl border border-[#252624]/10 bg-white/70 p-7 shadow-[0_12px_32px_rgba(37,38,36,0.05)] backdrop-blur-sm sm:p-8">
-            <span className="text-xs font-medium uppercase tracking-widest text-[#52634D]">
+          <div className="flex h-full flex-col rounded-2xl border border-tinta/10 bg-tarjeta/70 p-7 shadow-[0_12px_32px_rgba(37,38,36,0.05)] backdrop-blur-sm sm:p-8">
+            <span className="text-xs font-medium uppercase tracking-widest text-oliva">
               Misión
             </span>
 
-            <p className="mt-4 text-base leading-relaxed text-[#252624]/75 sm:text-lg">
+            <p className="mt-4 text-base leading-relaxed text-tinta/75 sm:text-lg">
               Brindar una formación académica y técnica integral que permita
               a nuestros estudiantes desarrollar conocimientos, habilidades
               prácticas, valores y actitudes necesarias para desenvolverse en
@@ -32,12 +32,12 @@ export function LandingIdentidad() {
             </p>
           </div>
 
-          <div className="flex h-full flex-col rounded-2xl border border-[#252624]/10 bg-white/70 p-7 shadow-[0_12px_32px_rgba(37,38,36,0.05)] backdrop-blur-sm sm:p-8">
-            <span className="text-xs font-medium uppercase tracking-widest text-[#896A78]">
+          <div className="flex h-full flex-col rounded-2xl border border-tinta/10 bg-tarjeta/70 p-7 shadow-[0_12px_32px_rgba(37,38,36,0.05)] backdrop-blur-sm sm:p-8">
+            <span className="text-xs font-medium uppercase tracking-widest text-malva">
               Visión
             </span>
 
-            <p className="mt-4 text-base leading-relaxed text-[#252624]/75 sm:text-lg">
+            <p className="mt-4 text-base leading-relaxed text-tinta/75 sm:text-lg">
               Ser una institución educativa técnica comprometida con la
               excelencia, la innovación y el desarrollo integral de sus
               estudiantes, capaz de responder a los cambios sociales,

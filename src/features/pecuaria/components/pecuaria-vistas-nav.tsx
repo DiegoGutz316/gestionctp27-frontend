@@ -25,7 +25,7 @@ export function PecuariaVistasNav() {
 
   return (
     <nav
-      className="flex flex-wrap gap-2"
+      className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0"
       aria-label="Vistas de pecuaria"
     >
       {VISTAS.map((vista) => {
@@ -37,7 +37,7 @@ export function PecuariaVistasNav() {
             href={vista.href}
             aria-current={activa ? "page" : undefined}
             className={cn(
-              "inline-flex h-9 items-center justify-center rounded-full border px-4 text-sm font-medium transition-colors",
+              "inline-flex h-11 shrink-0 items-center justify-center rounded-full border px-4 text-sm font-medium whitespace-nowrap transition-colors md:h-9",
               activa
                 ? "border-transparent bg-[#465526] text-white"
                 : "border-border bg-background text-foreground hover:bg-muted",

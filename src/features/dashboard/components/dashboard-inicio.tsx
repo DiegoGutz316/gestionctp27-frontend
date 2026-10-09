@@ -141,16 +141,16 @@ export function DashboardInicio() {
   if (error) {
     return (
       <div className="flex h-[60vh] flex-col items-center justify-center gap-4 text-center">
-        <div className="flex size-14 items-center justify-center rounded-2xl bg-[#fff0ed] text-[#c9705a]">
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-[#fff0ed] dark:bg-red-950/40 text-[#c9705a] dark:text-red-300">
           <AlertCircle className="size-6" />
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-[#292c2a]">
+          <h2 className="text-xl font-semibold text-[#292c2a] dark:text-foreground">
             Error al cargar el panel
           </h2>
 
-          <p className="mt-2 max-w-md text-sm text-[#858985]">
+          <p className="mt-2 max-w-md text-sm text-[#858985] dark:text-foreground">
             Hubo un problema de comunicación con el servidor.
             Intente nuevamente.
           </p>
@@ -188,10 +188,10 @@ export function DashboardInicio() {
           overflow-hidden
           rounded-[26px]
           border
-          border-[#e5e2dc]
-          bg-[#fbfaf7]
-          px-7
-          py-7
+          border-[#e5e2dc] dark:border-border
+          bg-[#fbfaf7] dark:bg-muted
+          px-4
+          py-6
           shadow-[0_14px_45px_rgba(41,39,35,0.07)]
           sm:px-8
           sm:py-8
@@ -262,9 +262,9 @@ export function DashboardInicio() {
                 justify-center
                 rounded-2xl
                 border
-                border-[#d8e5d0]
-                bg-[#edf4e9]
-                text-[#6f935e]
+                border-[#d8e5d0] dark:border-border
+                bg-[#edf4e9] dark:bg-secondary
+                text-[#6f935e] dark:text-primary
                 shadow-[0_12px_30px_rgba(111,147,94,0.16)]">
 
               <LayoutDashboard className="size-6" />
@@ -281,7 +281,7 @@ export function DashboardInicio() {
                     font-bold
                     uppercase
                     tracking-[0.18em]
-                    text-[#8c857b]
+                    text-[#8c857b] dark:text-foreground
                   "
                 >
                   Vista general
@@ -292,19 +292,22 @@ export function DashboardInicio() {
               <h1
                 className="
                   mt-3
-                  text-[40px]
+                  text-[1.85rem]
                   font-semibold
-                  leading-[1]
-                  tracking-[-0.055em]
-                  text-[#292a28]
-                  sm:text-[46px]
+                  leading-[1.05]
+                  tracking-[-0.045em]
+                  text-[#292a28] dark:text-foreground
+                  sm:text-[40px]
+                  sm:leading-[1]
+                  sm:tracking-[-0.055em]
+                  md:text-[46px]
                 "
               >
                 Panel de Control
               </h1>
 
               {/* Descripción */}
-              <p className="mt-2 max-w-xl text-sm leading-6 text-[#7f7b74]">
+              <p className="mt-2 max-w-xl text-sm leading-6 text-[#7f7b74] dark:text-foreground">
                 {nombre
                   ? `Hola, ${nombre}. Aquí tienes el resumen general del sistema.`
                   : "Resumen general y acceso rápido a los módulos."}
@@ -323,12 +326,12 @@ export function DashboardInicio() {
               gap-2
               self-start
               rounded-xl
-              border-[#d7dfd1]
-              bg-white
+              border-[#d7dfd1] dark:border-border
+              bg-white dark:bg-card
               px-4
               text-xs
               font-medium
-              text-[#4d5948]
+              text-[#4d5948] dark:text-primary
 
               shadow-[0_4px_14px_rgba(36,35,32,0.05)]
 
@@ -336,8 +339,8 @@ export function DashboardInicio() {
               duration-200
 
               hover:border-[#a8be8e]
-              hover:bg-[#f4f8f1]
-              hover:text-[#5f7f50]
+              hover:bg-[#f4f8f1] dark:hover:bg-accent
+              hover:text-[#5f7f50] dark:hover:text-primary
 
               sm:self-auto
             "

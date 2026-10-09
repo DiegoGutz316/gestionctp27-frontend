@@ -187,7 +187,7 @@ export function LoginForm() {
                     mb-2
                     text-xs
                     font-semibold
-                    text-[#4b5348]
+                    text-[#4b5348] dark:text-foreground
                   "
                 >
                   Correo electrónico
@@ -202,10 +202,10 @@ export function LoginForm() {
                       left-4
                       size-[17px]
                       -translate-y-1/2
-                      text-[#92998e]
+                      text-[#92998e] dark:text-foreground
                       transition-colors
                       duration-200
-                      group-focus-within:text-[#637a36]
+                      group-focus-within:text-[#637a36] dark:group-focus-within:text-primary
                     "
                   />
 
@@ -225,22 +225,22 @@ export function LoginForm() {
                     className="
                       h-12
                       rounded-xl
-                      border-[#dde3da]
-                      bg-[#fafbf9]
+                      border-[#dde3da] dark:border-border
+                      bg-[#fafbf9] dark:bg-muted
                       pr-4
                       pl-11
                       text-sm
-                      text-[#252b23]
+                      text-[#252b23] dark:text-foreground
                       shadow-none
                       transition-all
                       duration-200
 
-                      placeholder:text-[#a4aba0]
+                      placeholder:text-[#a4aba0] dark:placeholder:text-foreground
 
-                      hover:border-[#cfd7cb]
+                      hover:border-[#cfd7cb] dark:hover:border-border
 
                       focus-visible:border-[#8da267]
-                      focus-visible:bg-white
+                      focus-visible:bg-white dark:focus-visible:bg-card
                       focus-visible:ring-4
                       focus-visible:ring-[#637a36]/10
                     "
@@ -280,7 +280,7 @@ export function LoginForm() {
                     mb-2
                     text-xs
                     font-semibold
-                    text-[#4b5348]
+                    text-[#4b5348] dark:text-foreground
                   "
                 >
                   Contraseña
@@ -295,10 +295,10 @@ export function LoginForm() {
                       left-4
                       size-[17px]
                       -translate-y-1/2
-                      text-[#92998e]
+                      text-[#92998e] dark:text-foreground
                       transition-colors
                       duration-200
-                      group-focus-within:text-[#637a36]
+                      group-focus-within:text-[#637a36] dark:group-focus-within:text-primary
                     "
                   />
 
@@ -322,22 +322,22 @@ export function LoginForm() {
                     className="
                       h-12
                       rounded-xl
-                      border-[#dde3da]
-                      bg-[#fafbf9]
+                      border-[#dde3da] dark:border-border
+                      bg-[#fafbf9] dark:bg-muted
                       pr-12
                       pl-11
                       text-sm
-                      text-[#252b23]
+                      text-[#252b23] dark:text-foreground
                       shadow-none
                       transition-all
                       duration-200
 
-                      placeholder:text-[#a4aba0]
+                      placeholder:text-[#a4aba0] dark:placeholder:text-foreground
 
-                      hover:border-[#cfd7cb]
+                      hover:border-[#cfd7cb] dark:hover:border-border
 
                       focus-visible:border-[#8da267]
-                      focus-visible:bg-white
+                      focus-visible:bg-white dark:focus-visible:bg-card
                       focus-visible:ring-4
                       focus-visible:ring-[#637a36]/10
                     "
@@ -360,12 +360,12 @@ export function LoginForm() {
                       items-center
                       justify-center
                       rounded-lg
-                      text-[#92998e]
+                      text-[#92998e] dark:text-foreground
                       transition-all
                       duration-200
 
-                      hover:bg-[#eef2eb]
-                      hover:text-[#596153]
+                      hover:bg-[#eef2eb] dark:hover:bg-accent
+                      hover:text-[#596153] dark:hover:text-foreground
                     "
                     aria-label={
                       mostrarContrasena
@@ -420,15 +420,15 @@ export function LoginForm() {
               gap-3
               rounded-xl
               border
-              border-[#e6d3b8]
-              bg-[#fdf7ec]
+              border-[#e6d3b8] dark:border-border
+              bg-[#fdf7ec] dark:bg-amber-950/35
               px-4
               py-3
             "
           >
-            <ShieldAlert className="mt-0.5 size-4 shrink-0 text-[#a8791f]" />
+            <ShieldAlert className="mt-0.5 size-4 shrink-0 text-[#a8791f] dark:text-amber-200" />
 
-            <div className="text-xs leading-5 text-[#6b5426]">
+            <div className="text-xs leading-5 text-[#6b5426] dark:text-amber-100">
               <p className="font-semibold">
                 Demasiados intentos fallidos
               </p>
@@ -485,7 +485,7 @@ export function LoginForm() {
           >
             {isSubmitting ? (
               <>
-                <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                <span className="size-4 animate-spin rounded-full border-2 border-white/30 dark:border-border border-t-white" />
                 Ingresando...
               </>
             ) : (

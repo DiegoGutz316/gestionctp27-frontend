@@ -46,7 +46,7 @@ export function BarraFiltrosAgricolas({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         {busqueda ? (
           <div className="relative min-w-0 flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -56,7 +56,7 @@ export function BarraFiltrosAgricolas({
               onChange={(event) => busqueda.onChange(event.target.value)}
               placeholder={busqueda.placeholder}
               maxLength={busqueda.maxLength}
-              className="h-9 rounded-lg bg-white pl-9 shadow-none"
+              className="h-11 rounded-lg bg-white pl-9 shadow-none md:h-9 dark:bg-card"
             />
           </div>
         ) : (
@@ -70,7 +70,7 @@ export function BarraFiltrosAgricolas({
           aria-controls={panelId}
           onClick={() => setAbierto((actual) => !actual)}
           className={cn(
-            "h-9 shrink-0 rounded-lg bg-white px-3 shadow-none",
+            "h-11 w-full shrink-0 rounded-lg bg-white px-3 shadow-none sm:w-auto md:h-9 dark:bg-card",
             cantidad > 0 && "border-primary/40",
           )}
         >
@@ -90,7 +90,7 @@ export function BarraFiltrosAgricolas({
         <ul className="mt-2 flex flex-wrap gap-1.5">
           {etiquetas.map((item) => (
             <li key={item.id}>
-              <span className="inline-flex max-w-full items-center gap-1 rounded-full border bg-white px-2.5 py-0.5 text-xs text-muted-foreground">
+              <span className="inline-flex max-w-full items-center gap-1 rounded-full border bg-white dark:bg-card px-2.5 py-0.5 text-xs text-muted-foreground">
                 <span className="truncate">{item.etiqueta}</span>
                 <button
                   type="button"

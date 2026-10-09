@@ -50,13 +50,13 @@ const MODULOS: Modulo[] = [
 
 export function LandingModulos() {
   return (
-    <section id="modulos" className="bg-[#F7F5F0] py-24 sm:py-28">
+    <section id="modulos" className="bg-crema py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="max-w-2xl">
-          <span className="text-xs font-medium uppercase tracking-widest text-[#896A78]">
+          <span className="text-xs font-medium uppercase tracking-widest text-malva">
             Módulos
           </span>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#252624] sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
             Un sistema, todas las áreas productivas
           </h2>
         </div>
@@ -65,7 +65,7 @@ export function LandingModulos() {
           {MODULOS.map((modulo) => (
             <div
               key={modulo.nombre}
-              className={`group relative overflow-hidden rounded-2xl border border-[#252624]/10 bg-white p-6 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-25px_rgba(37,38,36,0.25)] ${modulo.className}`}
+              className={`group relative overflow-hidden rounded-2xl border border-tinta/10 bg-tarjeta p-6 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-25px_rgba(37,38,36,0.25)] ${modulo.className}`}
             >
               <div
                 aria-hidden
@@ -78,8 +78,8 @@ export function LandingModulos() {
               >
                 <modulo.icono className="h-5 w-5" style={{ color: modulo.acento }} />
               </div>
-              <h3 className="mt-5 text-lg font-medium text-[#252624]">{modulo.nombre}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#252624]/60">
+              <h3 className="mt-5 text-lg font-medium text-tinta">{modulo.nombre}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-tinta/60">
                 {modulo.descripcion}
               </p>
             </div>
