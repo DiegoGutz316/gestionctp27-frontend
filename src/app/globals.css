@@ -73,6 +73,8 @@
   --font-google-sans: "Google Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --radius: 1rem;
 
+  --landing-background: #eef2ea;
+  
   /* Base general */
   --background: #f6f7f5;
   --foreground: #222720;
