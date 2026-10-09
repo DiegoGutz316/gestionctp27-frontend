@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ImageIcon, LoaderCircle } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -43,11 +44,14 @@ import {
   urlFlyerAviso,
 } from "../servicios/aviso.service";
 import {
+  CATEGORIAS_AVISO,
   DESCRIPCION_ESTADO_AVISO,
   ESTADOS_AVISO,
+  ETIQUETA_CATEGORIA_AVISO,
   ETIQUETA_ESTADO_AVISO,
   registrarAvisoSchema,
   type AvisoRespuesta,
+  type CategoriaAviso,
   type EstadoAviso,
   type RegistrarAviso,
 } from "../validacion/aviso.validacion";
@@ -57,17 +61,47 @@ const estadosItems = ESTADOS_AVISO.map((estado) => ({
   label: ETIQUETA_ESTADO_AVISO[estado],
 }));
 
+const categoriasItems = CATEGORIAS_AVISO.map((categoria) => ({
+  value: categoria,
+  label: ETIQUETA_CATEGORIA_AVISO[categoria],
+}));
+
 const TIPOS_FLYER = ["image/jpeg", "image/png", "image/webp"];
 const TAMANO_MAXIMO_FLYER = 5 * 1024 * 1024;
+
+function validarFlyer(archivo: File): string | null {
+  const tipo = archivo.type === "image/jpg" ? "image/jpeg" : archivo.type;
+  const extension = archivo.name.split(".").pop()?.toLowerCase();
+  const extensionValida =
+    extension === "jpg" ||
+    extension === "jpeg" ||
+    extension === "png" ||
+    extension === "webp";
+  const tipoValido = TIPOS_FLYER.includes(tipo) || (tipo === "" && extensionValida);
+
+  if (!tipoValido) {
+    return "Seleccione una imagen JPG, PNG o WebP.";
+  }
+
+  if (archivo.size > TAMANO_MAXIMO_FLYER) {
+    return "La imagen no puede superar 5 MB.";
+  }
+
+  return null;
+}
 
 export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
   const router = useRouter();
   const registrar = useRegistrarAviso();
   const editar = useEditarAviso();
   const [confirmarDesactivar, setConfirmarDesactivar] = useState(false);
+  const [confirmarSalida, setConfirmarSalida] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [errorFlyer, setErrorFlyer] = useState<string | null>(null);
   const [flyer, setFlyer] = useState<File | null>(null);
   const [vistaFlyer, setVistaFlyer] = useState<string | null>(null);
   const [quitarFlyer, setQuitarFlyer] = useState(false);
+  const entradaFlyer = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const esEdicion = Boolean(aviso);
 
@@ -80,7 +114,23 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
     if (archivo) setQuitarFlyer(false);
   };
 
+  const abrirSelector = () => {
+    if (entradaFlyer.current) entradaFlyer.current.value = "";
+    entradaFlyer.current?.click();
+  };
+
+  const quitarImagen = () => {
+    setErrorFlyer(null);
+    if (flyer) {
+      elegirFlyer(null);
+      if (entradaFlyer.current) entradaFlyer.current.value = "";
+      return;
+    }
+    setQuitarFlyer(true);
+  };
+
   const guardar = async (datos: RegistrarAviso) => {
+    setEnviando(true);
     let guardado: AvisoRespuesta;
 
     try {
@@ -89,8 +139,11 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
         : await registrar.mutateAsync(datos);
     } catch (error) {
       toast.error(getMensajeDeError(error));
+      setEnviando(false);
       return;
     }
+
+    let flyerConError = false;
 
     try {
       if (flyer) {
@@ -99,30 +152,38 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
         guardado = await quitarFlyerAviso(guardado.id);
       }
     } catch (error) {
+      flyerConError = true;
       toast.error(
-        `El aviso se guardó, pero el flyer no: ${getMensajeDeError(error)}`,
+        `El aviso se guardó, pero la imagen no: ${getMensajeDeError(error)}`,
       );
     }
 
     await queryClient.invalidateQueries({ queryKey: avisosQueryKey });
-
-    toast.success(
-      guardado.estado === "INACTIVO"
-        ? `Aviso "${guardado.titulo}" desactivado correctamente.`
-        : esEdicion
-          ? `Aviso "${guardado.titulo}" actualizado correctamente.`
-          : `Aviso "${guardado.titulo}" publicado correctamente.`,
-    );
     setConfirmarDesactivar(false);
-    router.push(
-      esEdicion ? "/dashboard/comunicacion/avisos" : "/dashboard",
-    );
+
+    if (flyerConError && esEdicion) {
+      setEnviando(false);
+      return;
+    }
+
+    if (!flyerConError) {
+      toast.success(
+        esEdicion
+          ? "Cambios guardados correctamente"
+          : guardado.estado === "ACTIVO"
+            ? "Aviso publicado correctamente"
+            : "Aviso guardado correctamente",
+      );
+    }
+
+    router.push(esEdicion ? "/dashboard/comunicacion/avisos" : "/dashboard");
   };
 
   const form = useForm({
     defaultValues: {
       titulo: aviso?.titulo ?? "",
       descripcion: aviso?.descripcion ?? "",
+      categoria: (aviso?.categoria ?? "") as CategoriaAviso | "",
       fecha: aviso?.fecha ?? "",
       estado: (aviso?.estado ?? "ACTIVO") as EstadoAviso,
     },
@@ -147,8 +208,7 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
     },
   });
 
-  const guardando =
-    registrar.isPending || editar.isPending;
+  const guardando = enviando || registrar.isPending || editar.isPending;
 
   return (
     <>
@@ -160,7 +220,7 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
       }}
       noValidate
     >
-      <FieldGroup>
+      <FieldGroup className="gap-6">
         <form.Field name="titulo">
           {(field) => {
             const errors = fieldErrors(field.state.meta.errors);
@@ -216,7 +276,60 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
           }}
         </form.Field>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <form.Field name="categoria">
+          {(field) => {
+            const errors = fieldErrors(field.state.meta.errors);
+            const invalid = errors.length > 0;
+
+            return (
+              <Field data-invalid={invalid}>
+                <FieldLabel htmlFor={field.name} required>
+                  Categoría del aviso
+                </FieldLabel>
+
+                <Select
+                  items={categoriasItems}
+                  value={field.state.value || null}
+                  onValueChange={(valor) =>
+                    field.handleChange((valor as CategoriaAviso | null) ?? "")
+                  }
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    className="w-full"
+                    aria-invalid={invalid}
+                    onBlur={field.handleBlur}
+                  >
+                    <SelectValue
+                      placeholder={
+                        aviso && !aviso.categoria
+                          ? "Sin categoría"
+                          : "Seleccione una categoría"
+                      }
+                    />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {categoriasItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <FieldDescription>
+                  Selecciona la categoría en la que aparecerá este aviso en la
+                  página institucional.
+                </FieldDescription>
+
+                <FieldError errors={errors} />
+              </Field>
+            );
+          }}
+        </form.Field>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <form.Field name="fecha">
             {(field) => {
               const errors = fieldErrors(field.state.meta.errors);
@@ -225,7 +338,7 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
               return (
                 <Field data-invalid={invalid}>
                   <FieldLabel htmlFor={field.name} required>
-                    Fecha del aviso
+                    Fecha de la actividad o comunicado
                   </FieldLabel>
 
                   {/* Sin `max`: un aviso anuncia algo que todavía no ocurrió,
@@ -240,7 +353,7 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
                   />
 
                   <FieldDescription>
-                    La fecha de la actividad que se anuncia.
+                    Indica la fecha a la que corresponde el aviso.
                   </FieldDescription>
 
                   <FieldError errors={errors} />
@@ -304,79 +417,185 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
 
         <Field>
           <FieldLabel htmlFor="flyer">Flyer</FieldLabel>
-          <Input
+          <input
+            ref={entradaFlyer}
             id="flyer"
             type="file"
             accept="image/jpeg,image/png,image/webp"
+            className="sr-only"
             onChange={(event) => {
               const archivo = event.target.files?.[0] ?? null;
-              if (!archivo) {
-                elegirFlyer(null);
-                return;
-              }
+              if (!archivo) return;
 
-              const tipo =
-                archivo.type === "image/jpg" ? "image/jpeg" : archivo.type;
-
-              if (!TIPOS_FLYER.includes(tipo) || archivo.size > TAMANO_MAXIMO_FLYER) {
-                toast.error("El flyer debe ser JPG, PNG o WebP de hasta 5 MB.");
+              const mensaje = validarFlyer(archivo);
+              if (mensaje) {
+                setErrorFlyer(mensaje);
+                toast.error(mensaje);
                 event.target.value = "";
                 return;
               }
 
+              setErrorFlyer(null);
               elegirFlyer(archivo);
             }}
           />
+
+          {vistaFlyer || (aviso?.tieneFlyer && !quitarFlyer) ? (
+            <div className="overflow-hidden rounded-xl border border-dashed border-border bg-muted/30">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={vistaFlyer ?? (aviso ? urlFlyerAviso(aviso.id) : "")}
+                alt={
+                  vistaFlyer
+                    ? "Vista previa del flyer"
+                    : `Flyer de ${aviso?.titulo ?? "aviso"}`
+                }
+                className="mx-auto max-h-80 w-auto max-w-full object-contain p-3"
+              />
+              <div className="flex flex-col gap-2 border-t bg-card px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="truncate text-xs text-muted-foreground">
+                  {flyer?.name ?? "Flyer actual"}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={abrirSelector}
+                    disabled={guardando}
+                  >
+                    Cambiar imagen
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={quitarImagen}
+                    disabled={guardando}
+                  >
+                    Quitar imagen
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-dashed border-border bg-muted/30">
+              <button
+                type="button"
+                onClick={abrirSelector}
+                disabled={guardando}
+                className="flex w-full flex-col items-center gap-2 px-4 py-8 text-center transition hover:bg-muted/50 disabled:opacity-60"
+              >
+                <span className="flex size-10 items-center justify-center rounded-full bg-background text-muted-foreground">
+                  <ImageIcon className="size-5" />
+                </span>
+                <span className="text-sm font-medium">Seleccione una imagen</span>
+                <span className="text-xs text-muted-foreground">
+                  JPG, PNG o WebP de hasta 5 MB
+                </span>
+              </button>
+              {quitarFlyer ? (
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t px-3 py-2">
+                  <p className="text-xs text-muted-foreground">
+                    La imagen se quitará al guardar los cambios.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setQuitarFlyer(false)}
+                    disabled={guardando}
+                  >
+                    Conservar imagen
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          )}
+
           <FieldDescription>
             Opcional. La imagen se muestra junto al aviso en la página pública.
           </FieldDescription>
-
-          {vistaFlyer ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={vistaFlyer}
-              alt="Vista previa del flyer"
-              className="mt-3 max-h-72 w-full rounded-lg border object-contain"
-            />
-          ) : null}
-
-          {!vistaFlyer && aviso?.tieneFlyer && !quitarFlyer ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={urlFlyerAviso(aviso.id)}
-              alt={`Flyer de ${aviso.titulo}`}
-              className="mt-3 max-h-72 w-full rounded-lg border object-contain"
-            />
-          ) : null}
-
-          {aviso?.tieneFlyer && !flyer ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-3"
-              onClick={() => setQuitarFlyer((actual) => !actual)}
-            >
-              {quitarFlyer ? "Conservar flyer" : "Quitar flyer"}
-            </Button>
+          {errorFlyer ? (
+            <p className="text-sm text-destructive">{errorFlyer}</p>
           ) : null}
         </Field>
 
-        <form.Subscribe selector={(estado) => estado.isSubmitting || guardando}>
-          {(ocupado) => (
-            <Button type="submit" disabled={ocupado}>
-              {ocupado
-                ? esEdicion
-                  ? "Guardando…"
-                  : "Publicando…"
-                : esEdicion
-                  ? "Guardar cambios"
-                  : "Publicar aviso"}
-            </Button>
-          )}
+        <form.Subscribe
+          selector={(estado) => ({
+            sucio: estado.isDirty,
+            estadoAviso: estado.values.estado,
+          })}
+        >
+          {({ sucio, estadoAviso }) => {
+            const hayCambios = sucio || flyer !== null || quitarFlyer;
+            const etiqueta = guardando
+              ? esEdicion || estadoAviso === "INACTIVO"
+                ? "Guardando…"
+                : "Publicando…"
+              : esEdicion
+                ? "Guardar cambios"
+                : estadoAviso === "ACTIVO"
+                  ? "Publicar aviso"
+                  : "Guardar aviso";
+
+            return (
+              <div className="flex flex-wrap justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={guardando}
+                  onClick={() => {
+                    if (hayCambios) {
+                      setConfirmarSalida(true);
+                      return;
+                    }
+                    router.push("/dashboard/comunicacion/avisos");
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={guardando}>
+                  {guardando ? (
+                    <LoaderCircle
+                      className="animate-spin"
+                      data-icon="inline-start"
+                    />
+                  ) : null}
+                  {etiqueta}
+                </Button>
+              </div>
+            );
+          }}
         </form.Subscribe>
       </FieldGroup>
     </form>
+
+    <Dialog open={confirmarSalida} onOpenChange={setConfirmarSalida}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Cambios sin guardar</DialogTitle>
+          <DialogDescription>
+            Si sale ahora, se perderán los cambios que todavía no ha guardado.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setConfirmarSalida(false)}
+          >
+            Seguir editando
+          </Button>
+          <Button
+            type="button"
+            onClick={() => router.push("/dashboard/comunicacion/avisos")}
+          >
+            Salir sin guardar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
     <Dialog open={confirmarDesactivar} onOpenChange={setConfirmarDesactivar}>
       <DialogContent>

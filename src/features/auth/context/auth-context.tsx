@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { usePathname } from "next/navigation";
 import {
   cerrarSesion,
   iniciarSesion,
@@ -41,10 +42,20 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+/**
+ * La landing no usa la sesión. Consultarla ahí responde 401 y el navegador
+ * lo muestra como fallo, aunque sea el caso normal de un visitante anónimo.
+ */
+function rutaSinSesion(pathname: string): boolean {
+  return pathname === "/";
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const necesitaSesion = !rutaSinSesion(pathname);
   const [usuario, setUsuario] = useState<UsuarioSesion | null>(null);
   const [permisos, setPermisos] = useState<MatrizPermisos>(matrizVacia);
-  const [cargando, setCargando] = useState(true);
+  const [cargando, setCargando] = useState(!rutaSinSesion(pathname));
 
   /**
    * Carga perfil y permisos en paralelo, pero los resuelve por separado.
@@ -84,21 +95,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [cargarSesion]);
 
   useEffect(() => {
+    if (!necesitaSesion) {
+      setCargando(false);
+      return;
+    }
+
     let activo = true;
+    setCargando(true);
 
     (async () => {
       const sesion = await cargarSesion();
-      if (activo) {
-        setUsuario(sesion.usuario);
-        setPermisos(sesion.permisos);
-        setCargando(false);
-      }
+      if (!activo) return;
+      setUsuario(sesion.usuario);
+      setPermisos(sesion.permisos);
+      setCargando(false);
     })();
 
     return () => {
       activo = false;
     };
-  }, [cargarSesion]);
+  }, [necesitaSesion, cargarSesion]);
 
   const login = useCallback(async (datos: LoginDatos) => {
     const respuesta = await iniciarSesion(datos);

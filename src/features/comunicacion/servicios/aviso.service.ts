@@ -1,17 +1,47 @@
-import { api } from "@/lib/api";
+import { ApiError, api } from "@/lib/api";
+import type { ResultadoPaginado } from "@/lib/paginacion";
+
+import type {
+  AvisoPublico,
+  AvisoRespuesta,
+  CategoriaAviso,
+  ConsultarAvisos,
+  RegistrarAviso,
+} from "../validacion/aviso.validacion";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 export function urlFlyerAviso(id: number) {
   return `${API_URL}/comunicacion/avisos/${id}/flyer`;
 }
-import type { ResultadoPaginado } from "@/lib/paginacion";
 
-import type {
-  AvisoRespuesta,
-  ConsultarAvisos,
-  RegistrarAviso,
-} from "../validacion/aviso.validacion";
+/**
+ * Listado público de la landing. No usa el cliente autenticado: la página
+ * institucional se consulta sin sesión y este endpoint ya existe.
+ */
+export async function consultarAvisosPublicos(
+  limite = 12,
+  categoria?: CategoriaAviso,
+): Promise<AvisoPublico[]> {
+  const params = new URLSearchParams({ limite: String(limite) });
+  if (categoria) params.set("categoria", categoria);
+
+  const respuesta = await fetch(
+    `${API_URL}/comunicacion/avisos/publicos?${params.toString()}`,
+    { cache: "no-store" },
+  );
+
+  if (!respuesta.ok) {
+    const body = await respuesta.text().catch(() => "");
+    throw new ApiError(
+      respuesta.status,
+      body || `Error ${respuesta.status} al consultar avisos públicos`,
+    );
+  }
+
+  const cuerpo = (await respuesta.json()) as { datos?: AvisoPublico[] };
+  return cuerpo.datos ?? [];
+}
 
 export function consultarAvisos(filtros: ConsultarAvisos = {}) {
   return api.get<ResultadoPaginado<AvisoRespuesta>>(

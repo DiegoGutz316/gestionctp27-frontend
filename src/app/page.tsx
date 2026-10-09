@@ -16,8 +16,8 @@ export default function LandingPage() {
         <LandingStats />
         <LandingNosotros />
         <LandingEspecialidades />
-        <LandingIdentidad />
         <LandingNoticias />
+        <LandingIdentidad />
       </main>
       <LandingFooter />
     </div>

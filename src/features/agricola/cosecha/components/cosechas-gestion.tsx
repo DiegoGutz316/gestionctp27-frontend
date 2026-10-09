@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, SearchIcon, WheatIcon } from "lucide-react";
+import { Home, WheatIcon } from "lucide-react";
 
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 
@@ -26,8 +26,13 @@ import {
 } from "@/components/ui/select";
 
 import { AgricolaVistasNav } from "@/features/agricola/components/agricola-vistas-nav";
+import {
+  BarraFiltrosAgricolas,
+  type EtiquetaFiltro,
+} from "@/features/agricola/components/barra-filtros-agricolas";
 import { useCamasCultivo } from "@/features/agricola/hooks/cama-cultivo-hooks";
 import { INVERNADEROS } from "@/features/agricola/validacion/cama-cultivo.validacion";
+import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { fechaHoyCR } from "@/lib/fechas";
@@ -188,6 +193,78 @@ export function CosechasGestion() {
     setPagina(1);
   };
 
+  const limpiar = () => {
+    setCultivo("");
+    setUbicacion("");
+    setCamaId("");
+    setDesde("");
+    setHasta("");
+    setPeriodo(PERIODO_PERSONALIZADO);
+    setPagina(1);
+  };
+
+  const camaElegida = listaCamas.find((cama) => String(cama.id) === camaId);
+  const etiquetas: EtiquetaFiltro[] = [];
+
+  if (ubicacion) {
+    etiquetas.push({
+      id: "ubicacion",
+      etiqueta: ubicacion,
+      onQuitar: () => {
+        setUbicacion("");
+        setPagina(1);
+      },
+    });
+  }
+
+  if (camaId) {
+    etiquetas.push({
+      id: "cama",
+      etiqueta: camaElegida?.codigo ?? "Cama",
+      onQuitar: () => {
+        setCamaId("");
+        setPagina(1);
+      },
+    });
+  }
+
+  if (periodo !== PERIODO_PERSONALIZADO) {
+    const rango = rangosRapidos.find((item) => item.id === periodo);
+
+    etiquetas.push({
+      id: "periodo",
+      etiqueta: rango?.etiqueta ?? "Período",
+      onQuitar: () => {
+        setPeriodo(PERIODO_PERSONALIZADO);
+        setDesde("");
+        setHasta("");
+        setPagina(1);
+      },
+    });
+  } else {
+    if (desde) {
+      etiquetas.push({
+        id: "desde",
+        etiqueta: `Desde ${formatearFecha(desde)}`,
+        onQuitar: () => {
+          setDesde("");
+          setPagina(1);
+        },
+      });
+    }
+
+    if (hasta) {
+      etiquetas.push({
+        id: "hasta",
+        etiqueta: `Hasta ${formatearFecha(hasta)}`,
+        onQuitar: () => {
+          setHasta("");
+          setPagina(1);
+        },
+      });
+    }
+  }
+
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
       <Breadcrumb>
@@ -253,29 +330,36 @@ export function CosechasGestion() {
 
       <AgricolaVistasNav />
 
-      <div className="rounded-xl border bg-card p-4 shadow-sm">
-        <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,1fr)]">
-          <div className="flex min-w-0 flex-col gap-2">
-            <Label htmlFor="filtro-cultivo" className="h-5 leading-5">
-              Cultivo
-            </Label>
-
-            <div className="relative">
-              <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="filtro-cultivo"
-                value={cultivo}
-                onChange={(event) => {
-                  setCultivo(event.target.value);
-                  setPagina(1);
-                }}
-                placeholder="Buscar por cultivo…"
-                className="h-9 pl-9"
-                maxLength={120}
-              />
+      <BarraFiltrosAgricolas
+        busqueda={{
+          id: "filtro-cultivo",
+          value: cultivo,
+          onChange: (valor) => {
+            setCultivo(valor);
+            setPagina(1);
+          },
+          placeholder: "Buscar cultivo...",
+          maxLength: 120,
+        }}
+        etiquetas={etiquetas}
+        onLimpiar={limpiar}
+        aviso={
+          camas.isError || problemaFechas ? (
+            <div className="space-y-2">
+              {camas.isError ? (
+                <p className="text-sm text-destructive">
+                  {getMensajeDeError(camas.error)}
+                </p>
+              ) : null}
+              {problemaFechas ? (
+                <p role="alert" className="text-sm text-destructive">
+                  {problemaFechas}
+                </p>
+              ) : null}
             </div>
-          </div>
-
+          ) : null
+        }
+      >
           <div className="flex min-w-0 flex-col gap-2">
             <Label htmlFor="filtro-ubicacion" className="h-5 leading-5">
               Ubicación
@@ -425,20 +509,7 @@ export function CosechasGestion() {
               </SelectContent>
             </Select>
           </div>
-        </div>
-
-        {camas.isError ? (
-          <p className="mt-3 text-sm text-destructive">
-            {getMensajeDeError(camas.error)}
-          </p>
-        ) : null}
-
-        {problemaFechas ? (
-          <p role="alert" className="mt-3 text-sm text-destructive">
-            {problemaFechas}
-          </p>
-        ) : null}
-      </div>
+      </BarraFiltrosAgricolas>
 
       {problemaFechas ? (
         <div className="rounded-xl border bg-card px-4 py-16 text-center text-sm text-muted-foreground shadow-sm">

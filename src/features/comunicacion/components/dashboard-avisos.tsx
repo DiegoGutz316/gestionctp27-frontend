@@ -1,47 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Ban, CalendarDays, Megaphone, Pencil } from "lucide-react";
+import { CalendarDays, Eye, Megaphone } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-
-import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+import { Badge } from "@/components/ui/badge";
 import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
 
 import { useAvisos } from "../hooks/aviso-hooks";
 import { urlFlyerAviso } from "../servicios/aviso.service";
-import type { AvisoRespuesta } from "../validacion/aviso.validacion";
-import { AvisoDesactivarDialog } from "./aviso-desactivar-dialog";
+import {
+  ETIQUETA_CATEGORIA_AVISO,
+  ETIQUETA_ESTADO_AVISO,
+  type AvisoRespuesta,
+} from "../validacion/aviso.validacion";
+import { AvisoDetalleDialog } from "./aviso-detalle-dialog";
 
-/** Cuántos avisos caben en el panel sin tapar el resto del contenido. */
+/** El panel resume; el resto se consulta en el módulo administrativo. */
 const AVISOS_EN_EL_PANEL = 3;
+
+/**
+ * Tope del listado paginado. El servicio ordena por la fecha del aviso, así
+ * que el panel pide la página completa de activos y se queda con los tres de
+ * publicación más reciente.
+ */
+const AVISOS_ACTIVOS_A_CONSULTAR = 100;
 
 /**
  * Backlog 5.6: "Los avisos activos pueden mostrarse en el panel principal".
  *
- * Es un resumen, no el listado: trae solo los más próximos y enlaza a la
- * pantalla completa. Mientras carga o si falla no ocupa espacio, porque el
- * panel tiene su propio contenido y un hueco vacío arriba distrae.
+ * Es un resumen, no el listado: tres avisos activos y el enlace al módulo.
+ * Mientras carga o si falla no ocupa espacio, porque el panel tiene su propio
+ * contenido y un hueco vacío arriba distrae.
  */
 export function DashboardAvisos() {
-  const consulta = useAvisos({ pagina: 1, limite: AVISOS_EN_EL_PANEL });
-  const [avisoADesactivar, setAvisoADesactivar] =
-    useState<AvisoRespuesta | null>(null);
+  const consulta = useAvisos({
+    pagina: 1,
+    limite: AVISOS_ACTIVOS_A_CONSULTAR,
+    estado: "ACTIVO",
+  });
+  const [avisoAbierto, setAvisoAbierto] = useState<AvisoRespuesta | null>(
+    null,
+  );
 
-  const avisos = consulta.data?.datos ?? [];
-  const total = consulta.data?.meta?.total ?? 0;
+  const avisos = useMemo(
+    () => recientes(consulta.data?.datos ?? []),
+    [consulta.data],
+  );
 
-  // Basta con mirar si hay algo que mostrar: cubre la carga inicial y el fallo
-  // sin datos. Lo que no debe pasar es que un refresco fallido haga desaparecer
-  // avisos que ya estaban en pantalla, y eso es alcanzable desde «Actualizar
-  // datos»; en ese caso se conservan los últimos conocidos, como en el listado.
-  if (avisos.length === 0) {
-    return null;
-  }
+  if (consulta.isPending && !consulta.data) return null;
+  if (consulta.isError && avisos.length === 0) return null;
 
   return (
-    <section className="rounded-[26px] border border-[#e5e2dc] bg-[#fbfaf7] px-6 py-5 shadow-[0_14px_45px_rgba(41,39,35,0.07)]">
+    <section className="rounded-[26px] border border-[#e5e2dc] bg-[#fbfaf7] px-5 py-5 shadow-[0_14px_45px_rgba(41,39,35,0.07)] sm:px-6">
       <div className="flex items-center justify-between gap-4">
         <h2 className="flex items-center gap-2 font-semibold text-[#292c2a]">
           <Megaphone className="size-4 text-[#7fa36a]" />
@@ -50,77 +61,99 @@ export function DashboardAvisos() {
 
         <Link
           href="/dashboard/comunicacion/avisos"
-          className="text-sm text-[#7fa36a] hover:underline"
+          className="shrink-0 text-sm text-[#7fa36a] hover:underline"
         >
-          {total > AVISOS_EN_EL_PANEL ? `Ver los ${total}` : "Ver todos"}
+          Ver todos
         </Link>
       </div>
 
-      <ul className="mt-4 flex flex-col gap-3">
-        {avisos.map((aviso) => (
-          <li
-            key={aviso.id}
-            className="border-b border-[#e5e2dc] pb-3 last:border-0 last:pb-0"
-          >
-            <div className="flex flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-              <p className="font-medium text-[#292c2a]">{aviso.titulo}</p>
+      {avisos.length === 0 ? (
+        <div className="flex items-center gap-3 py-6 text-sm text-[#858985]">
+          <Megaphone className="size-4 shrink-0 text-[#7fa36a]" />
+          <p>No hay avisos institucionales activos por el momento</p>
+        </div>
+      ) : (
+        <ul className="mt-2">
+          {avisos.map((aviso) => (
+            <li
+              key={aviso.id}
+              className="border-b border-[#e5e2dc] last:border-0"
+            >
+              <button
+                type="button"
+                onClick={() => setAvisoAbierto(aviso)}
+                className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-[#f3f1ec]/70 sm:gap-4"
+              >
+                <Miniatura aviso={aviso} />
 
-              <span className="flex items-center gap-1.5 text-sm whitespace-nowrap text-[#858985]">
-                <CalendarDays className="size-3.5" />
-                {formatearFecha(aviso.fecha)}
-              </span>
-            </div>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold text-[#292c2a]">
+                    {aviso.titulo}
+                  </span>
+                  <span className="mt-0.5 line-clamp-2 text-sm leading-5 text-[#858985]">
+                    {aviso.descripcion}
+                  </span>
+                  <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#858985]">
+                    <span className="inline-flex items-center gap-1">
+                      <CalendarDays className="size-3.5" />
+                      {formatearFecha(aviso.fecha)}
+                    </span>
+                    {aviso.categoria ? (
+                      <span>{ETIQUETA_CATEGORIA_AVISO[aviso.categoria]}</span>
+                    ) : null}
+                    <Badge
+                      variant="secondary"
+                      className="bg-[#e7efe2] font-normal text-[#5d734c]"
+                    >
+                      {ETIQUETA_ESTADO_AVISO[aviso.estado]}
+                    </Badge>
+                  </span>
+                </span>
 
-            {aviso.tieneFlyer ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={urlFlyerAviso(aviso.id)}
-                alt={`Flyer de ${aviso.titulo}`}
-                className="mt-2 max-h-48 w-full rounded-lg object-contain"
-              />
-            ) : null}
+                <Eye
+                  aria-hidden
+                  className="size-4 shrink-0 text-[#858985]"
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
 
-            <p className="mt-1 line-clamp-2 text-sm text-[#858985]">
-              {aviso.descripcion}
-            </p>
-
-            <MostrarSiPuede modulo="REPORTES" nivel="COMPLETO">
-              <div className="mt-2 flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  nativeButton={false}
-                  render={
-                    <Link
-                      href={`/dashboard/comunicacion/avisos/${aviso.id}/editar`}
-                    />
-                  }
-                >
-                  <Pencil data-icon="inline-start" />
-                  Editar
-                </Button>
-
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => setAvisoADesactivar(aviso)}
-                >
-                  <Ban data-icon="inline-start" />
-                  Desactivar
-                </Button>
-              </div>
-            </MostrarSiPuede>
-          </li>
-        ))}
-      </ul>
-
-      <AvisoDesactivarDialog
-        aviso={avisoADesactivar}
-        open={avisoADesactivar !== null}
-        onOpenChange={(abierto) => {
-          if (!abierto) setAvisoADesactivar(null);
-        }}
+      <AvisoDetalleDialog
+        aviso={avisoAbierto}
+        onCerrar={() => setAvisoAbierto(null)}
       />
     </section>
+  );
+}
+
+function recientes(avisos: AvisoRespuesta[]) {
+  return [...avisos]
+    .sort((a, b) => {
+      const publicado = b.creadoEn.localeCompare(a.creadoEn);
+      return publicado !== 0 ? publicado : b.id - a.id;
+    })
+    .slice(0, AVISOS_EN_EL_PANEL);
+}
+
+function Miniatura({ aviso }: { aviso: AvisoRespuesta }) {
+  if (!aviso.tieneFlyer) {
+    return (
+      <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-white text-[#7fa36a] sm:size-24">
+        <Megaphone className="size-5" />
+      </span>
+    );
+  }
+
+  return (
+    <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white sm:size-24">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={urlFlyerAviso(aviso.id)}
+        alt=""
+        className="max-h-full max-w-full object-contain"
+      />
+    </span>
   );
 }

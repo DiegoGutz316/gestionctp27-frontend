@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, PlusIcon, SearchIcon } from "lucide-react";
+import { Home, PlusIcon } from "lucide-react";
 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AgricolaVistasNav } from "@/features/agricola/components/agricola-vistas-nav";
+import { BarraFiltrosAgricolas, type EtiquetaFiltro } from "@/features/agricola/components/barra-filtros-agricolas";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 import { useSiembras } from "../hooks/siembra-hooks";
-import { fechaHoyLocal } from "../models/siembra.model";
+import { fechaHoyLocal, formatearFecha } from "../models/siembra.model";
 import { SiembrasTabla } from "./siembras-tabla";
 
 export function SiembrasGestion() {
@@ -26,6 +27,21 @@ export function SiembrasGestion() {
   });
   const siembras = consulta.data ?? [];
   const hayFiltros = Boolean(cultivoDebounced || fecha);
+
+  const etiquetas: EtiquetaFiltro[] = [];
+
+  if (fecha) {
+    etiquetas.push({
+      id: "fecha",
+      etiqueta: formatearFecha(fecha),
+      onQuitar: () => setFecha(""),
+    });
+  }
+
+  const limpiar = () => {
+    setCultivo("");
+    setFecha("");
+  };
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
@@ -55,19 +71,22 @@ export function SiembrasGestion() {
 
       <AgricolaVistasNav />
 
-      <div className="grid gap-4 rounded-xl border bg-card p-4 shadow-sm sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="filtro-cultivo">Cultivo</Label>
-          <div className="relative">
-            <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input id="filtro-cultivo" value={cultivo} onChange={(event) => setCultivo(event.target.value)} placeholder="Ej: Tomate" maxLength={120} className="pl-9" />
-          </div>
-        </div>
+      <BarraFiltrosAgricolas
+        busqueda={{
+          id: "filtro-cultivo",
+          value: cultivo,
+          onChange: setCultivo,
+          placeholder: "Buscar cultivo...",
+          maxLength: 120,
+        }}
+        etiquetas={etiquetas}
+        onLimpiar={limpiar}
+      >
         <div className="space-y-2">
           <Label htmlFor="filtro-fecha">Fecha de siembra</Label>
           <Input id="filtro-fecha" type="date" max={fechaHoyLocal()} value={fecha} onChange={(event) => setFecha(event.target.value)} />
         </div>
-      </div>
+      </BarraFiltrosAgricolas>
 
       <SiembrasTabla cargando={consulta.isLoading} error={consulta.isError} siembras={siembras} hayFiltros={hayFiltros} />
     </section>

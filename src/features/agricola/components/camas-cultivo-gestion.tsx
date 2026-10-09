@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, PlusIcon, SearchIcon } from "lucide-react";
+import { Home, PlusIcon } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -13,7 +13,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -29,6 +28,10 @@ import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useCamasCultivo } from "../hooks/cama-cultivo-hooks";
 import { INVERNADEROS } from "../validacion/cama-cultivo.validacion";
 import { AgricolaVistasNav } from "./agricola-vistas-nav";
+import {
+  BarraFiltrosAgricolas,
+  type EtiquetaFiltro,
+} from "./barra-filtros-agricolas";
 import { CamasCultivoTabla } from "./camas-cultivo-tabla";
 
 const TODAS_LAS_CAMAS = "TODAS";
@@ -77,6 +80,25 @@ export function CamasCultivoGestion() {
     setUbicacion("");
     setCamaId("");
   };
+
+  const camaElegida = listaCatalogo.find((cama) => String(cama.id) === camaId);
+  const etiquetas: EtiquetaFiltro[] = [];
+
+  if (ubicacion) {
+    etiquetas.push({
+      id: "ubicacion",
+      etiqueta: ubicacion,
+      onQuitar: () => setUbicacion(""),
+    });
+  }
+
+  if (camaId) {
+    etiquetas.push({
+      id: "cama",
+      etiqueta: camaElegida?.codigo ?? "Cama",
+      onQuitar: () => setCamaId(""),
+    });
+  }
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
@@ -131,24 +153,17 @@ export function CamasCultivoGestion() {
 
       <AgricolaVistasNav />
 
-      <div className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="space-y-2">
-            <Label htmlFor="filtro-busqueda-cama">Buscar</Label>
-
-            <div className="relative">
-              <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="filtro-busqueda-cama"
-                value={busqueda}
-                onChange={(event) => setBusqueda(event.target.value)}
-                placeholder="Buscar por código o estado…"
-                className="pl-9"
-                maxLength={120}
-              />
-            </div>
-          </div>
-
+      <BarraFiltrosAgricolas
+        busqueda={{
+          id: "filtro-busqueda-cama",
+          value: busqueda,
+          onChange: setBusqueda,
+          placeholder: "Buscar por código o estado…",
+          maxLength: 120,
+        }}
+        etiquetas={etiquetas}
+        onLimpiar={limpiar}
+      >
           <div className="space-y-2">
             <Label htmlFor="filtro-ubicacion-cama">Ubicación</Label>
 
@@ -228,16 +243,7 @@ export function CamasCultivoGestion() {
               </SelectContent>
             </Select>
           </div>
-        </div>
-
-        {hayFiltros ? (
-          <div className="flex justify-end">
-            <Button type="button" size="sm" variant="ghost" onClick={limpiar}>
-              Limpiar filtros
-            </Button>
-          </div>
-        ) : null}
-      </div>
+      </BarraFiltrosAgricolas>
 
       <CamasCultivoTabla
         cargando={camas.isLoading}

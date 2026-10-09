@@ -14,8 +14,26 @@ export const ETIQUETA_ESTADO_AVISO: Record<EstadoAviso, string> = {
 };
 
 export const DESCRIPCION_ESTADO_AVISO: Record<EstadoAviso, string> = {
-  ACTIVO: "Visible para quienes consulten los avisos.",
-  INACTIVO: "Queda guardado pero no se muestra.",
+  ACTIVO: "Este aviso será visible en la página institucional.",
+  INACTIVO:
+    "Este aviso se guardará, pero no será visible en la página institucional.",
+};
+
+/** Catálogo único de categorías. "Todos" es solo un filtro de la landing. */
+export const CATEGORIAS_AVISO = [
+  "ACADEMICOS",
+  "EVENTOS",
+  "COMUNIDAD",
+  "ADMINISTRATIVOS",
+] as const;
+
+export type CategoriaAviso = (typeof CATEGORIAS_AVISO)[number];
+
+export const ETIQUETA_CATEGORIA_AVISO: Record<CategoriaAviso, string> = {
+  ACADEMICOS: "Académicos",
+  EVENTOS: "Eventos",
+  COMUNIDAD: "Comunidad",
+  ADMINISTRATIVOS: "Administrativos",
 };
 
 /**
@@ -44,6 +62,10 @@ export const registrarAvisoSchema = z.object({
     .min(1, "La descripción es obligatoria")
     .max(2000, "La descripción no puede superar 2000 caracteres"),
 
+  categoria: z.enum(CATEGORIAS_AVISO, {
+    error: "Seleccione una categoría",
+  }),
+
   fecha: fechaAvisoSchema,
 
   estado: z.enum(ESTADOS_AVISO, { error: "Seleccione un estado válido" }),
@@ -56,6 +78,7 @@ export const avisoSchema = z.object({
   titulo: z.string(),
   descripcion: z.string(),
   fecha: z.string(),
+  categoria: z.enum(CATEGORIAS_AVISO).nullable(),
   estado: z.enum(ESTADOS_AVISO),
   creadoEn: z.string(),
   creadoPor: z.uuid(),
@@ -67,10 +90,31 @@ export const avisoSchema = z.object({
 export type AvisoRespuesta = z.infer<typeof avisoSchema>;
 
 /**
- * Backlog 5.6: el listado va paginado porque los avisos solo se acumulan.
- * No lleva filtro de estado: el endpoint devuelve únicamente los activos.
+ * Aviso que devuelve `GET /comunicacion/avisos/publicos`.
+ * El endpoint ya aplica las reglas de activos y vigentes.
+ * `creadoEn`, `categoria`, `fechaActividad`, `prioridad` y `estado` se leen
+ * solo si el backend los envía; el contrato mínimo sigue siendo el actual.
+ */
+export type AvisoPublico = {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  fecha: string;
+  tieneFlyer: boolean;
+  categoria?: CategoriaAviso | null;
+  estado?: EstadoAviso | null;
+  creadoEn?: string | null;
+  fechaActividad?: string | null;
+  prioridad?: number | null;
+};
+
+/**
+ * El listado administrativo puede filtrar por estado y título.
+ * Sin `estado`, el backend sigue devolviendo solo los activos.
  */
 export type ConsultarAvisos = {
   pagina?: number;
   limite?: number;
+  estado?: EstadoAviso | "TODOS";
+  q?: string;
 };

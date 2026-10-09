@@ -23,9 +23,14 @@ import {
 } from "@/components/ui/select";
 
 import { AgricolaVistasNav } from "@/features/agricola/components/agricola-vistas-nav";
+import {
+  BarraFiltrosAgricolas,
+  type EtiquetaFiltro,
+} from "@/features/agricola/components/barra-filtros-agricolas";
 import { INVERNADEROS } from "@/features/agricola/validacion/cama-cultivo.validacion";
 import { useSiembras } from "@/features/agricola/siembra/hooks/siembra-hooks";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 import { useTratamientos } from "../hooks/tratamiento-hooks";
 import {
@@ -40,9 +45,11 @@ const TODAS_LAS_CAMAS = "TODAS";
 const TODOS_LOS_TIPOS = "TODOS";
 
 export function TratamientosGestion() {
+  const [cultivo, setCultivo] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [camaId, setCamaId] = useState("");
   const [tipo, setTipo] = useState("");
+  const cultivoDebounced = useDebouncedValue(cultivo.trim(), 300);
 
   const siembras = useSiembras();
   const activas = useMemo(
@@ -58,13 +65,14 @@ export function TratamientosGestion() {
     : activas;
 
   const consulta = useTratamientos({
+    cultivo: cultivoDebounced || undefined,
     ubicacion: ubicacion || undefined,
     camaId: camaId ? Number(camaId) : undefined,
     tipo: (tipo || undefined) as TipoTratamiento | undefined,
   });
 
   const tratamientos = consulta.data ?? [];
-  const hayFiltros = Boolean(ubicacion || camaId || tipo);
+  const hayFiltros = Boolean(cultivoDebounced || ubicacion || camaId || tipo);
 
   const ubicacionesItems = INVERNADEROS.map((nombre) => ({
     value: nombre,
@@ -98,6 +106,42 @@ export function TratamientosGestion() {
       label: ETIQUETA_TIPO_TRATAMIENTO[valor],
     })),
   ];
+
+  const camaElegida = camasUnicas.find((cama) => String(cama.id) === camaId);
+  const etiquetas: EtiquetaFiltro[] = [];
+
+  if (ubicacion) {
+    etiquetas.push({
+      id: "ubicacion",
+      etiqueta: ubicacion,
+      onQuitar: () => setUbicacion(""),
+    });
+  }
+
+  if (camaId) {
+    etiquetas.push({
+      id: "cama",
+      etiqueta: camaElegida
+        ? nombreDeCama(camaElegida.codigo)
+        : "Cama",
+      onQuitar: () => setCamaId(""),
+    });
+  }
+
+  if (tipo && tipo in ETIQUETA_TIPO_TRATAMIENTO) {
+    etiquetas.push({
+      id: "tipo",
+      etiqueta: ETIQUETA_TIPO_TRATAMIENTO[tipo as TipoTratamiento],
+      onQuitar: () => setTipo(""),
+    });
+  }
+
+  const limpiar = () => {
+    setCultivo("");
+    setUbicacion("");
+    setCamaId("");
+    setTipo("");
+  };
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
@@ -149,8 +193,17 @@ export function TratamientosGestion() {
 
       <AgricolaVistasNav />
 
-      <div className="rounded-xl border bg-card p-4 shadow-sm">
-        <div className="grid items-end gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <BarraFiltrosAgricolas
+        busqueda={{
+          id: "filtro-cultivo-tratamiento",
+          value: cultivo,
+          onChange: setCultivo,
+          placeholder: "Buscar cultivo...",
+          maxLength: 120,
+        }}
+        etiquetas={etiquetas}
+        onLimpiar={limpiar}
+      >
           <div className="space-y-2">
             <Label htmlFor="filtro-ubicacion">Ubicación</Label>
             <Select
@@ -235,8 +288,7 @@ export function TratamientosGestion() {
               </SelectContent>
             </Select>
           </div>
-        </div>
-      </div>
+      </BarraFiltrosAgricolas>
 
       <TratamientosTabla
         cargando={consulta.isLoading}

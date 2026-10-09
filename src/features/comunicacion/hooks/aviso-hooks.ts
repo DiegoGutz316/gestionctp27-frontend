@@ -4,12 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   consultarAvisos,
+  consultarAvisosPublicos,
   desactivarAviso,
   editarAviso,
   obtenerAviso,
   registrarAviso,
 } from "../servicios/aviso.service";
 import type {
+  CategoriaAviso,
   ConsultarAvisos,
   RegistrarAviso,
 } from "../validacion/aviso.validacion";
@@ -20,10 +22,24 @@ export const avisosQueryKey = ["comunicacion", "avisos"] as const;
  * Sin `placeholderData`: al cambiar de página conservar el resultado anterior
  * mostraría avisos que no corresponden a lo consultado.
  */
-export function useAvisos(filtros: ConsultarAvisos = {}) {
+export function useAvisos(
+  filtros: ConsultarAvisos = {},
+  opciones?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: [...avisosQueryKey, filtros],
     queryFn: () => consultarAvisos(filtros),
+    enabled: opciones?.enabled ?? true,
+  });
+}
+
+/** Mismo tope que ya usaba la landing sobre el endpoint público. */
+const AVISOS_PUBLICOS_LIMITE = 12;
+
+export function useAvisosPublicos(categoria?: CategoriaAviso) {
+  return useQuery({
+    queryKey: [...avisosQueryKey, "publicos", categoria ?? "TODOS"],
+    queryFn: () => consultarAvisosPublicos(AVISOS_PUBLICOS_LIMITE, categoria),
   });
 }
 
