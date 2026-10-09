@@ -4,14 +4,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   consultarAvisos,
-  consultarAvisosPublicos,
+  consultarAvisosParaCalendario,
   desactivarAviso,
   editarAviso,
   obtenerAviso,
   registrarAviso,
 } from "../servicios/aviso.service";
 import type {
-  CategoriaAviso,
   ConsultarAvisos,
   RegistrarAviso,
 } from "../validacion/aviso.validacion";
@@ -33,13 +32,11 @@ export function useAvisos(
   });
 }
 
-/** Mismo tope que ya usaba la landing sobre el endpoint público. */
-const AVISOS_PUBLICOS_LIMITE = 12;
-
-export function useAvisosPublicos(categoria?: CategoriaAviso) {
+/** Avisos activos con fecha, para el calendario de la landing. */
+export function useAvisosCalendario() {
   return useQuery({
-    queryKey: [...avisosQueryKey, "publicos", categoria ?? "TODOS"],
-    queryFn: () => consultarAvisosPublicos(AVISOS_PUBLICOS_LIMITE, categoria),
+    queryKey: [...avisosQueryKey, "publicos", "calendario"],
+    queryFn: consultarAvisosParaCalendario,
   });
 }
 
