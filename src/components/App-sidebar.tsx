@@ -5,7 +5,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
-  BarChart3,
   Boxes,
   ChevronRight,
   ChevronsUpDown,
@@ -105,12 +104,6 @@ const navigation = [
   {
     label: "Análisis",
     items: [
-      {
-        title: "Reportes",
-        href: "/dashboard/reportes",
-        icon: BarChart3,
-        modulo: "REPORTES" as const,
-      },
       {
         title: "Avisos",
         href: "/dashboard/comunicacion/avisos",

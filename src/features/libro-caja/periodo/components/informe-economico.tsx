@@ -98,8 +98,8 @@ export function InformeEconomico({
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink render={<Link href="/dashboard/reportes" />}>
-                Reportes
+              <BreadcrumbLink render={<Link href="/dashboard/libro-caja" />}>
+                Libro de caja
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

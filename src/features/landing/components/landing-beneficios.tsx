@@ -13,7 +13,7 @@ const BLOQUES = [
   {
     titulo: "Seguimiento de procesos",
     texto:
-      "Cada actividad productiva queda registrada y trazable, desde la siembra o el ingreso de un lote hasta la elaboración de reportes.",
+      "Cada actividad productiva queda registrada y trazable, desde la siembra o el ingreso de un lote hasta la cosecha o el registro de producción.",
   },
   {
     titulo: "Acceso según roles",
