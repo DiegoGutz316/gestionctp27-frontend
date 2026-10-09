@@ -32,7 +32,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-svh bg-[#f8f9f6]">
+    <div className="flex min-h-svh bg-[#f8f9f6] dark:bg-background">
       {/* Panel izquierdo */}
       <div className="relative hidden min-h-svh w-[56%] overflow-hidden lg:flex">
         {/* Fondo */}
@@ -138,10 +138,10 @@ export default function LoginPage() {
       {/* Panel derecho */}
       <div className="flex flex-1 items-center justify-center px-6 py-10 sm:px-10 lg:px-14">
         <div className="w-full max-w-md">
-          <div className="rounded-[2rem] border border-border/70 bg-white/92 p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-10">
+          <div className="rounded-[2rem] border border-border/70 bg-white/92 dark:bg-card/92 p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-10">
             {/* Header móvil */}
             <div className="mb-8 flex items-center gap-3 lg:hidden">
-              <div className="flex size-12 items-center justify-center rounded-full border border-border bg-white shadow-sm">
+              <div className="flex size-12 items-center justify-center rounded-full border border-border bg-white dark:bg-card shadow-sm">
                 <Image
                   src="/escudo-ctp27.png"
                   alt="Escudo CTP 27 de Abril"

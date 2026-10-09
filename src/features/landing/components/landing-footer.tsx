@@ -6,7 +6,7 @@ const MAPS_URL = "https://maps.app.goo.gl/aNgqKiZekCDtEGKJA";
 
 export function LandingFooter() {
   return (
-    <footer id="footer-contacto" className="border-t border-[#252624]/10 bg-[#F7F5F0]">
+    <footer id="footer-contacto" className="border-t border-tinta/10 bg-crema">
       <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">
@@ -18,52 +18,52 @@ export function LandingFooter() {
               className="h-8 w-8 object-contain"
             />
             <div>
-              <p className="text-sm font-semibold text-[#252624]">
+              <p className="text-sm font-semibold text-tinta">
                 Colegio Técnico Profesional 27 de Abril
               </p>
             </div>
           </div>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#252624]/65">
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-tinta/65">
             Educación técnica al servicio de nuestra comunidad, en Veintisiete
             de Abril, Santa Cruz, Guanacaste.
           </p>
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-[#896A78]">
+          <p className="text-xs font-medium uppercase tracking-widest text-malva">
             Contacto
           </p>
-          <ul className="mt-4 space-y-3 text-sm text-[#252624]/65">
+          <ul className="mt-4 space-y-3 text-sm text-tinta/65">
             <li className="flex items-start gap-2.5">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#52634D]" />
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-oliva" />
               <a
                 href={MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-[#252624]"
+                className="hover:text-tinta"
               >
                 Veintisiete de Abril, Santa Cruz, Guanacaste
               </a>
             </li>
             <li className="flex items-center gap-2.5">
-              <Phone className="h-4 w-4 shrink-0 text-[#52634D]" />
-              <a href="tel:+50626580054" className="hover:text-[#252624]">
+              <Phone className="h-4 w-4 shrink-0 text-oliva" />
+              <a href="tel:+50626580054" className="hover:text-tinta">
                 +506 2658-0054
               </a>
             </li>
             <li className="flex items-center gap-2.5">
-              <Mail className="h-4 w-4 shrink-0 text-[#52634D]" />
-              <a href="mailto:ctp.27deabril@mep.go.cr" className="hover:text-[#252624]">
+              <Mail className="h-4 w-4 shrink-0 text-oliva" />
+              <a href="mailto:ctp.27deabril@mep.go.cr" className="hover:text-tinta">
                 ctp.27deabril@mep.go.cr
               </a>
             </li>
             <li className="flex items-center gap-2.5">
-              <Link2 className="h-4 w-4 shrink-0 text-[#52634D]" />
+              <Link2 className="h-4 w-4 shrink-0 text-oliva" />
               <a
                 href={FACEBOOK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-[#252624]"
+                className="hover:text-tinta"
               >
                 Facebook
               </a>
@@ -72,20 +72,20 @@ export function LandingFooter() {
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-[#896A78]">
+          <p className="text-xs font-medium uppercase tracking-widest text-malva">
             Horario de atención
           </p>
-          <ul className="mt-4 space-y-3 text-sm text-[#252624]/65">
+          <ul className="mt-4 space-y-3 text-sm text-tinta/65">
             <li className="flex items-start gap-2.5">
-              <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#52634D]" />
+              <Clock className="mt-0.5 h-4 w-4 shrink-0 text-oliva" />
               <span>Lunes a viernes: 7:00 a. m. – 5:00 p. m.</span>
             </li>
           </ul>
         </div>
       </div>
 
-      <div className="border-t border-[#252624]/10 px-5 py-5 sm:px-8">
-        <p className="text-xs text-[#252624]/40">
+      <div className="border-t border-tinta/10 px-5 py-5 sm:px-8">
+        <p className="text-xs text-tinta/40">
           © {new Date().getFullYear()} Colegio Técnico Profesional 27 de Abril. Todos los derechos reservados.
         </p>
       </div>

@@ -52,24 +52,24 @@ export function DashboardAvisos() {
   if (consulta.isError && avisos.length === 0) return null;
 
   return (
-    <section className="rounded-[26px] border border-[#e5e2dc] bg-[#fbfaf7] px-5 py-5 shadow-[0_14px_45px_rgba(41,39,35,0.07)] sm:px-6">
+    <section className="rounded-[26px] border border-[#e5e2dc] dark:border-border bg-[#fbfaf7] dark:bg-muted px-5 py-5 shadow-[0_14px_45px_rgba(41,39,35,0.07)] sm:px-6">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="flex items-center gap-2 font-semibold text-[#292c2a]">
-          <Megaphone className="size-4 text-[#7fa36a]" />
+        <h2 className="flex items-center gap-2 font-semibold text-[#292c2a] dark:text-foreground">
+          <Megaphone className="size-4 text-[#7fa36a] dark:text-primary" />
           Avisos institucionales
         </h2>
 
         <Link
           href="/dashboard/comunicacion/avisos"
-          className="shrink-0 text-sm text-[#7fa36a] hover:underline"
+          className="shrink-0 text-sm text-[#7fa36a] dark:text-primary hover:underline"
         >
           Ver todos
         </Link>
       </div>
 
       {avisos.length === 0 ? (
-        <div className="flex items-center gap-3 py-6 text-sm text-[#858985]">
-          <Megaphone className="size-4 shrink-0 text-[#7fa36a]" />
+        <div className="flex items-center gap-3 py-6 text-sm text-[#858985] dark:text-foreground">
+          <Megaphone className="size-4 shrink-0 text-[#7fa36a] dark:text-primary" />
           <p>No hay avisos institucionales activos por el momento</p>
         </div>
       ) : (
@@ -77,23 +77,23 @@ export function DashboardAvisos() {
           {avisos.map((aviso) => (
             <li
               key={aviso.id}
-              className="border-b border-[#e5e2dc] last:border-0"
+              className="border-b border-[#e5e2dc] dark:border-border last:border-0"
             >
               <button
                 type="button"
                 onClick={() => setAvisoAbierto(aviso)}
-                className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-[#f3f1ec]/70 sm:gap-4"
+                className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-[#f3f1ec]/70 dark:hover:bg-accent sm:gap-4"
               >
                 <Miniatura aviso={aviso} />
 
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-semibold text-[#292c2a]">
+                  <span className="block truncate font-semibold text-[#292c2a] dark:text-foreground">
                     {aviso.titulo}
                   </span>
-                  <span className="mt-0.5 line-clamp-2 text-sm leading-5 text-[#858985]">
+                  <span className="mt-0.5 line-clamp-2 text-sm leading-5 text-[#858985] dark:text-foreground">
                     {aviso.descripcion}
                   </span>
-                  <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#858985]">
+                  <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#858985] dark:text-foreground">
                     <span className="inline-flex items-center gap-1">
                       <CalendarDays className="size-3.5" />
                       {formatearFecha(aviso.fecha)}
@@ -103,7 +103,7 @@ export function DashboardAvisos() {
                     ) : null}
                     <Badge
                       variant="secondary"
-                      className="bg-[#e7efe2] font-normal text-[#5d734c]"
+                      className="bg-[#e7efe2] dark:bg-secondary font-normal text-[#5d734c] dark:text-primary"
                     >
                       {ETIQUETA_ESTADO_AVISO[aviso.estado]}
                     </Badge>
@@ -112,7 +112,7 @@ export function DashboardAvisos() {
 
                 <Eye
                   aria-hidden
-                  className="size-4 shrink-0 text-[#858985]"
+                  className="size-4 shrink-0 text-[#858985] dark:text-foreground"
                 />
               </button>
             </li>
@@ -140,14 +140,14 @@ function recientes(avisos: AvisoRespuesta[]) {
 function Miniatura({ aviso }: { aviso: AvisoRespuesta }) {
   if (!aviso.tieneFlyer) {
     return (
-      <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-white text-[#7fa36a] sm:size-24">
+      <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-card text-[#7fa36a] dark:text-primary sm:size-24">
         <Megaphone className="size-5" />
       </span>
     );
   }
 
   return (
-    <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white sm:size-24">
+    <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white dark:bg-card sm:size-24">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={urlFlyerAviso(aviso.id)}

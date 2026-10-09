@@ -56,7 +56,7 @@ export function BarraFiltrosAgricolas({
               onChange={(event) => busqueda.onChange(event.target.value)}
               placeholder={busqueda.placeholder}
               maxLength={busqueda.maxLength}
-              className="h-9 rounded-lg bg-white pl-9 shadow-none"
+              className="h-9 rounded-lg bg-white dark:bg-card pl-9 shadow-none"
             />
           </div>
         ) : (
@@ -70,7 +70,7 @@ export function BarraFiltrosAgricolas({
           aria-controls={panelId}
           onClick={() => setAbierto((actual) => !actual)}
           className={cn(
-            "h-9 shrink-0 rounded-lg bg-white px-3 shadow-none",
+            "h-9 shrink-0 rounded-lg bg-white dark:bg-card px-3 shadow-none",
             cantidad > 0 && "border-primary/40",
           )}
         >
@@ -90,7 +90,7 @@ export function BarraFiltrosAgricolas({
         <ul className="mt-2 flex flex-wrap gap-1.5">
           {etiquetas.map((item) => (
             <li key={item.id}>
-              <span className="inline-flex max-w-full items-center gap-1 rounded-full border bg-white px-2.5 py-0.5 text-xs text-muted-foreground">
+              <span className="inline-flex max-w-full items-center gap-1 rounded-full border bg-white dark:bg-card px-2.5 py-0.5 text-xs text-muted-foreground">
                 <span className="truncate">{item.etiqueta}</span>
                 <button
                   type="button"

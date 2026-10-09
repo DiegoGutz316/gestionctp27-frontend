@@ -29,33 +29,33 @@ const PROYECTOS = [
 
 export function LandingProyectos() {
   return (
-    <section className="bg-white py-24 sm:py-28">
+    <section className="bg-tarjeta py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="max-w-2xl">
-          <span className="text-xs font-medium uppercase tracking-widest text-[#896A78]">
+          <span className="text-xs font-medium uppercase tracking-widest text-malva">
             Proyectos
           </span>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#252624] sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
             Proyectos destacados
           </h2>
         </div>
 
-        <div className="mt-12 divide-y divide-[#252624]/10 border-t border-[#252624]/10">
+        <div className="mt-12 divide-y divide-tinta/10 border-t border-tinta/10">
           {PROYECTOS.map((proyecto) => (
             <div
               key={proyecto.numero}
               className="grid items-center gap-6 py-8 sm:grid-cols-[auto_1fr_auto] sm:gap-10"
             >
-              <span className="text-3xl font-semibold tracking-tight text-[#C7A35D]">
+              <span className="text-3xl font-semibold tracking-tight text-oro">
                 {proyecto.numero}
               </span>
               <div>
-                <h3 className="text-lg font-medium text-[#252624]">{proyecto.nombre}</h3>
-                <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[#252624]/60">
+                <h3 className="text-lg font-medium text-tinta">{proyecto.nombre}</h3>
+                <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-tinta/60">
                   {proyecto.descripcion}
                 </p>
               </div>
-              <div className="relative h-24 w-full overflow-hidden rounded-xl border border-[#252624]/10 sm:h-20 sm:w-32">
+              <div className="relative h-24 w-full overflow-hidden rounded-xl border border-tinta/10 sm:h-20 sm:w-32">
                 <Image
                   src={proyecto.src}
                   alt={proyecto.alt}

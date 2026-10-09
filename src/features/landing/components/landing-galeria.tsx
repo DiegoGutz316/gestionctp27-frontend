@@ -183,7 +183,7 @@ export function LandingGaleria() {
   return (
     <div className="w-full max-w-md sm:max-w-lg lg:max-w-none">
       <div
-        className="relative overflow-hidden rounded-3xl border border-[#252624]/10 bg-white shadow-[0_30px_70px_-25px_rgba(37,38,36,0.35)]"
+        className="relative overflow-hidden rounded-3xl border border-tinta/10 bg-tarjeta shadow-[0_30px_70px_-25px_rgba(37,38,36,0.35)]"
         onMouseEnter={() => setPausado(true)}
         onMouseLeave={() => setPausado(false)}
       >
@@ -245,7 +245,7 @@ export function LandingGaleria() {
           onClick={anterior}
           disabled={activo === 0}
           aria-label="Fotografía anterior"
-          className="absolute left-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[#252624]/10 bg-white/90 text-[#252624] shadow-sm backdrop-blur transition-opacity hover:bg-white disabled:opacity-30 sm:flex"
+          className="absolute left-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-tinta/10 bg-tarjeta/90 text-tinta shadow-sm backdrop-blur transition-opacity hover:bg-tarjeta disabled:opacity-30 sm:flex"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -254,7 +254,7 @@ export function LandingGaleria() {
           onClick={siguiente}
           disabled={activo === FOTOS.length - 1}
           aria-label="Fotografía siguiente"
-          className="absolute right-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[#252624]/10 bg-white/90 text-[#252624] shadow-sm backdrop-blur transition-opacity hover:bg-white disabled:opacity-30 sm:flex"
+          className="absolute right-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-tinta/10 bg-tarjeta/90 text-tinta shadow-sm backdrop-blur transition-opacity hover:bg-tarjeta disabled:opacity-30 sm:flex"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
@@ -269,7 +269,7 @@ export function LandingGaleria() {
             aria-label={`Ir a la fotografía ${i + 1}`}
             aria-current={activo === i}
             className={`h-1.5 rounded-full transition-all ${
-              activo === i ? "w-6 bg-[#C7A35D]" : "w-1.5 bg-[#252624]/20 hover:bg-[#252624]/35"
+              activo === i ? "w-6 bg-oro" : "w-1.5 bg-tinta/20 hover:bg-tinta/35"
             }`}
           />
         ))}

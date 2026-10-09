@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function LandingIdentidad() {
   return (
-    <section className="relative overflow-hidden bg-[#252624] py-24 text-[#F7F5F0] sm:py-28">
+    <section className="relative overflow-hidden bg-banda py-24 text-[#F7F5F0] sm:py-28">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(247,245,240,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(247,245,240,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"

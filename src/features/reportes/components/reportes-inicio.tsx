@@ -51,10 +51,10 @@ import { getMensajeDeError } from "@/features/libro-caja/periodo/servicios/perio
 const LIMITE_PERIODOS = 100;
 
 const claseTarjetaReporte =
-  "group flex h-full flex-col border-[#dde4db] bg-white shadow-[0_6px_24px_rgba(39,50,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(39,50,42,0.08)]";
+  "group flex h-full flex-col border-[#dde4db] dark:border-border bg-white dark:bg-card shadow-[0_6px_24px_rgba(39,50,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(39,50,42,0.08)]";
 
 const claseIcono =
-  "flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#edf2e9] text-[#62774d]";
+  "flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#edf2e9] dark:bg-secondary text-[#62774d] dark:text-primary";
 
 export function ReportesInicio() {
   const [periodoId, setPeriodoId] =
@@ -154,7 +154,7 @@ export function ReportesInicio() {
       >
         <section className="space-y-4">
           <div>
-            <h2 className="text-lg font-semibold tracking-tight text-[#303832]">
+            <h2 className="text-lg font-semibold tracking-tight text-[#303832] dark:text-foreground">
               Reportes del sistema
             </h2>
 
@@ -197,7 +197,7 @@ export function ReportesInicio() {
                 </div>
               </CardHeader>
 
-              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] pt-4">
+              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] dark:border-border pt-4">
                 <Button
                   nativeButton={false}
                   render={
@@ -238,7 +238,7 @@ export function ReportesInicio() {
                 </div>
               </CardHeader>
 
-              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] pt-4">
+              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] dark:border-border pt-4">
                 <Button
                   nativeButton={false}
                   render={
@@ -279,7 +279,7 @@ export function ReportesInicio() {
                 </div>
               </CardHeader>
 
-              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] pt-4">
+              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] dark:border-border pt-4">
                 <Button
                   nativeButton={false}
                   render={
@@ -300,7 +300,7 @@ export function ReportesInicio() {
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold tracking-tight text-[#303832]">
+          <h2 className="text-lg font-semibold tracking-tight text-[#303832] dark:text-foreground">
             Formatos institucionales
           </h2>
 
@@ -314,8 +314,8 @@ export function ReportesInicio() {
         </div>
 
         {/* Informe económico */}
-        <Card className="overflow-hidden border-[#dde4db] bg-white shadow-[0_6px_24px_rgba(39,50,42,0.04)]">
-          <CardHeader className="border-b border-[#edf0eb] bg-[#fafbf9]">
+        <Card className="overflow-hidden border-[#dde4db] dark:border-border bg-white dark:bg-card shadow-[0_6px_24px_rgba(39,50,42,0.04)]">
+          <CardHeader className="border-b border-[#edf0eb] dark:border-border bg-[#fafbf9] dark:bg-muted">
             <div className="flex items-start gap-4">
               <div
                 className={
@@ -362,7 +362,7 @@ export function ReportesInicio() {
             !periodos.isError &&
             listaPeriodos.length ===
               0 ? (
-              <div className="rounded-xl border border-dashed border-[#dfe5dc] bg-[#fafbf9] px-4 py-6">
+              <div className="rounded-xl border border-dashed border-[#dfe5dc] dark:border-border bg-[#fafbf9] dark:bg-muted px-4 py-6">
                 <p className="text-sm text-muted-foreground">
                   No hay periodos de
                   caja. Abra un periodo
@@ -575,7 +575,7 @@ export function ReportesInicio() {
                 </div>
               </CardHeader>
 
-              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] pt-4">
+              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] dark:border-border pt-4">
                 <Button
                   nativeButton={false}
                   render={
@@ -619,7 +619,7 @@ export function ReportesInicio() {
                 </div>
               </CardHeader>
 
-              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] pt-4">
+              <CardContent className="mt-auto flex justify-end border-t border-[#edf0eb] dark:border-border pt-4">
                 <Button
                   nativeButton={false}
                   render={

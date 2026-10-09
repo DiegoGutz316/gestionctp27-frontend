@@ -35,25 +35,25 @@ import { AvisoPublicoDialog } from "./aviso-publico-dialog";
 const ESTILO_CATEGORIA: Record<CategoriaAviso, { badge: string; punto: string }> =
   {
     ACADEMICOS: {
-      badge: "bg-[#52634D]/10 text-[#3F4E3A]",
-      punto: "bg-[#52634D]",
+      badge: "bg-oliva/10 text-oliva-profundo",
+      punto: "bg-oliva",
     },
     EVENTOS: {
-      badge: "bg-[#C7A35D]/18 text-[#7A6233]",
-      punto: "bg-[#C7A35D]",
+      badge: "bg-oro/18 text-oro-profundo",
+      punto: "bg-oro",
     },
     COMUNIDAD: {
-      badge: "bg-[#7D8F76]/18 text-[#3F4E3A]",
-      punto: "bg-[#7D8F76]",
+      badge: "bg-salvia/18 text-oliva-profundo",
+      punto: "bg-salvia",
     },
     ADMINISTRATIVOS: {
-      badge: "bg-[#252624]/6 text-[#252624]/70",
-      punto: "bg-[#252624]/35",
+      badge: "bg-tinta/6 text-tinta/70",
+      punto: "bg-tinta/35",
     },
   };
 
 const SOMBRA =
-  "shadow-[0_12px_32px_-26px_rgba(37,38,36,0.7)] ring-1 ring-[#252624]/8";
+  "shadow-[0_12px_32px_-26px_rgba(37,38,36,0.7)] ring-1 ring-tinta/8";
 
 export function LandingCalendario() {
   const consulta = useAvisosCalendario();
@@ -85,7 +85,7 @@ export function LandingCalendario() {
   return (
     <section
       id="calendario"
-      className="scroll-mt-24 bg-[#F7F5F0] py-24 sm:py-28"
+      className="scroll-mt-24 bg-crema py-24 sm:py-28"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Encabezado />
@@ -98,14 +98,14 @@ export function LandingCalendario() {
 function Encabezado() {
   return (
     <div className="flex items-start gap-4">
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#52634D] text-[#F7F5F0]">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-oliva text-sobre-oliva">
         <CalendarDays className="size-5" aria-hidden />
       </div>
       <div>
-        <h2 className="text-3xl font-semibold tracking-tight text-[#252624] sm:text-4xl">
+        <h2 className="text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
           Calendario Institucional
         </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#252624]/60 sm:text-base">
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-tinta/60 sm:text-base">
           Consulta actividades, comunicados y eventos importantes del colegio.
         </p>
       </div>
@@ -214,9 +214,9 @@ function CalendarioMes({
   const tituloMes = etiquetaMes(mesVisible);
 
   return (
-    <div className={cn("rounded-2xl bg-white p-4 sm:p-6", SOMBRA)}>
+    <div className={cn("rounded-2xl bg-tarjeta p-4 sm:p-6", SOMBRA)}>
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold tracking-tight text-[#252624] sm:text-xl">
+        <h3 className="text-lg font-semibold tracking-tight text-tinta sm:text-xl">
           {tituloMes}
         </h3>
         <div className="flex shrink-0 gap-2">
@@ -224,7 +224,7 @@ function CalendarioMes({
             type="button"
             onClick={onMesAnterior}
             aria-label="Mes anterior"
-            className="flex size-9 items-center justify-center rounded-full bg-[#F7F5F0] text-[#52634D] transition hover:bg-[#ECEAE4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40"
+            className="flex size-9 items-center justify-center rounded-full bg-crema text-oliva transition hover:bg-superficie focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40"
           >
             <ChevronLeft className="size-4" aria-hidden />
           </button>
@@ -232,7 +232,7 @@ function CalendarioMes({
             type="button"
             onClick={onMesSiguiente}
             aria-label="Mes siguiente"
-            className="flex size-9 items-center justify-center rounded-full bg-[#F7F5F0] text-[#52634D] transition hover:bg-[#ECEAE4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40"
+            className="flex size-9 items-center justify-center rounded-full bg-crema text-oliva transition hover:bg-superficie focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40"
           >
             <ChevronRight className="size-4" aria-hidden />
           </button>
@@ -249,7 +249,7 @@ function CalendarioMes({
             <div
               key={dia}
               role="columnheader"
-              className="pb-2 text-center text-[11px] font-medium tracking-wide text-[#252624]/45 sm:text-xs"
+              className="pb-2 text-center text-[11px] font-medium tracking-wide text-tinta/45 sm:text-xs"
             >
               {dia}
             </div>
@@ -291,20 +291,20 @@ function CalendarioMes({
                       tituloActividad,
                     )}
                     onClick={() => onSeleccionarDia(celda.clave)}
-                    className="flex h-full w-full flex-col items-center rounded-xl px-0.5 py-1 transition hover:bg-[#F7F5F0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40"
+                    className="flex h-full w-full flex-col items-center rounded-xl px-0.5 py-1 transition hover:bg-crema focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40"
                   >
                     <span
                       className={cn(
-                        "flex size-8 items-center justify-center rounded-full text-sm text-[#252624]",
-                        seleccionado && "bg-[#52634D] font-medium text-[#F7F5F0]",
-                        esHoy && !seleccionado && "ring-1 ring-[#52634D]/45",
+                        "flex size-8 items-center justify-center rounded-full text-sm text-tinta",
+                        seleccionado && "bg-oliva font-medium text-sobre-oliva",
+                        esHoy && !seleccionado && "ring-1 ring-oliva/45",
                       )}
                     >
                       {celda.dia}
                     </span>
                     {tituloActividad ? (
                       <span
-                        className="mt-0.5 line-clamp-2 w-full text-center text-[9px] leading-tight font-medium text-[#52634D] sm:text-[10px]"
+                        className="mt-0.5 line-clamp-2 w-full text-center text-[9px] leading-tight font-medium text-oliva sm:text-[10px]"
                       >
                         {tituloActividad}
                       </span>
@@ -318,7 +318,7 @@ function CalendarioMes({
       </div>
 
       {mesVacio ? (
-        <p className="mt-4 rounded-xl bg-[#F7F5F0] px-3 py-2.5 text-center text-sm text-[#252624]/65">
+        <p className="mt-4 rounded-xl bg-crema px-3 py-2.5 text-center text-sm text-tinta/65">
           Este mes no tiene actividades publicadas.
         </p>
       ) : null}
@@ -355,12 +355,12 @@ function ProximosEventos({
 }) {
   return (
     <div>
-      <h3 className="text-sm font-semibold tracking-tight text-[#252624]">
+      <h3 className="text-sm font-semibold tracking-tight text-tinta">
         Próximos eventos
       </h3>
 
       {avisos.length === 0 ? (
-        <p className={cn("mt-3 rounded-2xl bg-white px-4 py-4 text-sm text-[#252624]/60", SOMBRA)}>
+        <p className={cn("mt-3 rounded-2xl bg-tarjeta px-4 py-4 text-sm text-tinta/60", SOMBRA)}>
           No hay actividades próximas por ahora.
         </p>
       ) : (
@@ -373,21 +373,21 @@ function ProximosEventos({
                   type="button"
                   onClick={() => onSeleccionar(aviso)}
                   className={cn(
-                    "w-full rounded-2xl bg-white px-4 py-3.5 text-left transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40",
+                    "w-full rounded-2xl bg-tarjeta px-4 py-3.5 text-left transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40",
                     SOMBRA,
-                    activo && "ring-2 ring-[#52634D]",
+                    activo && "ring-2 ring-oliva",
                   )}
                 >
                   <span className="flex items-start justify-between gap-3">
-                    <span className="text-xs font-medium text-[#52634D]">
+                    <span className="text-xs font-medium text-oliva">
                       {fechaCortaAviso(aviso.fecha, hoy)}
                     </span>
                     <BadgeCategoria aviso={aviso} />
                   </span>
-                  <span className="mt-1.5 block text-sm font-medium text-[#252624]">
+                  <span className="mt-1.5 block text-sm font-medium text-tinta">
                     {aviso.titulo}
                   </span>
-                  <span className="mt-1 line-clamp-2 block text-sm leading-relaxed text-[#252624]/60">
+                  <span className="mt-1 line-clamp-2 block text-sm leading-relaxed text-tinta/60">
                     {aviso.descripcion}
                   </span>
                 </button>
@@ -418,7 +418,7 @@ function PanelDetalle({
   return (
     <article
       aria-live="polite"
-      className={cn("rounded-2xl bg-white p-4 sm:p-5", SOMBRA)}
+      className={cn("rounded-2xl bg-tarjeta p-4 sm:p-5", SOMBRA)}
     >
       {avisoActivo ? (
         <DetalleEvento
@@ -454,21 +454,21 @@ function DetalleEvento({
 
       <div className="mt-5 space-y-3 px-1">
         <BadgeCategoria aviso={aviso} />
-        <h3 className="text-2xl font-semibold tracking-tight text-balance text-[#252624]">
+        <h3 className="text-2xl font-semibold tracking-tight text-balance text-tinta">
           {aviso.titulo}
         </h3>
-        <p className="flex items-center gap-2 text-sm text-[#252624]/70">
-          <CalendarDays className="size-4 shrink-0 text-[#C7A35D]" aria-hidden />
+        <p className="flex items-center gap-2 text-sm text-tinta/70">
+          <CalendarDays className="size-4 shrink-0 text-oro" aria-hidden />
           <span>{fechaLargaAviso(aviso.fecha)}</span>
         </p>
-        <p className="line-clamp-4 text-sm leading-relaxed text-[#252624]/70">
+        <p className="line-clamp-4 text-sm leading-relaxed text-tinta/70">
           {aviso.descripcion}
         </p>
       </div>
 
       {eventos.length > 1 ? (
         <div className="mt-5 px-1">
-          <p className="text-xs font-medium text-[#252624]/50">
+          <p className="text-xs font-medium text-tinta/50">
             {eventos.length} eventos programados
           </p>
           <ul className="mt-2 space-y-2">
@@ -481,10 +481,10 @@ function DetalleEvento({
                     aria-pressed={activo}
                     onClick={() => onElegirEvento(evento.id)}
                     className={cn(
-                      "w-full rounded-xl px-3 py-2.5 text-left text-sm leading-snug transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52634D]/40",
+                      "w-full rounded-xl px-3 py-2.5 text-left text-sm leading-snug transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva/40",
                       activo
-                        ? "bg-[#52634D] font-medium text-[#F7F5F0]"
-                        : "bg-[#F7F5F0] text-[#252624] hover:bg-[#ECEAE4]",
+                        ? "bg-oliva font-medium text-sobre-oliva"
+                        : "bg-crema text-tinta hover:bg-superficie",
                     )}
                   >
                     {evento.titulo}
@@ -499,7 +499,7 @@ function DetalleEvento({
       <div className="mt-5 px-1">
         <Button
           type="button"
-          className="rounded-full bg-[#52634D] px-5 text-[#F7F5F0] hover:bg-[#52634D]/90"
+          className="rounded-full bg-oliva px-5 text-sobre-oliva hover:bg-oliva/90"
           onClick={onVerDetalle}
         >
           Ver detalle
@@ -514,7 +514,7 @@ function FlyerEvento({ aviso }: { aviso: AvisoPublico }) {
   const mostrar = aviso.tieneFlyer && !roto;
 
   return (
-    <div className="flex h-72 items-center justify-center overflow-hidden rounded-2xl bg-[#F7F5F0] sm:h-80">
+    <div className="flex h-72 items-center justify-center overflow-hidden rounded-2xl bg-crema sm:h-80">
       {mostrar ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -540,10 +540,10 @@ function PlaceholderFlyer() {
         height={72}
         className="h-16 w-16 object-contain"
       />
-      <p className="mt-3 text-sm font-medium text-[#52634D]">
+      <p className="mt-3 text-sm font-medium text-oliva">
         Colegio Técnico Profesional
       </p>
-      <p className="text-xs text-[#252624]/50">27 de Abril</p>
+      <p className="text-xs text-tinta/50">27 de Abril</p>
     </div>
   );
 }
@@ -557,28 +557,28 @@ function EstadoSinActividad({
 }) {
   return (
     <div className="flex min-h-72 flex-col items-center justify-center px-6 py-12 text-center sm:min-h-80">
-      <div className="flex size-12 items-center justify-center rounded-full bg-[#F7F5F0] text-[#52634D]">
+      <div className="flex size-12 items-center justify-center rounded-full bg-crema text-oliva">
         <CalendarDays className="size-5" aria-hidden />
       </div>
       {sinAvisos ? (
         <>
-          <p className="mt-4 max-w-sm text-base font-medium text-[#252624]">
+          <p className="mt-4 max-w-sm text-base font-medium text-tinta">
             Aún no hay actividades publicadas
           </p>
-          <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#252624]/60">
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-tinta/60">
             Cuando el colegio registre avisos con fecha, podrás consultarlos
             en este calendario.
           </p>
         </>
       ) : (
         <>
-          <p className="mt-4 max-w-sm text-base font-medium text-[#252624]">
+          <p className="mt-4 max-w-sm text-base font-medium text-tinta">
             No hay actividades programadas para esta fecha
           </p>
-          <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#252624]/60">
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-tinta/60">
             Selecciona otro día para consultar avisos o eventos institucionales.
           </p>
-          <p className="mt-3 text-xs text-[#252624]/45">{fechaLargaAviso(fecha)}</p>
+          <p className="mt-3 text-xs text-tinta/45">{fechaLargaAviso(fecha)}</p>
         </>
       )}
     </div>
@@ -612,16 +612,16 @@ function ErrorCalendario({
   onReintentar: () => void;
 }) {
   return (
-    <div className={cn("mt-10 max-w-md rounded-2xl bg-white px-6 py-8", SOMBRA)}>
-      <p className="font-medium text-[#252624]">
+    <div className={cn("mt-10 max-w-md rounded-2xl bg-tarjeta px-6 py-8", SOMBRA)}>
+      <p className="font-medium text-tinta">
         No se pudo cargar el calendario institucional
       </p>
-      <p className="mt-1 text-sm text-[#252624]/60">
+      <p className="mt-1 text-sm text-tinta/60">
         Verifica la conexión e inténtalo nuevamente
       </p>
       <Button
         type="button"
-        className="mt-5 rounded-full bg-[#52634D] text-[#F7F5F0] hover:bg-[#52634D]/90"
+        className="mt-5 rounded-full bg-oliva text-sobre-oliva hover:bg-oliva/90"
         disabled={cargando}
         onClick={onReintentar}
       >
@@ -639,35 +639,35 @@ function EsqueletoCalendario() {
     >
       <p className="sr-only">Cargando el calendario institucional</p>
       <div className="space-y-6">
-        <div className={cn("rounded-2xl bg-white p-4 sm:p-6", SOMBRA)}>
+        <div className={cn("rounded-2xl bg-tarjeta p-4 sm:p-6", SOMBRA)}>
           <div className="flex items-center justify-between">
-            <Skeleton className="h-6 w-40 bg-[#ECEAE4]" />
+            <Skeleton className="h-6 w-40 bg-superficie" />
             <div className="flex gap-2">
-              <Skeleton className="size-9 rounded-full bg-[#ECEAE4]" />
-              <Skeleton className="size-9 rounded-full bg-[#ECEAE4]" />
+              <Skeleton className="size-9 rounded-full bg-superficie" />
+              <Skeleton className="size-9 rounded-full bg-superficie" />
             </div>
           </div>
           <div className="mt-6 grid grid-cols-7 gap-y-3">
             {Array.from({ length: 35 }).map((_, indice) => (
               <Skeleton
                 key={`dia-esqueleto-${indice}`}
-                className="mx-auto size-9 rounded-full bg-[#ECEAE4]"
+                className="mx-auto size-9 rounded-full bg-superficie"
               />
             ))}
           </div>
         </div>
         <div className="space-y-3">
-          <Skeleton className="h-4 w-36 bg-[#ECEAE4]" />
-          <Skeleton className="h-20 w-full rounded-2xl bg-[#ECEAE4]" />
-          <Skeleton className="h-20 w-full rounded-2xl bg-[#ECEAE4]" />
+          <Skeleton className="h-4 w-36 bg-superficie" />
+          <Skeleton className="h-20 w-full rounded-2xl bg-superficie" />
+          <Skeleton className="h-20 w-full rounded-2xl bg-superficie" />
         </div>
       </div>
-      <div className={cn("rounded-2xl bg-white p-4 sm:p-5", SOMBRA)}>
-        <Skeleton className="h-72 w-full rounded-2xl bg-[#ECEAE4] sm:h-80" />
-        <Skeleton className="mt-5 h-6 w-24 rounded-full bg-[#ECEAE4]" />
-        <Skeleton className="mt-3 h-8 w-3/4 bg-[#ECEAE4]" />
-        <Skeleton className="mt-3 h-4 w-1/2 bg-[#ECEAE4]" />
-        <Skeleton className="mt-4 h-16 w-full bg-[#ECEAE4]" />
+      <div className={cn("rounded-2xl bg-tarjeta p-4 sm:p-5", SOMBRA)}>
+        <Skeleton className="h-72 w-full rounded-2xl bg-superficie sm:h-80" />
+        <Skeleton className="mt-5 h-6 w-24 rounded-full bg-superficie" />
+        <Skeleton className="mt-3 h-8 w-3/4 bg-superficie" />
+        <Skeleton className="mt-3 h-4 w-1/2 bg-superficie" />
+        <Skeleton className="mt-4 h-16 w-full bg-superficie" />
       </div>
     </div>
   );

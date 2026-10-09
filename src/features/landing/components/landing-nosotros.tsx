@@ -2,17 +2,17 @@ import Image from "next/image";
 
 export function LandingNosotros() {
   return (
-    <section id="nosotros" className="bg-[#F7F5F0] py-24 sm:py-28">
+    <section id="nosotros" className="bg-crema py-24 sm:py-28">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div>
-          <span className="text-xs font-medium uppercase tracking-widest text-[#896A78]">
+          <span className="text-xs font-medium uppercase tracking-widest text-malva">
             Nosotros
           </span>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#252624] sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
             Nuestra historia
           </h2>
 
-          <p className="mt-6 text-base leading-relaxed text-[#252624]/65">
+          <p className="mt-6 text-base leading-relaxed text-tinta/65">
             El Colegio Técnico Profesional 27 de Abril inició sus labores en
             1974 como respuesta a la necesidad de brindar educación
             secundaria y formación técnica a los jóvenes de Veintisiete de
@@ -23,7 +23,7 @@ export function LandingNosotros() {
             prácticas y valores que permitan a sus estudiantes contribuir al
             crecimiento de sus comunidades.
           </p>
-          <p className="mt-4 text-base leading-relaxed text-[#252624]/65">
+          <p className="mt-4 text-base leading-relaxed text-tinta/65">
             A lo largo de su trayectoria, el CTP 27 de Abril ha evolucionado
             junto con las necesidades sociales, económicas y tecnológicas de
             la región. Su oferta educativa combina la formación académica con
@@ -37,7 +37,7 @@ export function LandingNosotros() {
           </p>
         </div>
 
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#252624]/10">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-tinta/10">
           <Image
             src="/landing/historia/ctp-historia.jpg"
             alt="Fotografía institucional del Colegio Técnico Profesional 27 de Abril"

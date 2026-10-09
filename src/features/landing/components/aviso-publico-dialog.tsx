@@ -35,12 +35,12 @@ export function AvisoPublicoDialog({ aviso, onCerrar }: Props) {
       }}
     >
       <DialogContent
-        className="max-h-[92vh] gap-0 overflow-y-auto p-0 sm:max-w-2xl [&_[data-slot=dialog-close]]:top-3 [&_[data-slot=dialog-close]]:right-3 [&_[data-slot=dialog-close]]:rounded-full [&_[data-slot=dialog-close]]:bg-white/95 [&_[data-slot=dialog-close]]:shadow-sm"
+        className="max-h-[92vh] gap-0 overflow-y-auto p-0 sm:max-w-2xl [&_[data-slot=dialog-close]]:top-3 [&_[data-slot=dialog-close]]:right-3 [&_[data-slot=dialog-close]]:rounded-full [&_[data-slot=dialog-close]]:bg-tarjeta/95 [&_[data-slot=dialog-close]]:shadow-sm"
       >
         {aviso && fechas ? (
           <>
             {aviso.tieneFlyer ? (
-              <div className="flex items-center justify-center bg-[#F7F5F0] px-4 py-6 sm:px-8 sm:py-8">
+              <div className="flex items-center justify-center bg-crema px-4 py-6 sm:px-8 sm:py-8">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={urlFlyerAviso(aviso.id)}
@@ -53,31 +53,31 @@ export function AvisoPublicoDialog({ aviso, onCerrar }: Props) {
             <div className="space-y-4 px-5 py-5 sm:px-6">
               <DialogHeader className="gap-3 text-left">
                 {etiquetaCategoria(aviso) ? (
-                  <span className="w-fit rounded-full bg-[#52634D]/10 px-3 py-1 text-xs font-medium text-[#52634D]">
+                  <span className="w-fit rounded-full bg-oliva/10 px-3 py-1 text-xs font-medium text-oliva">
                     {etiquetaCategoria(aviso)}
                   </span>
                 ) : null}
-                <DialogTitle className="text-xl font-semibold tracking-tight text-[#252624] sm:text-2xl">
+                <DialogTitle className="text-xl font-semibold tracking-tight text-tinta sm:text-2xl">
                   {aviso.titulo}
                 </DialogTitle>
               </DialogHeader>
 
-              <DialogDescription className="text-sm leading-relaxed whitespace-pre-line text-[#252624]/75">
+              <DialogDescription className="text-sm leading-relaxed whitespace-pre-line text-tinta/75">
                 {aviso.descripcion}
               </DialogDescription>
 
-              <dl className="grid gap-2 text-sm text-[#252624]/70">
+              <dl className="grid gap-2 text-sm text-tinta/70">
                 <div className="flex items-center gap-2">
-                  <CalendarDays className="size-4 shrink-0 text-[#C7A35D]" />
-                  <dt className="font-medium text-[#252624]">
+                  <CalendarDays className="size-4 shrink-0 text-oro" />
+                  <dt className="font-medium text-tinta">
                     Fecha de publicación
                   </dt>
                   <dd>{formatearFechaAviso(fechas.publicacion)}</dd>
                 </div>
                 {fechas.actividad ? (
                   <div className="flex items-center gap-2">
-                    <CalendarDays className="size-4 shrink-0 text-[#C7A35D]" />
-                    <dt className="font-medium text-[#252624]">
+                    <CalendarDays className="size-4 shrink-0 text-oro" />
+                    <dt className="font-medium text-tinta">
                       Fecha de la actividad
                     </dt>
                     <dd>{formatearFechaAviso(fechas.actividad)}</dd>
