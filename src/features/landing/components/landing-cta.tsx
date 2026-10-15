@@ -20,7 +20,7 @@ export function LandingCta() {
           </p>
 
           <a
-            href="#footer-contacto"
+            href="#contacto"
             className="group relative mt-8 inline-flex items-center gap-2 rounded-full bg-banda px-7 py-3.5 text-sm font-medium text-sobre-oliva transition-colors hover:brightness-125"
           >
             Contáctanos

@@ -74,6 +74,8 @@
   --color-oliva-profundo: var(--oliva-profundo);
   --color-oro-profundo: var(--oro-profundo);
   --color-salvia: var(--salvia);
+  --color-pie: var(--pie);
+  --color-pie-texto: var(--pie-texto);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -161,6 +163,10 @@
   --acento-cocina: #c76f57;
   --acento-agroindustria: #c7a35d;
   --acento-inspeccion: #252624;
+
+  /* Pie institucional: verde oscuro en ambos modos. */
+  --pie: #2f4934;
+  --pie-texto: #f3f5ef;
 }
 
 .dark {
@@ -225,6 +231,9 @@
   --acento-cocina: #e09a86;
   --acento-agroindustria: #d4b56a;
   --acento-inspeccion: #f3f4ef;
+
+  --pie: #213426;
+  --pie-texto: #f3f5ef;
 }
 
 @layer base {

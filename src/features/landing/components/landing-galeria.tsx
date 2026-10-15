@@ -181,99 +181,124 @@ export function LandingGaleria() {
   }, []);
 
   return (
-    <div className="w-full max-w-md sm:max-w-lg lg:max-w-none">
-      <div
-        className="relative overflow-hidden rounded-3xl border border-tinta/10 bg-tarjeta shadow-[0_30px_70px_-25px_rgba(37,38,36,0.35)]"
-        onMouseEnter={() => setPausado(true)}
-        onMouseLeave={() => setPausado(false)}
-      >
-        <div
-          ref={trackRef}
-          // `scroll-smooth` solo cuando no se pidió reducir el movimiento: la
-          // clase afecta a cualquier desplazamiento del contenedor, incluido
-          // el ajuste del scroll-snap tras un gesto del usuario.
-          className={`scrollbar-none flex snap-x snap-mandatory overflow-x-auto ${
-            reduceMotion ? "" : "scroll-smooth"
-          }`}
-          tabIndex={0}
-          role="region"
-          aria-roledescription="carrusel"
-          aria-label="Fotografías institucionales"
-          onKeyDown={(e) => {
-            if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-            // El contenedor tiene scroll propio, así que el navegador también
-            // desplaza por su cuenta al pulsar las flechas. Sumado al
-            // scroll-snap, eso avanzaba dos fotos en lugar de una.
-            e.preventDefault();
-            if (e.key === "ArrowRight") siguiente();
-            else anterior();
-          }}
-        >
-          {FOTOS.map((foto, i) => (
-            <div
-              key={foto.src}
-              ref={(el) => {
-                slideRefs.current[i] = el;
-              }}
-              className="relative aspect-[4/3] w-full shrink-0 snap-center"
+    <section
+      id="galeria"
+      aria-labelledby="galeria-titulo"
+      className="scroll-mt-20 bg-landing py-24 sm:py-28"
+    >
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-2xl">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-malva">
+              Galería
+            </span>
+            <h2
+              id="galeria-titulo"
+              className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl"
             >
-              <Image
-                src={foto.src}
-                alt={foto.alt}
-                fill
-                sizes="(max-width: 1024px) 90vw, 45vw"
-                className="object-cover"
-                style={foto.objectPosition ? { objectPosition: foto.objectPosition } : undefined}
-                priority={i === 0}
-              />
-              <div
-                aria-hidden
-                className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#252624]/55 to-transparent"
-              />
-              <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-5 py-3.5">
-                <p className="text-xs font-medium text-white/90">{foto.caption}</p>
-                <span className="shrink-0 text-[11px] tabular-nums text-white/60">
-                  {String(i + 1).padStart(2, "0")} / {String(FOTOS.length).padStart(2, "0")}
-                </span>
-              </div>
-            </div>
-          ))}
+              Nuestro colegio en imágenes
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm leading-relaxed text-tinta/60">
+            Producción agrícola, pecuaria, cocina, tecnología y la vida estudiantil.
+          </p>
         </div>
 
-        <button
-          type="button"
-          onClick={anterior}
-          disabled={activo === 0}
-          aria-label="Fotografía anterior"
-          className="absolute left-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-tinta/10 bg-tarjeta/90 text-tinta shadow-sm backdrop-blur transition-opacity hover:bg-tarjeta disabled:opacity-30 sm:flex"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={siguiente}
-          disabled={activo === FOTOS.length - 1}
-          aria-label="Fotografía siguiente"
-          className="absolute right-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-tinta/10 bg-tarjeta/90 text-tinta shadow-sm backdrop-blur transition-opacity hover:bg-tarjeta disabled:opacity-30 sm:flex"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
+        <div className="mt-12 w-full">
+          <div
+            className="relative overflow-hidden rounded-3xl border border-tinta/10 bg-tarjeta shadow-[0_30px_70px_-25px_rgba(37,38,36,0.35)]"
+            onMouseEnter={() => setPausado(true)}
+            onMouseLeave={() => setPausado(false)}
+          >
+            <div
+              ref={trackRef}
+              // `scroll-smooth` solo cuando no se pidió reducir el movimiento: la
+              // clase afecta a cualquier desplazamiento del contenedor, incluido
+              // el ajuste del scroll-snap tras un gesto del usuario.
+              className={`scrollbar-none flex snap-x snap-mandatory overflow-x-auto ${
+                reduceMotion ? "" : "scroll-smooth"
+              }`}
+              tabIndex={0}
+              role="region"
+              aria-roledescription="carrusel"
+              aria-label="Fotografías institucionales"
+              onKeyDown={(e) => {
+                if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+                // El contenedor tiene scroll propio, así que el navegador también
+                // desplaza por su cuenta al pulsar las flechas. Sumado al
+                // scroll-snap, eso avanzaba dos fotos en lugar de una.
+                e.preventDefault();
+                if (e.key === "ArrowRight") siguiente();
+                else anterior();
+              }}
+            >
+              {FOTOS.map((foto, i) => (
+                <div
+                  key={foto.src}
+                  ref={(el) => {
+                    slideRefs.current[i] = el;
+                  }}
+                  className="relative aspect-[4/3] w-full shrink-0 snap-center lg:aspect-[16/8]"
+                >
+                  <Image
+                    src={foto.src}
+                    alt={foto.alt}
+                    fill
+                    sizes="(max-width: 1024px) 90vw, 45vw"
+                    className="object-cover"
+                    style={foto.objectPosition ? { objectPosition: foto.objectPosition } : undefined}
+                    priority={i === 0}
+                  />
+                  <div
+                    aria-hidden
+                    className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#252624]/55 to-transparent"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-5 py-3.5">
+                    <p className="text-xs font-medium text-white/90">{foto.caption}</p>
+                    <span className="shrink-0 text-[11px] tabular-nums text-white/60">
+                      {String(i + 1).padStart(2, "0")} / {String(FOTOS.length).padStart(2, "0")}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-      <div className="mt-4 flex items-center justify-center gap-2">
-        {FOTOS.map((foto, i) => (
-          <button
-            key={foto.src}
-            type="button"
-            onClick={() => irA(i)}
-            aria-label={`Ir a la fotografía ${i + 1}`}
-            aria-current={activo === i}
-            className={`h-1.5 rounded-full transition-all ${
-              activo === i ? "w-6 bg-oro" : "w-1.5 bg-tinta/20 hover:bg-tinta/35"
-            }`}
-          />
-        ))}
+            <button
+              type="button"
+              onClick={anterior}
+              disabled={activo === 0}
+              aria-label="Fotografía anterior"
+              className="absolute left-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-tinta/10 bg-tarjeta/90 text-tinta shadow-sm backdrop-blur transition-opacity hover:bg-tarjeta disabled:opacity-30 sm:flex"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={siguiente}
+              disabled={activo === FOTOS.length - 1}
+              aria-label="Fotografía siguiente"
+              className="absolute right-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-tinta/10 bg-tarjeta/90 text-tinta shadow-sm backdrop-blur transition-opacity hover:bg-tarjeta disabled:opacity-30 sm:flex"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="mt-4 flex items-center justify-center gap-2">
+            {FOTOS.map((foto, i) => (
+              <button
+                key={foto.src}
+                type="button"
+                onClick={() => irA(i)}
+                aria-label={`Ir a la fotografía ${i + 1}`}
+                aria-current={activo === i}
+                className={`h-1.5 rounded-full transition-all ${
+                  activo === i ? "w-6 bg-oro" : "w-1.5 bg-tinta/20 hover:bg-tinta/35"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
