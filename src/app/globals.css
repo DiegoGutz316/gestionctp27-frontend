@@ -74,6 +74,8 @@
   --color-oliva-profundo: var(--oliva-profundo);
   --color-oro-profundo: var(--oro-profundo);
   --color-salvia: var(--salvia);
+  --color-pie: var(--pie);
+  --color-pie-texto: var(--pie-texto);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -90,31 +92,6 @@
 
   --landing-background: #ffffff;
 
-  /* La landing pública se mantiene en blanco aunque el sistema esté en modo oscuro. */
-  .landing-clara {
-    color-scheme: light;
-    color: var(--tinta);
-    --landing-background: #ffffff;
-    --crema: #f7f5f0;
-    --tinta: #252624;
-    --oliva: #52634d;
-    --sobre-oliva: #f7f5f0;
-    --tarjeta: #ffffff;
-    --oro: #c7a35d;
-    --malva: #896a78;
-    --superficie: #eceae4;
-    --superficie-fuerte: #e3e0d8;
-    --banda: #252624;
-    --oliva-profundo: #3f4e3a;
-    --oro-profundo: #7a6233;
-    --salvia: #7d8f76;
-    --acento-agro: #52634d;
-    --acento-digital: #896a78;
-    --acento-cocina: #c76f57;
-    --acento-agroindustria: #c7a35d;
-    --acento-inspeccion: #252624;
-  }
-  
   /* Base general */
   --background: #f6f7f5;
   --foreground: #222720;
@@ -186,6 +163,10 @@
   --acento-cocina: #c76f57;
   --acento-agroindustria: #c7a35d;
   --acento-inspeccion: #252624;
+
+  /* Pie institucional: verde oscuro en ambos modos. */
+  --pie: #2f4934;
+  --pie-texto: #f3f5ef;
 }
 
 .dark {
@@ -250,6 +231,9 @@
   --acento-cocina: #e09a86;
   --acento-agroindustria: #d4b56a;
   --acento-inspeccion: #f3f4ef;
+
+  --pie: #213426;
+  --pie-texto: #f3f5ef;
 }
 
 @layer base {
