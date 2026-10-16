@@ -16,23 +16,23 @@ export function LandingHero() {
         </div>
 
         <div className="relative z-10 mx-auto flex max-w-7xl items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-16 lg:min-h-[680px] lg:pb-28 lg:pt-20">
-          <div className={`min-w-0 max-w-[640px] ${ENTRADA}`}>
-            <h1 className="text-[2.2rem] font-semibold leading-[1.02] tracking-[-0.04em] text-tinta sm:text-[3.4rem] sm:leading-[0.98] md:text-[4.2rem] lg:text-[4.6rem]">
+          <div className={`min-w-0 max-w-[640px] lg:[text-shadow:0_2px_12px_rgba(0,0,0,0.45)] ${ENTRADA}`}>
+            <h1 className="text-[2.2rem] font-semibold leading-[1.02] tracking-[-0.04em] text-tinta sm:text-[3.4rem] sm:leading-[0.98] md:text-[4.2rem] lg:text-[4.6rem] lg:text-white">
               <span className="block uppercase">Colegio Técnico Profesional</span>
-              <span className="block text-oliva">27 de Abril</span>
+              <span className="block text-oliva lg:text-[#d5e0c4]">27 de Abril</span>
             </h1>
 
-            <p className="mt-6 text-xl font-medium leading-snug text-oliva-profundo sm:text-2xl">
+            <p className="mt-6 text-xl font-medium leading-snug text-oliva-profundo lg:text-white sm:text-2xl">
               Educación técnica que transforma comunidades
             </p>
 
-            <p className="mt-4 max-w-[560px] text-base leading-7 text-tinta/65 sm:text-[17px]">
+            <p className="mt-4 max-w-[560px] text-base leading-7 text-tinta/65 lg:text-white/90 sm:text-[17px]">
               Formamos estudiantes con valores, conocimientos y habilidades
               prácticas para el trabajo, el emprendimiento y el desarrollo de
               nuestra región.
             </p>
 
-            <div className="mt-5 flex items-start gap-2 text-sm font-medium text-tinta/55">
+            <div className="mt-5 flex items-start gap-2 text-sm font-medium text-tinta/55 lg:text-white/80">
               <MapPin className="mt-0.5 size-4 shrink-0 text-malva" aria-hidden />
               <span>Veintisiete de Abril, Santa Cruz, Guanacaste.</span>
             </div>
