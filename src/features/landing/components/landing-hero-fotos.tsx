@@ -69,7 +69,7 @@ export function LandingHeroFotos({
           key={foto.src}
           aria-hidden={indice !== activa}
           className={cn(
-            "absolute inset-0 transition-opacity duration-[1400ms] ease-in-out motion-reduce:transition-none",
+            "absolute inset-0 transition-opacity duration-1400 ease-in-out motion-reduce:transition-none",
             indice === activa ? "opacity-100" : "opacity-0",
           )}
         >
