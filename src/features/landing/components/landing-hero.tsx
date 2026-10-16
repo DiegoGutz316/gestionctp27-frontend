@@ -9,14 +9,14 @@ const ENTRADA =
 export function LandingHero() {
   return (
     <section id="inicio" className="relative scroll-mt-16 overflow-hidden bg-landing">
-      <div className="relative lg:min-h-[680px]">
+      <div className="relative lg:min-h-170">
         {/* Fotografía de fondo a todo el ancho, con degradado blanco hacia la izquierda */}
         <div className="absolute inset-0 hidden lg:block">
           <LandingHeroFotos sizes="100vw" objectPosition="center 35%" />
         </div>
 
-        <div className="relative z-10 mx-auto flex max-w-7xl items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-16 lg:min-h-[680px] lg:pb-28 lg:pt-20">
-          <div className={`min-w-0 max-w-[640px] lg:[text-shadow:0_2px_12px_rgba(0,0,0,0.45)] ${ENTRADA}`}>
+        <div className="relative z-10 mx-auto flex max-w-7xl items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-16 lg:min-h-170 lg:pb-28 lg:pt-20">
+          <div className={`min-w-0 max-w-160 lg:[text-shadow:0_2px_12px_rgba(0,0,0,0.45)] ${ENTRADA}`}>
             <h1 className="text-[2.2rem] font-semibold leading-[1.02] tracking-[-0.04em] text-tinta sm:text-[3.4rem] sm:leading-[0.98] md:text-[4.2rem] lg:text-[4.6rem] lg:text-white">
               <span className="block uppercase">Colegio Técnico Profesional</span>
               <span className="block text-oliva lg:text-[#d5e0c4]">27 de Abril</span>
@@ -26,7 +26,7 @@ export function LandingHero() {
               Educación técnica que transforma comunidades
             </p>
 
-            <p className="mt-4 max-w-[560px] text-base leading-7 text-tinta/65 lg:text-white/90 sm:text-[17px]">
+            <p className="mt-4 max-w-140 text-base leading-7 text-tinta/65 lg:text-white/90 sm:text-[17px]">
               Formamos estudiantes con valores, conocimientos y habilidades
               prácticas para el trabajo, el emprendimiento y el desarrollo de
               nuestra región.
@@ -58,7 +58,7 @@ export function LandingHero() {
       </div>
 
       {/* Versión móvil y tablet de la fotografía */}
-      <div className="relative mx-5 -mt-10 aspect-[16/10] overflow-hidden rounded-[28px] border border-tinta/10 bg-tarjeta shadow-[0_20px_55px_rgba(37,38,36,0.14)] sm:mx-8 lg:hidden">
+      <div className="relative mx-5 -mt-10 aspect-16/10 overflow-hidden rounded-[28px] border border-tinta/10 bg-tarjeta shadow-[0_20px_55px_rgba(37,38,36,0.14)] sm:mx-8 lg:hidden">
         <LandingHeroFotos sizes="92vw" objectPosition="center 35%" />
       </div>
     </section>
