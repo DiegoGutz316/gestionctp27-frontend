@@ -14,6 +14,8 @@ export type Especialidad = {
   acento: string;
   foto: string;
   fotoAlt: string;
+  /** Punto de enfoque del recorte cuando la foto es vertical. */
+  posicionFoto?: string;
 };
 
 export const ESPECIALIDADES: Especialidad[] = [
@@ -23,8 +25,9 @@ export const ESPECIALIDADES: Especialidad[] = [
     descripcion:
       "Formación en manejo de cultivos, producción animal y procesos agropecuarios.",
     acento: "var(--acento-agro)",
-    foto: "/landing/especialidades/produccion-agricola-pecuaria.jpg",
-    fotoAlt: "Estudiante en labores de producción agrícola y pecuaria",
+    foto: "/landing/especialidades/produccion-pecuaria-campo.jpg",
+    fotoAlt: "Estudiantes observando labores de manejo de ganado en el campo del colegio",
+    posicionFoto: "center 45%",
   },
   {
     icono: Monitor,
@@ -39,23 +42,25 @@ export const ESPECIALIDADES: Especialidad[] = [
     nombre: "Gerencia y Producción de Cocina",
     descripcion: "Técnicas culinarias y gestión de servicios gastronómicos.",
     acento: "var(--acento-cocina)",
-    foto: "/landing/especialidades/gerencia-produccion-cocina.jpg",
-    fotoAlt: "Persona preparando alimentos en una cocina profesional",
+    foto: "/landing/especialidades/cocina-panaderia.jpg",
+    fotoAlt: "Estudiantes con uniforme de cocina junto a una producción de panadería",
   },
   {
     icono: Factory,
     nombre: "Agroindustria Alimentaria",
     descripcion: "Procesamiento y transformación de productos alimenticios.",
     acento: "var(--acento-agroindustria)",
-    foto: "/landing/especialidades/agroindustria-alimentaria.jpg",
-    fotoAlt: "Proceso de agroindustria alimentaria",
+    foto: "/landing/especialidades/agroindustria-carniceria.jpg",
+    fotoAlt: "Estudiantes cortando carne en la práctica de agroindustria alimentaria",
+    posicionFoto: "center 45%",
   },
   {
     icono: Microscope,
     nombre: "Inspección de la Industria Alimentaria",
     descripcion: "Control de calidad e inocuidad en procesos alimentarios.",
     acento: "var(--acento-inspeccion)",
-    foto: "/landing/especialidades/inspeccion-industria-alimentaria.jpg",
-    fotoAlt: "Inspección de calidad en la industria alimentaria",
+    foto: "/landing/especialidades/inspeccion-laboratorio.jpg",
+    fotoAlt: "Estudiante observando una muestra al microscopio en el laboratorio de inspección alimentaria",
+    posicionFoto: "center 40%",
   },
 ];

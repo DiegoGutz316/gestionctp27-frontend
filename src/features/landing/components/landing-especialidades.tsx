@@ -31,6 +31,11 @@ export function LandingEspecialidades() {
                     fill
                     sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    style={
+                      especialidad.posicionFoto
+                        ? { objectPosition: especialidad.posicionFoto }
+                        : undefined
+                    }
                   />
                   <div
                     aria-hidden

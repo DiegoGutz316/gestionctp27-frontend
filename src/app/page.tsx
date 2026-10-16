@@ -5,7 +5,6 @@ import { LandingNosotros } from "@/features/landing/components/landing-nosotros"
 import { LandingEspecialidades } from "@/features/landing/components/landing-especialidades";
 import { LandingProposito } from "@/features/landing/components/landing-proposito";
 import { LandingCalendario } from "@/features/landing/components/landing-calendario";
-import { LandingGaleria } from "@/features/landing/components/landing-galeria";
 import { LandingIdentidad } from "@/features/landing/components/landing-identidad";
 import { LandingFooter } from "@/features/landing/components/landing-footer";
 
@@ -20,7 +19,6 @@ export default function LandingPage() {
         <LandingEspecialidades />
         <LandingProposito />
         <LandingCalendario />
-        <LandingGaleria />
         <LandingIdentidad />
       </main>
       <LandingFooter />

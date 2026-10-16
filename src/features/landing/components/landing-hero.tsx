@@ -1,8 +1,6 @@
-import Image from "next/image";
 import { ArrowRight, MapPin } from "lucide-react";
 
-const FOTO_HERO = "/landing/galeria/ctp-galeria-01.jpg";
-const ALT_HERO = "Estudiantes del CTP 27 de Abril trabajando en el invernadero";
+import { LandingHeroFotos } from "./landing-hero-fotos";
 
 /** Entrada suave; `motion-reduce` la desactiva para quien pide menos movimiento. */
 const ENTRADA =
@@ -14,16 +12,7 @@ export function LandingHero() {
       <div className="relative lg:min-h-[680px]">
         {/* Fotografía de fondo a todo el ancho, con degradado blanco hacia la izquierda */}
         <div className="absolute inset-0 hidden lg:block">
-          <Image
-            src={FOTO_HERO}
-            alt={ALT_HERO}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-landing from-[0%] via-landing/85 via-[38%] to-landing/0 to-[62%]" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-landing/40 to-transparent" />
+          <LandingHeroFotos sizes="100vw" objectPosition="center 35%" />
         </div>
 
         <div className="relative z-10 mx-auto flex max-w-7xl items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-16 lg:min-h-[680px] lg:pb-28 lg:pt-20">
@@ -66,19 +55,11 @@ export function LandingHero() {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Versión móvil y tablet de la fotografía */}
       <div className="relative mx-5 -mt-10 aspect-[16/10] overflow-hidden rounded-[28px] border border-tinta/10 bg-tarjeta shadow-[0_20px_55px_rgba(37,38,36,0.14)] sm:mx-8 lg:hidden">
-        <Image
-          src={FOTO_HERO}
-          alt={ALT_HERO}
-          fill
-          priority
-          sizes="92vw"
-          className="object-cover object-center"
-        />
+        <LandingHeroFotos sizes="92vw" objectPosition="center 35%" />
       </div>
     </section>
   );

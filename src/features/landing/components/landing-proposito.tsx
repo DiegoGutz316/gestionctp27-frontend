@@ -2,7 +2,7 @@ import Image from "next/image";
 import { GraduationCap, HeartHandshake, Sprout } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-const FOTO = "/landing/galeria/ctp-galeria-02.jpg";
+const FOTO = "/landing/hero/hero-06-ganado-campo.jpg";
 
 const PILARES: { icono: LucideIcon; titulo: string }[] = [
   { icono: GraduationCap, titulo: "Formación de calidad" },
