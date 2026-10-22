@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/api-backend/:ruta*",
+      "destination": "https://gestionctp27-backend.vercel.app/:ruta*"
+    }
+  ]
+}
