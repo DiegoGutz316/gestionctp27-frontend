@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { CalendarDays, Eye, Megaphone } from "lucide-react";
 
@@ -14,7 +14,6 @@ import {
   ETIQUETA_ESTADO_AVISO,
   type AvisoRespuesta,
 } from "../validacion/aviso.validacion";
-import { AvisoDetalleDialog } from "./aviso-detalle-dialog";
 
 /** El panel resume; el resto se consulta en el módulo administrativo. */
 const AVISOS_EN_EL_PANEL = 3;
@@ -39,10 +38,6 @@ export function DashboardAvisos() {
     limite: AVISOS_ACTIVOS_A_CONSULTAR,
     estado: "ACTIVO",
   });
-  const [avisoAbierto, setAvisoAbierto] = useState<AvisoRespuesta | null>(
-    null,
-  );
-
   const avisos = useMemo(
     () => recientes(consulta.data?.datos ?? []),
     [consulta.data],
@@ -79,9 +74,8 @@ export function DashboardAvisos() {
               key={aviso.id}
               className="border-b border-[#e5e2dc] dark:border-border last:border-0"
             >
-              <button
-                type="button"
-                onClick={() => setAvisoAbierto(aviso)}
+              <Link
+                href={`/dashboard/comunicacion/avisos/${aviso.id}`}
                 className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-[#f3f1ec]/70 dark:hover:bg-accent sm:gap-4"
               >
                 <Miniatura aviso={aviso} />
@@ -114,16 +108,11 @@ export function DashboardAvisos() {
                   aria-hidden
                   className="size-4 shrink-0 text-[#858985] dark:text-foreground"
                 />
-              </button>
+              </Link>
             </li>
           ))}
         </ul>
       )}
-
-      <AvisoDetalleDialog
-        aviso={avisoAbierto}
-        onCerrar={() => setAvisoAbierto(null)}
-      />
     </section>
   );
 }

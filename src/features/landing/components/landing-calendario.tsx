@@ -30,7 +30,7 @@ import {
   semanasDelMes,
 } from "../calendario-institucional";
 import { categoriaDeAviso, etiquetaCategoria } from "../aviso-publico";
-import { AvisoPublicoDialog } from "./aviso-publico-dialog";
+import Link from "next/link";
 import { BotonEscuchar } from "./boton-escuchar";
 
 const ESTILO_CATEGORIA: Record<CategoriaAviso, { badge: string; punto: string }> =
@@ -186,7 +186,6 @@ function CalendarioCargado({ avisos }: { avisos: AvisoPublico[] }) {
   );
   const [fechaSeleccionada, setFechaSeleccionada] = useState(hoyClave);
   const [avisoId, setAvisoId] = useState<number | null>(null);
-  const [avisoAbierto, setAvisoAbierto] = useState<AvisoPublico | null>(null);
 
   const eventos = porFecha.get(fechaSeleccionada) ?? [];
   const avisoActivo =
@@ -235,17 +234,10 @@ function CalendarioCargado({ avisos }: { avisos: AvisoPublico[] }) {
             avisoActivo={avisoActivo}
             sinAvisos={avisos.length === 0}
             onElegirEvento={setAvisoId}
-            onVerDetalle={() => {
-              if (avisoActivo) setAvisoAbierto(avisoActivo);
-            }}
           />
         </div>
       </div>
 
-      <AvisoPublicoDialog
-        aviso={avisoAbierto}
-        onCerrar={() => setAvisoAbierto(null)}
-      />
     </>
   );
 }
@@ -465,14 +457,12 @@ function PanelDetalle({
   avisoActivo,
   sinAvisos,
   onElegirEvento,
-  onVerDetalle,
 }: {
   fechaSeleccionada: string;
   eventos: AvisoPublico[];
   avisoActivo: AvisoPublico | null;
   sinAvisos: boolean;
   onElegirEvento: (id: number) => void;
-  onVerDetalle: () => void;
 }) {
   return (
     <article
@@ -484,7 +474,6 @@ function PanelDetalle({
           aviso={avisoActivo}
           eventos={eventos}
           onElegirEvento={onElegirEvento}
-          onVerDetalle={onVerDetalle}
         />
       ) : (
         <EstadoSinActividad
@@ -500,12 +489,10 @@ function DetalleEvento({
   aviso,
   eventos,
   onElegirEvento,
-  onVerDetalle,
 }: {
   aviso: AvisoPublico;
   eventos: AvisoPublico[];
   onElegirEvento: (id: number) => void;
-  onVerDetalle: () => void;
 }) {
   return (
     <div>
@@ -557,9 +544,9 @@ function DetalleEvento({
 
       <div className="mt-5 px-1">
         <Button
-          type="button"
+          nativeButton={false}
           className="rounded-full bg-oliva px-5 text-sobre-oliva hover:bg-oliva/90"
-          onClick={onVerDetalle}
+          render={<Link href={`/avisos/${aviso.id}`} />}
         >
           Ver detalle
         </Button>

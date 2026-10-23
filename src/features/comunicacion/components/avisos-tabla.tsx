@@ -36,7 +36,6 @@ type Props = {
   mensajeError: string | null;
   avisos: AvisoRespuesta[];
   sinResultadosPorFiltro: boolean;
-  onVer: (aviso: AvisoRespuesta) => void;
   onDesactivar: (aviso: AvisoRespuesta) => void;
 };
 
@@ -45,7 +44,6 @@ export function AvisosTabla({
   mensajeError,
   avisos,
   sinResultadosPorFiltro,
-  onVer,
   onDesactivar,
 }: Props) {
   if (cargando) {
@@ -144,7 +142,12 @@ export function AvisosTabla({
                   <Miniatura aviso={aviso} />
                 </TableCell>
                 <TableCell className="max-w-xs whitespace-normal">
-                  <p className="font-medium text-foreground">{aviso.titulo}</p>
+                  <Link
+                    href={`/dashboard/comunicacion/avisos/${aviso.id}`}
+                    className="font-medium text-foreground underline-offset-2 hover:underline"
+                  >
+                    {aviso.titulo}
+                  </Link>
                   <p className="mt-0.5 line-clamp-1 hidden text-xs text-muted-foreground md:block">
                     {aviso.descripcion}
                   </p>
@@ -181,20 +184,14 @@ export function AvisosTabla({
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-1">
-                    <Tooltip>
-                      <TooltipTrigger
-                        type="button"
-                        aria-label={`Ver ${aviso.titulo}`}
-                        className={buttonVariants({
-                          variant: "ghost",
-                          size: "icon-sm",
-                        })}
-                        onClick={() => onVer(aviso)}
-                      >
-                        <Eye />
-                      </TooltipTrigger>
-                      <TooltipContent>Ver</TooltipContent>
-                    </Tooltip>
+                    <Link
+                      href={`/dashboard/comunicacion/avisos/${aviso.id}`}
+                      aria-label={`Ver detalle de ${aviso.titulo}`}
+                      className={`${buttonVariants({ variant: "outline", size: "sm" })} whitespace-nowrap`}
+                    >
+                      <Eye data-icon="inline-start" />
+                      Ver detalle
+                    </Link>
 
                     <MostrarSiPuede modulo="REPORTES" nivel="COMPLETO">
                       <Tooltip>
