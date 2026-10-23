@@ -26,7 +26,7 @@ export const ESPECIALIDADES: Especialidad[] = [
       "Formación en manejo de cultivos, producción animal y procesos agropecuarios.",
     acento: "var(--acento-agro)",
     foto: "/landing/especialidades/produccion-pecuaria-campo.jpg",
-    fotoAlt: "Estudiantes observando labores de manejo de ganado en el campo del colegio",
+    fotoAlt: "Estudiantes en el corral observan reses acostadas durante una práctica de manejo de ganado",
     posicionFoto: "center 45%",
   },
   {
@@ -43,7 +43,7 @@ export const ESPECIALIDADES: Especialidad[] = [
     descripcion: "Técnicas culinarias y gestión de servicios gastronómicos.",
     acento: "var(--acento-cocina)",
     foto: "/landing/especialidades/cocina-panaderia.jpg",
-    fotoAlt: "Estudiantes con uniforme de cocina junto a una producción de panadería",
+    fotoAlt: "Grupo de estudiantes con gorro y uniforme blanco junto a una mesa llena de panes recién horneados",
   },
   {
     icono: Factory,
@@ -51,7 +51,7 @@ export const ESPECIALIDADES: Especialidad[] = [
     descripcion: "Procesamiento y transformación de productos alimenticios.",
     acento: "var(--acento-agroindustria)",
     foto: "/landing/especialidades/agroindustria-carniceria.jpg",
-    fotoAlt: "Estudiantes cortando carne en la práctica de agroindustria alimentaria",
+    fotoAlt: "Estudiantes con delantal y cubrebocas cortan carne sobre mesas de acero en la sala de práctica",
     posicionFoto: "center 45%",
   },
   {
@@ -60,7 +60,7 @@ export const ESPECIALIDADES: Especialidad[] = [
     descripcion: "Control de calidad e inocuidad en procesos alimentarios.",
     acento: "var(--acento-inspeccion)",
     foto: "/landing/especialidades/inspeccion-laboratorio.jpg",
-    fotoAlt: "Estudiante observando una muestra al microscopio en el laboratorio de inspección alimentaria",
+    fotoAlt: "Estudiante con gabacha mira por un microscopio en el laboratorio, entre frascos de reactivos",
     posicionFoto: "center 40%",
   },
 ];

@@ -68,7 +68,7 @@ export function AvisoPublicoDialog({ aviso, onCerrar }: Props) {
 
               <dl className="grid gap-2 text-sm text-tinta/70">
                 <div className="flex items-center gap-2">
-                  <CalendarDays className="size-4 shrink-0 text-oro" />
+                  <CalendarDays className="size-4 shrink-0 text-oro" aria-hidden="true" />
                   <dt className="font-medium text-tinta">
                     Fecha de publicación
                   </dt>
@@ -76,7 +76,7 @@ export function AvisoPublicoDialog({ aviso, onCerrar }: Props) {
                 </div>
                 {fechas.actividad ? (
                   <div className="flex items-center gap-2">
-                    <CalendarDays className="size-4 shrink-0 text-oro" />
+                    <CalendarDays className="size-4 shrink-0 text-oro" aria-hidden="true" />
                     <dt className="font-medium text-tinta">
                       Fecha de la actividad
                     </dt>

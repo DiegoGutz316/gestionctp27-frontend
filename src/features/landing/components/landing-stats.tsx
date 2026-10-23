@@ -16,8 +16,11 @@ const DATOS: { icono: LucideIcon; numero: string; texto: string }[] = [
 
 export function LandingStats() {
   return (
-    <section aria-label="Datos institucionales" className="relative z-20 bg-landing">
+    <section aria-labelledby="datos-titulo" className="relative z-20 bg-landing">
       <div className="mx-auto max-w-7xl px-5 pb-16 pt-2 sm:px-8 sm:pb-20">
+        <h2 id="datos-titulo" className="sr-only">
+          Datos institucionales
+        </h2>
         <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
           {DATOS.map((dato) => (
             <li
@@ -28,7 +31,7 @@ export function LandingStats() {
                 <dato.icono className="size-5" aria-hidden />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-xl font-semibold tracking-tight text-oliva sm:text-2xl">
+                <p className="truncate ampliada:overflow-visible ampliada:whitespace-normal text-xl font-semibold tracking-tight text-oliva sm:text-2xl">
                   {dato.numero}
                 </p>
                 <p className="mt-0.5 text-sm leading-snug text-tinta/60">{dato.texto}</p>

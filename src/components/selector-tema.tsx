@@ -1,6 +1,7 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 
 import {
@@ -21,8 +22,17 @@ function marcarTransicion() {
   window.setTimeout(() => raiz.classList.remove("transicion-tema"), 220);
 }
 
+function suscribirNada() {
+  return () => {};
+}
+
 export function SelectorTema({ variante = "admin" }: SelectorTemaProps) {
-  const { setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
+  // El tema real solo se conoce en el cliente; antes se usa la etiqueta genérica.
+  const montado = useSyncExternalStore(suscribirNada, () => true, () => false);
+  const etiqueta = montado
+    ? `Cambiar apariencia: activar tema ${resolvedTheme === "dark" ? "claro" : "oscuro"}`
+    : "Cambiar apariencia";
 
   function alternar() {
     const oscuro = document.documentElement.classList.contains("dark");
@@ -36,7 +46,7 @@ export function SelectorTema({ variante = "admin" }: SelectorTemaProps) {
         <TooltipTrigger
           type="button"
           onClick={alternar}
-          aria-label="Cambiar apariencia"
+          aria-label={etiqueta}
           className={cn(
             "inline-flex size-11 items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 md:size-9",
             variante === "landing"
@@ -46,7 +56,6 @@ export function SelectorTema({ variante = "admin" }: SelectorTemaProps) {
         >
           <Sun className="icono-tema-sol size-4" aria-hidden />
           <Moon className="icono-tema-luna size-4" aria-hidden />
-          <span className="sr-only">Cambiar apariencia</span>
         </TooltipTrigger>
         <TooltipContent side="bottom">Cambiar apariencia</TooltipContent>
       </Tooltip>

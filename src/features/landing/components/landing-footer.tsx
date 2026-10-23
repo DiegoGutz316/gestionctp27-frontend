@@ -25,7 +25,7 @@ export function LandingFooter() {
             <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-tarjeta/95 p-1.5 shadow-sm">
               <Image
                 src="/escudo-ctp27.png"
-                alt="Escudo CTP 27 de Abril"
+                alt=""
                 width={40}
                 height={40}
                 className="size-9 object-contain"
@@ -66,6 +66,7 @@ export function LandingFooter() {
                 className={ENLACE}
               >
                 Veintisiete de Abril, Santa Cruz, Guanacaste
+                <span className="sr-only"> (se abre en una pestaña nueva)</span>
               </a>
             </li>
             <li className="flex items-center gap-3">
@@ -101,6 +102,7 @@ export function LandingFooter() {
                 className={ENLACE}
               >
                 Facebook · CTP 27 de Abril
+                <span className="sr-only"> (se abre en una pestaña nueva)</span>
               </a>
             </li>
           </ul>

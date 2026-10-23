@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Leaf } from "lucide-react";
 
 import { ANIO_INICIO } from "../datos-institucionales";
+import { BotonEscuchar } from "./boton-escuchar";
 
 /** Solo los hitos ya establecidos: no se agregan fechas históricas nuevas. */
 const HITOS = [
@@ -26,6 +27,7 @@ export function LandingNosotros() {
   return (
     <section
       id="nosotros"
+      aria-labelledby="nosotros-titulo"
       className="relative scroll-mt-20 overflow-hidden bg-landing py-24 sm:py-28"
     >
       <Leaf
@@ -39,9 +41,16 @@ export function LandingNosotros() {
             Nosotros
           </span>
 
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
-            Nuestra historia
-          </h2>
+          {/* El margen negativo deja la fila con la misma altura que el título. */}
+          <div className="mt-3 flex items-start gap-3">
+            <h2
+              id="nosotros-titulo"
+              className="text-3xl font-semibold tracking-tight text-tinta sm:text-4xl"
+            >
+              Nuestra historia
+            </h2>
+            <BotonEscuchar etiqueta="Nosotros" objetivo="nosotros" className="-my-1 md:my-0" />
+          </div>
 
           <div className="mt-5 h-px w-12 bg-oro" />
 
@@ -91,7 +100,7 @@ export function LandingNosotros() {
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[28px] border border-tinta/10 bg-tarjeta shadow-[0_24px_60px_-28px_rgba(37,38,36,0.35)]">
           <Image
             src="/landing/historia/ctp-historia.jpg"
-            alt="Fotografía institucional del Colegio Técnico Profesional 27 de Abril"
+            alt="Foto antigua en blanco y negro: un grupo grande de personas posa frente a edificios de madera del colegio"
             fill
             sizes="(max-width: 1024px) 90vw, 40vw"
             className="object-cover"
