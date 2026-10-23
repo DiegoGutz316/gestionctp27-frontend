@@ -55,7 +55,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const necesitaSesion = !rutaSinSesion(pathname);
   const [usuario, setUsuario] = useState<UsuarioSesion | null>(null);
   const [permisos, setPermisos] = useState<MatrizPermisos>(matrizVacia);
-  const [cargando, setCargando] = useState(!rutaSinSesion(pathname));
+  // true cuando la carga de la sesión de la ruta actual ya terminó. `cargando`
+  // se deriva de esto para no tener que fijarlo desde el efecto.
+  const [sesionResuelta, setSesionResuelta] = useState(false);
+  const [necesitabaSesion, setNecesitabaSesion] = useState(necesitaSesion);
+  const cargando = necesitaSesion && !sesionResuelta;
+
+  // Al volver de una ruta sin sesión a una con sesión se vuelve a consultar, y
+  // en ese lapso se debe mostrar "cargando". Se ajusta durante el render, no
+  // en el efecto, para que no haya un fotograma con `cargando` en false.
+  if (necesitabaSesion !== necesitaSesion) {
+    setNecesitabaSesion(necesitaSesion);
+    if (necesitaSesion) setSesionResuelta(false);
+  }
 
   /**
    * Carga perfil y permisos en paralelo, pero los resuelve por separado.
@@ -95,20 +107,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [cargarSesion]);
 
   useEffect(() => {
-    if (!necesitaSesion) {
-      setCargando(false);
-      return;
-    }
+    if (!necesitaSesion) return;
 
     let activo = true;
-    setCargando(true);
 
     (async () => {
       const sesion = await cargarSesion();
       if (!activo) return;
       setUsuario(sesion.usuario);
       setPermisos(sesion.permisos);
-      setCargando(false);
+      setSesionResuelta(true);
     })();
 
     return () => {

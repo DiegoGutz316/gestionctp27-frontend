@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import Image from "next/image";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -56,13 +61,16 @@ const ESTILO_CATEGORIA: Record<CategoriaAviso, { badge: string; punto: string }>
 const SOMBRA =
   "shadow-[0_12px_32px_-26px_rgba(37,38,36,0.7)] ring-1 ring-tinta/8";
 
+const suscribirseSinCambios = () => () => {};
+
 export function LandingCalendario() {
   const consulta = useAvisosCalendario();
-  const [montado, setMontado] = useState(false);
-
-  useEffect(() => {
-    setMontado(true);
-  }, []);
+  // false en el servidor y en la hidratación, true ya en el navegador.
+  const montado = useSyncExternalStore(
+    suscribirseSinCambios,
+    () => true,
+    () => false,
+  );
 
   const avisos = useMemo(
     () => avisosVisiblesEnCalendario(consulta.data ?? []),

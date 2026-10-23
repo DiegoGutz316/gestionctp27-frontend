@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { FileSpreadsheet, Home, Printer } from "lucide-react";
 import { toast } from "sonner";
@@ -47,15 +47,20 @@ export function InventarioAnimales({
     pieInventarioInicial(tipo),
   );
 
-  useEffect(() => {
-    const nombre = colegio.data?.nombre.trim();
-    if (!nombre) return;
+  // Completa el centro educativo con el nombre del colegio una vez por nombre
+  // recibido, sin pisar lo que el usuario escriba después. Se ajusta durante el
+  // render y no en un efecto.
+  const nombreColegio = colegio.data?.nombre.trim();
+  const [nombreAplicado, setNombreAplicado] = useState<string | undefined>();
+
+  if (nombreColegio && nombreColegio !== nombreAplicado) {
+    setNombreAplicado(nombreColegio);
     setPie((actual) =>
       actual.centroEducativo
         ? actual
-        : { ...actual, centroEducativo: nombre },
+        : { ...actual, centroEducativo: nombreColegio },
     );
-  }, [colegio.data]);
+  }
 
   if (animales.isLoading) {
     return (

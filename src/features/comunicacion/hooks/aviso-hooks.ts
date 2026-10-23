@@ -86,20 +86,18 @@ export function useSrcFlyer(
   const estado = aviso?.estado ?? null;
   const tieneFlyer = aviso?.tieneFlyer ?? false;
 
-  const [src, setSrc] = useState<string | null>(() =>
-    tieneFlyer && estado === "ACTIVO" ? urlFlyerAviso(id) : null,
-  );
+  // El aviso activo usa la URL pública y se deriva sin estado. Solo el flyer de
+  // un aviso inactivo es asíncrono y necesita guardarse.
+  const publico = tieneFlyer && id > 0 && estado === "ACTIVO";
+  const deGestion = tieneFlyer && id > 0 && estado !== "ACTIVO";
+
+  const [srcGestion, setSrcGestion] = useState<{
+    id: number;
+    url: string;
+  } | null>(null);
 
   useEffect(() => {
-    if (!tieneFlyer || id <= 0) {
-      setSrc(null);
-      return;
-    }
-
-    if (estado === "ACTIVO") {
-      setSrc(urlFlyerAviso(id));
-      return;
-    }
+    if (!deGestion) return;
 
     let cancelado = false;
     let objeto: string | null = null;
@@ -111,19 +109,24 @@ export function useSrcFlyer(
           return;
         }
         objeto = url;
-        setSrc(url);
+        setSrcGestion({ id, url });
       })
       .catch(() => {
-        if (!cancelado) setSrc(null);
+        if (!cancelado) setSrcGestion(null);
       });
 
     return () => {
       cancelado = true;
       if (objeto) URL.revokeObjectURL(objeto);
+      // La URL ya está revocada: no debe quedar disponible para el render.
+      setSrcGestion(null);
     };
-  }, [id, estado, tieneFlyer]);
+  }, [id, deGestion]);
 
-  return src;
+  if (publico) return urlFlyerAviso(id);
+  if (deGestion && srcGestion?.id === id) return srcGestion.url;
+
+  return null;
 }
 
 export function useDesactivarAviso() {
