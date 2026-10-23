@@ -32,9 +32,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -697,79 +695,75 @@ export function AppSidebar() {
                 align="start"
                 sideOffset={10}
               >
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="font-normal">
-                    <div
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-3
+                    px-1
+                    py-2
+                    text-left
+                    text-sm
+                  "
+                >
+                  <Avatar
+                    className="
+                      size-11
+                      rounded-[13px]
+                      border
+                      border-[#d7e2d3] dark:border-border
+                    "
+                  >
+                    <AvatarFallback
                       className="
-                        flex
-                        items-center
-                        gap-3
-                        px-1
-                        py-2
-                        text-left
-                        text-sm
+                        rounded-[13px]
+                        bg-linear-to-br
+                        from-[#526b4a]
+                        to-[#31452f]
+
+                        font-semibold
+                        text-white
                       "
                     >
-                      <Avatar
-                        className="
-                          size-11
-                          rounded-[13px]
-                          border
-                          border-[#d7e2d3] dark:border-border
-                        "
-                      >
-                        <AvatarFallback
-                          className="
-                            rounded-[13px]
-                            bg-linear-to-br
-                            from-[#526b4a]
-                            to-[#31452f]
+                      {avatar}
+                    </AvatarFallback>
+                  </Avatar>
 
-                            font-semibold
-                            text-white
-                          "
-                        >
-                          {avatar}
-                        </AvatarFallback>
-                      </Avatar>
+                  <div
+                    className="
+                      grid
+                      min-w-0
+                      flex-1
+                      leading-tight
+                    "
+                  >
+                    <span
+                      className="
+                        truncate
+                        font-semibold
+                        text-[#303831] dark:text-foreground
+                      "
+                    >
+                      {nombre}
+                    </span>
 
-                      <div
-                        className="
-                          grid
-                          min-w-0
-                          flex-1
-                          leading-tight
-                        "
-                      >
-                        <span
-                          className="
-                            truncate
-                            font-semibold
-                            text-[#303831] dark:text-foreground
-                          "
-                        >
-                          {nombre}
-                        </span>
-
-                        <span
-                          className="
-                            mt-1
-                            truncate
-                            text-xs
-                            text-[#879087] dark:text-foreground
-                          "
-                        >
-                          {correo}
-                        </span>
-                      </div>
-                    </div>
-                  </DropdownMenuLabel>
-                </DropdownMenuGroup>
+                    <span
+                      className="
+                        mt-1
+                        truncate
+                        text-xs
+                        text-[#879087] dark:text-foreground
+                      "
+                    >
+                      {correo}
+                    </span>
+                  </div>
+                </div>
 
                 <DropdownMenuSeparator className="bg-[#edf0eb] dark:bg-secondary" />
 
                 <DropdownMenuItem
-                  render={<Link href="/dashboard/perfil" />}
+                  onClick={() => router.push("/dashboard/perfil")}
                   className="
                     cursor-pointer
                     rounded-xl

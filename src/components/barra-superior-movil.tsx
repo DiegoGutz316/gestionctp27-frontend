@@ -10,7 +10,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -65,16 +64,18 @@ export function BarraSuperiorMovil() {
           {avatar}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-56">
-          <DropdownMenuLabel className="font-normal">
-            <span className="block truncate font-semibold">{nombre}</span>
+          <div className="px-1.5 py-1.5">
+            <span className="block truncate text-sm font-semibold">{nombre}</span>
             {usuario?.correo ? (
               <span className="mt-0.5 block truncate text-xs text-muted-foreground">
                 {usuario.correo}
               </span>
             ) : null}
-          </DropdownMenuLabel>
+          </div>
           <DropdownMenuSeparator />
-          <DropdownMenuItem render={<Link href="/dashboard/perfil" />}>
+          <DropdownMenuItem
+            onClick={() => router.push("/dashboard/perfil")}
+          >
             <CircleUserRound />
             Mi perfil
           </DropdownMenuItem>
