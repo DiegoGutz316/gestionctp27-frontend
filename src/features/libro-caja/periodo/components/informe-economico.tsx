@@ -54,13 +54,11 @@ export function InformeEconomico({
   periodoId: number;
   fondoId: number;
 }) {
-  const { puede } = useAuth();
-  const puedeGuardar = puede("LIBRO_CAJA", "COMPLETO");
+  const { puede, cargando } = useAuth();
+  const puedeGuardar = puede("LIBRO_CAJA", "LECTURA");
   const colegio = useColegio();
   const libro = useAsientos(periodoId, fondoId);
   const guardar = useGuardarPieInforme(periodoId, fondoId);
-  const guardarPie = useRef(guardar.mutate);
-  guardarPie.current = guardar.mutate;
   const [descargandoExcel, setDescargandoExcel] = useState(false);
   const [pieLocal, setPieLocal] = useState<PieInformeUdp | null>(null);
   const pieServidor = useMemo(
@@ -68,23 +66,68 @@ export function InformeEconomico({
     [libro.data?.fondo.pieInforme],
   );
   const pie = pieLocal ?? pieServidor;
+  const hayCambios = JSON.stringify(pie) !== JSON.stringify(pieServidor);
+  const [fondoDelPie, setFondoDelPie] = useState(fondoId);
+  if (fondoDelPie !== fondoId) {
+    setFondoDelPie(fondoId);
+    setPieLocal(null);
+  }
+  const estadoRef = useRef({
+    pie,
+    pieServidor,
+    puedeGuardar,
+    guardar: guardar.mutate,
+  });
 
   useEffect(() => {
-    setPieLocal(null);
-  }, [fondoId]);
+    estadoRef.current = {
+      pie,
+      pieServidor,
+      puedeGuardar,
+      guardar: guardar.mutate,
+    };
+  });
 
   useEffect(() => {
     if (!puedeGuardar || !libro.data) return;
-    if (JSON.stringify(pie) === JSON.stringify(pieServidor)) return;
+    if (!hayCambios) return;
 
     const timer = window.setTimeout(() => {
-      guardarPie.current(pie, {
+      estadoRef.current.guardar(pie, {
         onError: (error) => toast.error(getMensajeDeError(error)),
       });
     }, 600);
 
     return () => window.clearTimeout(timer);
-  }, [pie, pieServidor, libro.data, puedeGuardar]);
+  }, [pie, pieServidor, libro.data, puedeGuardar, hayCambios]);
+
+  useEffect(() => {
+    return () => {
+      const estado = estadoRef.current;
+      if (!estado.puedeGuardar) return;
+      if (JSON.stringify(estado.pie) === JSON.stringify(estado.pieServidor)) {
+        return;
+      }
+      estado.guardar(estado.pie, {
+        onError: (error) => toast.error(getMensajeDeError(error)),
+      });
+    };
+  }, [periodoId, fondoId]);
+
+  useEffect(() => {
+    const alSalir = () => {
+      const estado = estadoRef.current;
+      if (!estado.puedeGuardar) return;
+      if (JSON.stringify(estado.pie) === JSON.stringify(estado.pieServidor)) {
+        return;
+      }
+      estado.guardar(estado.pie, {
+        onError: (error) => toast.error(getMensajeDeError(error)),
+      });
+    };
+    window.addEventListener("pagehide", alSalir);
+    return () => window.removeEventListener("pagehide", alSalir);
+  }, []);
 
   if (colegio.isLoading || libro.isLoading) {
     return (
@@ -178,6 +221,22 @@ export function InformeEconomico({
             <p className="mt-0.5 text-sm text-muted-foreground">
               {unidad} · {datosLibro.periodo.nombre}
             </p>
+            {!cargando && !puedeGuardar ? (
+              <p className="mt-1 text-sm text-muted-foreground">
+                Puede consultar el informe. Solo quien registra el libro puede
+                cambiar las observaciones y las firmas.
+              </p>
+            ) : null}
+            {puedeGuardar && guardar.isPending ? (
+              <p className="mt-1 text-sm text-muted-foreground">
+                Guardando el informe…
+              </p>
+            ) : null}
+            {puedeGuardar && hayCambios && !guardar.isPending ? (
+              <p className="mt-1 text-sm text-muted-foreground">
+                Hay cambios sin guardar.
+              </p>
+            ) : null}
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
             <Button
@@ -203,6 +262,7 @@ export function InformeEconomico({
             colegio={datosColegio}
             libro={datosLibro}
             pie={pie}
+            editable={puedeGuardar}
             onPieChange={setPieLocal}
           />
         </div>

@@ -93,11 +93,13 @@ export function InformeEconomicoUdp({
   libro,
   pie,
   onPieChange,
+  editable = true,
 }: {
   colegio: ColegioRespuesta;
   libro: LibroDepartamentoRespuesta;
   pie: PieInformeUdp;
   onPieChange: (pie: PieInformeUdp) => void;
+  editable?: boolean;
 }) {
   function actualizarPie(cambio: Partial<PieInformeUdp>) {
     onPieChange({ ...pie, ...cambio });
@@ -119,6 +121,10 @@ export function InformeEconomicoUdp({
       className="informe-udp w-full bg-white text-black"
       style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
     >
+      <fieldset
+        disabled={!editable}
+        className="m-0 min-w-0 border-0 p-0"
+      >
       <table
         className="w-full table-fixed border-collapse border-2 border-black text-[11pt] leading-tight"
         style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
@@ -447,6 +453,7 @@ export function InformeEconomicoUdp({
           </tr>
         </tbody>
       </table>
+      </fieldset>
     </article>
   );
 }

@@ -5,6 +5,7 @@ import type {
   EditarDepartamento,
   FiltrarDepartamentos,
 } from "../validacion/departamento.validacion";
+import { periodosQueryKey } from "@/features/libro-caja/periodo/hooks/hooks";
 import {
   crearDepartamento,
   desactivarDepartamento,
@@ -46,8 +47,10 @@ export function useCrearDepartamento() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: crearDepartamento,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: departamentosQueryKey }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: departamentosQueryKey });
+      void queryClient.invalidateQueries({ queryKey: periodosQueryKey });
+    },
   });
 }
 
