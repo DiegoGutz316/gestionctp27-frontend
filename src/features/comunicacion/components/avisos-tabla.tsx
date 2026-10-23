@@ -105,7 +105,7 @@ export function AvisosTabla({
       ) : null}
 
       <Table>
-          <TableHeader>
+        <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
               <TableHead className="hidden w-16 py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
                 Flyer
@@ -214,7 +214,7 @@ export function AvisosTabla({
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>
+        </TableBody>
       </Table>
     </div>
   );
