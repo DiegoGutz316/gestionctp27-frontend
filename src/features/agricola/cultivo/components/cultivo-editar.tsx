@@ -42,6 +42,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { fieldErrors } from "@/lib/form-errors";
+import { recortarCaracteres } from "@/lib/texto";
 import { zodValidator } from "@/lib/zod-form";
 
 import { useCultivo, useEditarCultivo } from "../hooks/cultivo-hooks";
@@ -183,11 +184,14 @@ function Formulario({
                 </FieldLabel>
                 <Input
                   id={field.name}
-                  maxLength={120}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(event) =>
+                    field.handleChange(
+                      recortarCaracteres(event.target.value, 120),
+                    )
+                  }
                 />
                 <FieldError errors={errors} />
               </Field>
@@ -245,11 +249,14 @@ function Formulario({
                 <Textarea
                   id={field.name}
                   rows={3}
-                  maxLength={500}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(event) =>
+                    field.handleChange(
+                      recortarCaracteres(event.target.value, 500),
+                    )
+                  }
                 />
                 <FieldError errors={errors} />
               </Field>
