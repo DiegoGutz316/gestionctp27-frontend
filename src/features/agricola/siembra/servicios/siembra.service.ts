@@ -4,6 +4,7 @@ import type {
   ConsultarSiembras,
   MotivoFinalizacion,
   RegistrarSiembra,
+  SiembraDetalle,
   SiembraRespuesta,
 } from "../models/siembra.model";
 
@@ -20,6 +21,10 @@ export function registrarSiembra(datos: RegistrarSiembra) {
 
 export function consultarSiembras(filtros: ConsultarSiembras = {}) {
   return api.get<SiembraRespuesta[]>("/agricola/siembras", filtros);
+}
+
+export function obtenerDetalleSiembra(id: number) {
+  return api.get<SiembraDetalle>(`/agricola/siembras/${id}`);
 }
 
 export { getMensajeDeError } from "@/lib/api";

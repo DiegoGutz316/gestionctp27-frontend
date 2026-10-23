@@ -12,6 +12,10 @@ const vistas = [
     etiqueta: "Camas de cultivo",
   },
   {
+    href: "/dashboard/agricola/cultivos",
+    etiqueta: "Cultivos",
+  },
+  {
     href: "/dashboard/agricola/siembras",
     etiqueta: "Siembras",
   },

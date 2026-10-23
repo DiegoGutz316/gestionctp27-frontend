@@ -7,11 +7,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Field,
+  FieldContent,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -39,7 +42,9 @@ export function CosechaForm() {
   const router = useRouter();
   const params = useSearchParams();
   const siembraFija = params.get("siembraId") ?? "";
-  const cerrarCiclo = params.get("cerrarCiclo") === "1";
+  // Llegar desde «Finalizar siembra» deja la opción marcada de entrada; desde
+  // el camino normal arranca sin marcar y la decide quien registra.
+  const cerrarPorDefecto = params.get("cerrarCiclo") === "1";
 
   const siembras = useSiembras();
   const registrar = useRegistrarCosecha();
@@ -77,6 +82,7 @@ export function CosechaForm() {
       cantidadObtenida: "",
       unidadMedida: "KG" as (typeof UNIDADES_MEDIDA)[number],
       observaciones: "",
+      cerrarCiclo: cerrarPorDefecto,
     },
 
     validators: {
@@ -110,11 +116,11 @@ export function CosechaForm() {
 
         const cosecha = await registrar.mutateAsync({
           ...datos,
-          cerrarCiclo,
+          cerrarCiclo: value.cerrarCiclo,
         });
 
         toast.success(
-          cerrarCiclo
+          value.cerrarCiclo
             ? `Cosecha registrada y ciclo finalizado. La cama volvió a estar disponible.`
             : `Cosecha de ${cosecha.siembra.tipoCultivo} registrada: ${formatearCantidadConUnidad(
                 cosecha.cantidadObtenida,
@@ -386,14 +392,43 @@ export function CosechaForm() {
           }}
         </form.Field>
 
+        <form.Field name="cerrarCiclo">
+          {(field) => (
+            <Field orientation="horizontal">
+              <FieldContent>
+                <FieldLabel htmlFor={field.name}>
+                  Finalizar la siembra
+                </FieldLabel>
+
+                <FieldDescription>
+                  Cierra el ciclo de esta siembra: deja de aparecer entre las
+                  activas, no se le podrán registrar más cosechas ni cuidados, y
+                  su cama vuelve a quedar disponible para sembrar otra cosa. El
+                  historial se conserva. Úselo en cultivos que se cosechan una
+                  sola vez, como la cebolla.
+                </FieldDescription>
+              </FieldContent>
+
+              <Switch
+                id={field.name}
+                checked={field.state.value}
+                onCheckedChange={(marcado) => field.handleChange(marcado)}
+              />
+            </Field>
+          )}
+        </form.Field>
+
         <form.Subscribe
-          selector={(estado) => estado.isSubmitting || registrar.isPending}
+          selector={(estado) => ({
+            guardando: estado.isSubmitting || registrar.isPending,
+            cerrando: estado.values.cerrarCiclo,
+          })}
         >
-          {(guardando) => (
+          {({ guardando, cerrando }) => (
             <Button type="submit" disabled={guardando || sinSeleccionPosible}>
               {guardando
                 ? "Guardando…"
-                : cerrarCiclo
+                : cerrando
                   ? "Registrar cosecha y finalizar"
                   : "Registrar cosecha"}
             </Button>

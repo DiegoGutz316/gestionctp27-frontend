@@ -164,8 +164,12 @@ export type TotalPorUnidad = {
   cantidad: number;
 };
 
+/** Lo producido por un cultivo en una unidad concreta. */
+export type TotalPorCultivo = TotalPorUnidad & { cultivo: string };
+
 export type ResultadoCosechas = ResultadoPaginado<CosechaRespuesta> & {
   totales: TotalPorUnidad[];
+  totalesPorCultivo: TotalPorCultivo[];
 };
 
 /** «52,25 kg · 124 unidades», o vacío si no hay nada que totalizar. */

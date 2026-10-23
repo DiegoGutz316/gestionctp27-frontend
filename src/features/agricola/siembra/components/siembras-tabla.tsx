@@ -4,12 +4,15 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
 import { FinalizarSiembraDialog } from "./finalizar-siembra-dialog";
 import {
   ETIQUETA_MOTIVO_FINALIZACION,
+  ETIQUETA_UNIDAD_SIEMBRA,
   formatearCantidad,
   formatearFecha,
   type MotivoFinalizacion,
@@ -58,13 +61,21 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
           ) : null}
           {siembras.map((siembra) => (
             <TableRow key={siembra.id}>
-              <TableCell className="font-medium">{siembra.tipoCultivo}</TableCell>
+              <TableCell className="font-medium">
+                {/* El ciclo completo: cuidados y cosechas de esta siembra. */}
+                <Link
+                  href={`/dashboard/agricola/siembras/${siembra.id}`}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {siembra.tipoCultivo}
+                </Link>
+              </TableCell>
               <TableCell>
                 <span className="font-medium">{siembra.cama.codigo}</span>
                 <span className="block text-xs text-muted-foreground">{siembra.cama.ubicacion}</span>
               </TableCell>
               <TableCell>{formatearFecha(siembra.fechaSiembra)}</TableCell>
-              <TableCell className="text-right tabular-nums">{formatearCantidad(siembra.cantidadSembrada)}</TableCell>
+              <TableCell className="text-right tabular-nums">{formatearCantidad(siembra.cantidadSembrada)} {ETIQUETA_UNIDAD_SIEMBRA[siembra.unidadSembrada]}</TableCell>
               <TableCell className="text-right">
                 {siembra.finalizadaEn ? (
                   <span className="text-sm text-muted-foreground">
