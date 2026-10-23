@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, PlusIcon, SearchIcon } from "lucide-react";
+import { Home, SearchIcon } from "lucide-react";
 import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
@@ -13,7 +13,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -82,16 +81,6 @@ export function DepartamentosGestion() {
           </p>
         </div>
         <MostrarSiPuede modulo="LIBRO_CAJA" nivel="COMPLETO">
-          <Button
-            className="hidden md:inline-flex"
-            nativeButton={false}
-            render={
-              <Link href="/dashboard/libro-caja/departamentos/nuevo" />
-            }
-          >
-            <PlusIcon data-icon="inline-start" />
-            Registrar departamento
-          </Button>
           <AccionFlotante
             href="/dashboard/libro-caja/departamentos/nuevo"
             etiqueta="Registrar departamento"

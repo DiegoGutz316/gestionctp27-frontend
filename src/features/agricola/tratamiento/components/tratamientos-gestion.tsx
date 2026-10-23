@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Home, PlusIcon } from "lucide-react";
+import { Home } from "lucide-react";
 
 import { AccionFlotante } from "@/components/accion-flotante";
 
@@ -14,7 +14,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -182,14 +181,6 @@ export function TratamientosGestion() {
         </div>
 
         <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
-          <Button
-            className="hidden md:inline-flex"
-            nativeButton={false}
-            render={<Link href="/dashboard/agricola/tratamientos/nuevo" />}
-          >
-            <PlusIcon data-icon="inline-start" />
-            Registrar tratamiento
-          </Button>
           <AccionFlotante
             href="/dashboard/agricola/tratamientos/nuevo"
             etiqueta="Registrar tratamiento"

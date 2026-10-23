@@ -16,8 +16,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { MenuFlotante } from "@/components/accion-flotante";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -28,7 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+import { useAuth } from "@/features/auth/context/auth-context";
 import { DesparasitacionesHistorial } from "@/features/pecuaria/components/desparasitaciones-historial";
 import { VacunasHistorial } from "@/features/pecuaria/components/vacunas-historial";
 import { useHistorialSalud } from "@/features/pecuaria/salud/hooks/hooks";
@@ -51,6 +51,7 @@ import {
 } from "../models/animal.model";
 
 export function AnimalDetalle({ id }: { id: number }) {
+  const { puede } = useAuth();
   const animal = useAnimal(id);
   const historial = useHistorialSalud(id);
 
@@ -75,6 +76,7 @@ export function AnimalDetalle({ id }: { id: number }) {
 
   const datos = animal.data;
   const activo = esAnimalActivo(datos.estado);
+  const puedeEscribir = puede("PECUARIA", "COMPLETO");
   const registros = historial.data?.registros ?? [];
 
   return (
@@ -113,47 +115,33 @@ export function AnimalDetalle({ id }: { id: number }) {
           </p>
         </div>
 
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={
-              <Link
-                href={`/dashboard/pecuaria/produccion?animalId=${datos.id}`}
-              />
-            }
-          >
-            <MilkIcon data-icon="inline-start" />
-            Producción
-          </Button>
-
-          <MostrarSiPuede modulo="PECUARIA" nivel="COMPLETO">
-            {activo ? (
-              <Button
-                nativeButton={false}
-                render={
-                  <Link
-                    href={`/dashboard/pecuaria/salud/nuevo?animalId=${datos.id}`}
-                  />
-                }
-              >
-                <HeartPulseIcon data-icon="inline-start" />
-                Registrar salud
-              </Button>
-            ) : null}
-
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={
-                <Link href={`/dashboard/pecuaria/${datos.id}/editar`} />
-              }
-            >
-              <PencilIcon data-icon="inline-start" />
-              Editar
-            </Button>
-          </MostrarSiPuede>
-        </div>
+        <MenuFlotante
+          acciones={[
+            {
+              href: `/dashboard/pecuaria/produccion?animalId=${datos.id}`,
+              etiqueta: "Producción",
+              icono: <MilkIcon className="size-4" />,
+            },
+            ...(puedeEscribir && activo
+              ? [
+                  {
+                    href: `/dashboard/pecuaria/salud/nuevo?animalId=${datos.id}`,
+                    etiqueta: "Registrar salud",
+                    icono: <HeartPulseIcon className="size-4" />,
+                  },
+                ]
+              : []),
+            ...(puedeEscribir
+              ? [
+                  {
+                    href: `/dashboard/pecuaria/${datos.id}/editar`,
+                    etiqueta: "Editar",
+                    icono: <PencilIcon className="size-4" />,
+                  },
+                ]
+              : []),
+          ]}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 rounded-xl border bg-card p-4 shadow-xs sm:grid-cols-3">

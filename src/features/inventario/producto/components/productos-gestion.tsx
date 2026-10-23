@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpDownIcon, PlusIcon, SearchIcon, Home } from "lucide-react";
+import { ArrowUpDownIcon, SearchIcon, Home } from "lucide-react";
 import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
@@ -13,7 +13,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -122,20 +121,10 @@ export function ProductosGestion() {
           </p>
         </div>
         {usuario?.rol === "ADMINISTRADOR" ? (
-          <>
-            <Button
-              className="hidden md:inline-flex"
-              nativeButton={false}
-              render={<Link href="/dashboard/inventario/nuevo" />}
-            >
-              <PlusIcon data-icon="inline-start" />
-              Registrar producto
-            </Button>
-            <AccionFlotante
-              href="/dashboard/inventario/nuevo"
-              etiqueta="Registrar producto"
-            />
-          </>
+          <AccionFlotante
+            href="/dashboard/inventario/nuevo"
+            etiqueta="Registrar producto"
+          />
         ) : null}
       </div>
 

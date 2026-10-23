@@ -3,20 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Home, ListFilterIcon, PlusIcon } from "lucide-react";
+import { Home, ListFilterIcon } from "lucide-react";
 
 import { AccionFlotante } from "@/components/accion-flotante";
 import { Badge } from "@/components/ui/badge";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import {
   Breadcrumb,
@@ -150,22 +150,6 @@ export function ProduccionConsulta() {
         </div>
 
         <MostrarSiPuede modulo="PECUARIA" nivel="COMPLETO">
-          <Button
-            className="hidden md:inline-flex"
-            nativeButton={false}
-            render={
-              <Link
-                href={
-                  animalId
-                    ? `/dashboard/pecuaria/produccion/nuevo?animalId=${animalId}`
-                    : "/dashboard/pecuaria/produccion/nuevo"
-                }
-              />
-            }
-          >
-            <PlusIcon data-icon="inline-start" />
-            Registrar producción
-          </Button>
           <AccionFlotante
             href={
               animalId
@@ -180,8 +164,8 @@ export function ProduccionConsulta() {
       <PecuariaVistasNav />
 
       <div className="md:hidden">
-        <Sheet>
-          <SheetTrigger
+        <Dialog>
+          <DialogTrigger
             render={<Button type="button" variant="outline" className="gap-2" />}
           >
             <ListFilterIcon className="size-4" />
@@ -191,13 +175,13 @@ export function ProduccionConsulta() {
                 {[animalId, desde, tipoProduccion].filter(Boolean).length}
               </Badge>
             ) : null}
-          </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl">
-            <SheetHeader>
-              <SheetTitle>Filtros</SheetTitle>
-              <SheetDescription>Animal, fecha y tipo de producción.</SheetDescription>
-            </SheetHeader>
-            <div className="flex flex-col gap-4 px-4">
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Filtros</DialogTitle>
+              <DialogDescription>Animal, fecha y tipo de producción.</DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4">
               <div className="space-y-2">
                 <Label htmlFor="filtro-animal-movil">Animal</Label>
                 <Select
@@ -240,11 +224,11 @@ export function ProduccionConsulta() {
                 </Select>
               </div>
             </div>
-            <SheetFooter>
-              <SheetClose render={<Button type="button" />}>Ver resultados</SheetClose>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+            <DialogFooter>
+              <DialogClose render={<Button type="button" />}>Ver resultados</DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="hidden gap-4 rounded-xl border bg-card p-4 shadow-sm md:grid sm:grid-cols-2 lg:grid-cols-3">

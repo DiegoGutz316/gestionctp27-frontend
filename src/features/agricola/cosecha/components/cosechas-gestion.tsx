@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, WheatIcon } from "lucide-react";
+import { Home } from "lucide-react";
 
 import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
@@ -15,7 +15,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -339,14 +338,6 @@ export function CosechasGestion() {
         </div>
 
         <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
-          <Button
-            className="hidden md:inline-flex"
-            nativeButton={false}
-            render={<Link href="/dashboard/agricola/cosechas/nueva" />}
-          >
-            <WheatIcon data-icon="inline-start" />
-            Registrar cosecha
-          </Button>
           <AccionFlotante
             href="/dashboard/agricola/cosechas/nueva"
             etiqueta="Registrar cosecha"

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, PencilIcon } from "lucide-react";
+import { Home } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,9 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuth } from "@/features/auth/context/auth-context";
 import { MovimientosTabla } from "../../stock/components/movimientos-tabla";
 import { StockDeProducto } from "../../stock/components/stock-de-producto";
 import {
@@ -25,7 +23,6 @@ import { useProducto } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/producto.service";
 
 export function ProductoDetalle({ id }: { id: number }) {
-  const { usuario } = useAuth();
   const producto = useProducto(id);
 
   if (producto.isLoading) {
@@ -85,16 +82,6 @@ export function ProductoDetalle({ id }: { id: number }) {
             {ETIQUETA_UNIDAD_MEDIDA[datos.unidadMedida]}
           </p>
         </div>
-        {usuario?.rol === "ADMINISTRADOR" ? (
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href={`/dashboard/inventario/${id}/editar`} />}
-          >
-            <PencilIcon data-icon="inline-start" />
-            Editar producto
-          </Button>
-        ) : null}
       </div>
 
       <StockDeProducto producto={datos} />

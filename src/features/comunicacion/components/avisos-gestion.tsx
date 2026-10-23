@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Home, Megaphone, Search, X } from "lucide-react";
+import { Home, Search, X } from "lucide-react";
 
 import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
@@ -101,14 +101,6 @@ export function AvisosGestion() {
         </div>
 
         <MostrarSiPuede modulo="REPORTES" nivel="COMPLETO">
-          <Button
-            className="hidden md:inline-flex"
-            nativeButton={false}
-            render={<Link href="/dashboard/comunicacion/avisos/nuevo" />}
-          >
-            <Megaphone data-icon="inline-start" />
-            Publicar aviso
-          </Button>
           <AccionFlotante
             href="/dashboard/comunicacion/avisos/nuevo"
             etiqueta="Publicar aviso"

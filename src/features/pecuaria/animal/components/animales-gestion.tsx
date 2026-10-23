@@ -32,15 +32,15 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { MenuFlotante } from "@/components/accion-flotante";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -135,38 +135,6 @@ export function AnimalesGestion() {
               },
             ]}
           />
-          <div className="hidden gap-2 md:flex md:justify-end">
-            <Button
-              variant="outline"
-              className="w-auto"
-              nativeButton={false}
-              render={
-                <Link href="/dashboard/pecuaria/desparasitaciones/nueva" />
-              }
-            >
-              <SyringeIcon data-icon="inline-start" />
-              Registrar desparasitación
-            </Button>
-
-            <Button
-              variant="outline"
-              className="w-auto"
-              nativeButton={false}
-              render={<Link href="/dashboard/pecuaria/vacunas/nueva" />}
-            >
-              <ShieldPlusIcon data-icon="inline-start" />
-              Registrar vacuna
-            </Button>
-
-            <Button
-              className="w-auto"
-              nativeButton={false}
-              render={<Link href="/dashboard/pecuaria/nuevo" />}
-            >
-              <PlusIcon data-icon="inline-start" />
-              Registrar animal
-            </Button>
-          </div>
         </MostrarSiPuede>
       </div>
 
@@ -185,8 +153,8 @@ export function AnimalesGestion() {
           />
         </div>
 
-        <Sheet>
-          <SheetTrigger
+        <Dialog>
+          <DialogTrigger
             render={
               <Button
                 type="button"
@@ -205,13 +173,13 @@ export function AnimalesGestion() {
                 1
               </Badge>
             ) : null}
-          </SheetTrigger>
-          <SheetContent side="bottom" className="rounded-t-2xl">
-            <SheetHeader>
-              <SheetTitle>Filtros</SheetTitle>
-              <SheetDescription>Orden y animales inactivos.</SheetDescription>
-            </SheetHeader>
-            <div className="flex flex-col gap-4 px-4">
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Filtros</DialogTitle>
+              <DialogDescription>Orden y animales inactivos.</DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4">
               <div className="space-y-2">
                 <Label htmlFor="orden-animales-movil">Orden</Label>
                 <Select
@@ -242,13 +210,13 @@ export function AnimalesGestion() {
                 <Label htmlFor="incluir-inactivos-movil">Ver inactivos</Label>
               </div>
             </div>
-            <SheetFooter>
-              <SheetClose render={<Button type="button" />}>
+            <DialogFooter>
+              <DialogClose render={<Button type="button" />}>
                 Ver resultados
-              </SheetClose>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Select
           items={itemsOrden}

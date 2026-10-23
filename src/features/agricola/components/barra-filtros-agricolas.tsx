@@ -7,15 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 export type EtiquetaFiltro = {
@@ -73,8 +73,8 @@ export function BarraFiltrosAgricolas({
           <div className="min-w-0 flex-1" />
         )}
 
-        <Sheet open={abierto} onOpenChange={setAbierto}>
-          <SheetTrigger
+        <Dialog open={abierto} onOpenChange={setAbierto}>
+          <DialogTrigger
             render={
               <Button
                 type="button"
@@ -96,27 +96,25 @@ export function BarraFiltrosAgricolas({
                 {cantidad}
               </Badge>
             ) : null}
-          </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl">
-            <SheetHeader>
-              <SheetTitle>Filtros</SheetTitle>
-              <SheetDescription>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Filtros</DialogTitle>
+              <DialogDescription>
                 Ajuste el listado. La búsqueda de arriba se mantiene.
-              </SheetDescription>
-            </SheetHeader>
-            <div className="grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-1">
-              {children}
-            </div>
-            <SheetFooter className="flex-row justify-end">
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4">{children}</div>
+            <DialogFooter>
               <Button type="button" variant="outline" onClick={onLimpiar}>
                 Limpiar
               </Button>
-              <SheetClose render={<Button type="button" />}>
+              <DialogClose render={<Button type="button" />}>
                 Ver resultados
-              </SheetClose>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {cantidad > 0 ? (

@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, PlusIcon } from "lucide-react";
+import { Home } from "lucide-react";
 
 import { AccionFlotante } from "@/components/accion-flotante";
 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AgricolaVistasNav } from "@/features/agricola/components/agricola-vistas-nav";
@@ -65,9 +64,6 @@ export function SiembrasGestion() {
           <p className="mt-0.5 text-sm text-muted-foreground">{consulta.isLoading ? "Cargando siembras…" : `${siembras.length} siembra${siembras.length === 1 ? "" : "s"} encontrada${siembras.length === 1 ? "" : "s"}`}</p>
         </div>
         <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
-          <Button className="hidden md:inline-flex" nativeButton={false} render={<Link href="/dashboard/agricola/siembras/nueva" />}>
-            <PlusIcon data-icon="inline-start" />Registrar siembra
-          </Button>
           <AccionFlotante href="/dashboard/agricola/siembras/nueva" etiqueta="Registrar siembra" />
         </MostrarSiPuede>
       </div>

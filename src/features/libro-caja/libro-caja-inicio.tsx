@@ -17,7 +17,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+import { AccionFlotante } from "@/components/accion-flotante";
 import {
   Card,
   CardContent,
@@ -108,16 +108,11 @@ export function LibroCajaInicio() {
             </CardDescription>
           </div>
           <MostrarSiPuede modulo="LIBRO_CAJA" nivel="COMPLETO">
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto shrink-0"
-              nativeButton={false}
-              render={<Link href="/dashboard/libro-caja/colegio/editar" />}
-            >
-              <PencilIcon data-icon="inline-start" />
-              Editar
-            </Button>
+            <AccionFlotante
+              href="/dashboard/libro-caja/colegio/editar"
+              etiqueta="Editar colegio"
+              icono={<PencilIcon className="size-5" />}
+            />
           </MostrarSiPuede>
         </CardHeader>
         <CardContent>

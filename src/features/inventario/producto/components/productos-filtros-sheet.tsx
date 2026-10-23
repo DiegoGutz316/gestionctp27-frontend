@@ -12,15 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   DEPARTAMENTOS,
   ETIQUETA_DEPARTAMENTO,
@@ -97,8 +97,8 @@ export function ProductosFiltrosSheet({
   onLimpiar,
 }: ProductosFiltrosSheetProps) {
   return (
-    <Sheet open={abierto} onOpenChange={onAbiertoChange}>
-      <SheetTrigger
+    <Dialog open={abierto} onOpenChange={onAbiertoChange}>
+      <DialogTrigger
         render={
           <Button
             type="button"
@@ -117,16 +117,16 @@ export function ProductosFiltrosSheet({
             {filtrosActivos}
           </Badge>
         ) : null}
-      </SheetTrigger>
-      <SheetContent side="right" className="gap-0">
-        <SheetHeader>
-          <SheetTitle>Filtros</SheetTitle>
-          <SheetDescription>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Filtros</DialogTitle>
+          <DialogDescription>
             Refine el listado por tipo, departamento o ubicación.
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="flex flex-1 flex-col gap-4 px-4">
+        <div className="flex flex-col gap-4">
           <Field className="md:hidden">
             <FieldLabel htmlFor="filtro-orden">Orden</FieldLabel>
             <Select
@@ -220,7 +220,7 @@ export function ProductosFiltrosSheet({
           </Field>
         </div>
 
-        <SheetFooter>
+        <DialogFooter>
           <Button
             type="button"
             variant="outline"
@@ -229,11 +229,11 @@ export function ProductosFiltrosSheet({
           >
             Limpiar filtros
           </Button>
-          <SheetClose render={<Button type="button" />}>
+          <DialogClose render={<Button type="button" />}>
             Ver resultados
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

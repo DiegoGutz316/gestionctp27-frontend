@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { notFound } from "next/navigation"
 import {
   Leaf,
@@ -6,7 +5,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { AccionFlotante } from "@/components/accion-flotante"
 import {
   Card,
   CardContent,
@@ -89,23 +88,22 @@ export default async function DashboardModulePage({
               <CardDescription>{details.description}</CardDescription>
             </div>
           </CardHeader>
-          <CardContent>
-            {details.action ? (
-              <MostrarSiPuede modulo={details.modulo} nivel="COMPLETO">
-                <Button
-                  nativeButton={false}
-                  render={<Link href={details.action.href} />}
-                >
-                  {details.action.label}
-                </Button>
-              </MostrarSiPuede>
-            ) : (
+          {details.action ? null : (
+            <CardContent>
               <div className="rounded-lg border border-dashed bg-muted/30 p-6 text-sm text-muted-foreground">
                 El módulo está listo para recibir su contenido funcional.
               </div>
-            )}
-          </CardContent>
+            </CardContent>
+          )}
         </Card>
+        {details.action ? (
+          <MostrarSiPuede modulo={details.modulo} nivel="COMPLETO">
+            <AccionFlotante
+              href={details.action.href}
+              etiqueta={details.action.label}
+            />
+          </MostrarSiPuede>
+        ) : null}
       </div>
     </RequerirPermiso>
   )

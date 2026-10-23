@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { PlusIcon, SearchIcon, Home } from "lucide-react";
+import { SearchIcon, Home } from "lucide-react";
 
 import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
@@ -14,7 +14,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { RolUsuario } from "../models/usuario.model";
 import type { PaginarUsuarios } from "../validacion/usuario.validacion";
@@ -104,14 +103,6 @@ export function UsuariosGestion() {
               : `${total} usuario${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}`}
           </p>
         </div>
-        <Button
-          className="hidden md:inline-flex"
-          nativeButton={false}
-          render={<Link href="/dashboard/usuarios/nuevo" />}
-        >
-          <PlusIcon data-icon="inline-start" />
-          Crear usuario
-        </Button>
         <AccionFlotante href="/dashboard/usuarios/nuevo" etiqueta="Crear usuario" />
       </div>
 

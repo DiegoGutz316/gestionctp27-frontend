@@ -11,6 +11,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { MenuFlotante } from "@/components/accion-flotante";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -141,27 +142,20 @@ export function PeriodoDetalle({ id }: { id: number }) {
         </div>
         {abierto ? (
           <MostrarSiPuede modulo="LIBRO_CAJA" nivel="COMPLETO">
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-              <Button
-                variant="outline"
-                nativeButton={false}
-                render={
-                  <Link
-                    href={`/dashboard/libro-caja/periodos/${id}/editar`}
-                  />
-                }
-              >
-                <PencilIcon data-icon="inline-start" />
-                Editar
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => setCerrarAbierto(true)}
-              >
-                <LockIcon data-icon="inline-start" />
-                Cerrar periodo
-              </Button>
-            </div>
+            <MenuFlotante
+              acciones={[
+                {
+                  href: `/dashboard/libro-caja/periodos/${id}/editar`,
+                  etiqueta: "Editar",
+                  icono: <PencilIcon className="size-4" />,
+                },
+                {
+                  etiqueta: "Cerrar periodo",
+                  icono: <LockIcon className="size-4" />,
+                  onClick: () => setCerrarAbierto(true),
+                },
+              ]}
+            />
           </MostrarSiPuede>
         ) : null}
       </div>

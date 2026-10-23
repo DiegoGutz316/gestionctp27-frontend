@@ -1,16 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
   PencilIcon,
   PlusIcon,
 } from "lucide-react";
+import { MenuFlotante, type AccionMenu } from "@/components/accion-flotante";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { useAuth } from "@/features/auth/context/auth-context";
 import { esStockBajo } from "../../producto/models/producto.model";
 import type { ProductoRespuesta } from "../../producto/validacion/producto.validacion";
@@ -23,12 +21,50 @@ export function StockDeProducto({
 }: {
   producto: ProductoRespuesta;
 }) {
-  const { usuario } = useAuth();
+  const { usuario, puede } = useAuth();
   const esAdministrador = usuario?.rol === "ADMINISTRADOR";
+  const puedeEscribir = puede("INVENTARIO", "COMPLETO");
   const { configuracionStock, inventario } = producto;
   const [entradaPara, setEntradaPara] = useState<Inventario | null>(null);
   const [salidaPara, setSalidaPara] = useState<Inventario | null>(null);
   const stockBajo = esStockBajo(producto);
+  const acciones: AccionMenu[] = [];
+
+  if (esAdministrador) {
+    acciones.push({
+      href: `/dashboard/inventario/${producto.id}/editar`,
+      etiqueta: "Editar producto",
+      icono: <PencilIcon className="size-4" />,
+    });
+    acciones.push(
+      configuracionStock
+        ? {
+            href: `/dashboard/inventario/stock/${configuracionStock.id}/editar`,
+            etiqueta: "Editar configuración",
+            icono: <PencilIcon className="size-4" />,
+          }
+        : {
+            href: `/dashboard/inventario/${producto.id}/stock/nuevo`,
+            etiqueta: "Configuración de stock",
+            icono: <PlusIcon className="size-4" />,
+          },
+    );
+  }
+
+  if (puedeEscribir && inventario && configuracionStock?.activo) {
+    acciones.push(
+      {
+        etiqueta: "Registrar entrada",
+        icono: <ArrowDownIcon className="size-4" />,
+        onClick: () => setEntradaPara(inventario),
+      },
+      {
+        etiqueta: "Registrar salida",
+        icono: <ArrowUpIcon className="size-4" />,
+        onClick: () => setSalidaPara(inventario),
+      },
+    );
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -51,25 +87,10 @@ export function StockDeProducto({
         }}
       />
 
-      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-        <h2 className="text-base font-semibold tracking-tight">
-          Existencias y configuración de stock
-        </h2>
-        {!configuracionStock && esAdministrador ? (
-          <Button
-            size="sm"
-            nativeButton={false}
-            render={
-              <Link
-                href={`/dashboard/inventario/${producto.id}/stock/nuevo`}
-              />
-            }
-          >
-            <PlusIcon data-icon="inline-start" />
-            Configuración de stock
-          </Button>
-        ) : null}
-      </div>
+      <h2 className="text-base font-semibold tracking-tight">
+        Existencias y configuración de stock
+      </h2>
+      <MenuFlotante acciones={acciones} />
 
       <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
         <div className="grid gap-4 p-4 sm:grid-cols-[1.1fr_1fr] sm:items-center">
@@ -120,55 +141,6 @@ export function StockDeProducto({
           </dl>
         </div>
 
-        <MostrarSiPuede modulo="INVENTARIO" nivel="COMPLETO">
-          {inventario && configuracionStock?.activo ? (
-            <div className="flex flex-col gap-2 border-t bg-muted/20 p-3 sm:flex-row sm:justify-end">
-              {configuracionStock && esAdministrador ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  nativeButton={false}
-                  render={
-                    <Link
-                      href={`/dashboard/inventario/stock/${configuracionStock.id}/editar`}
-                    />
-                  }
-                >
-                  <PencilIcon data-icon="inline-start" />
-                  Editar configuración
-                </Button>
-              ) : null}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setEntradaPara(inventario)}
-              >
-                <ArrowDownIcon data-icon="inline-start" />
-                Registrar entrada
-              </Button>
-              <Button size="sm" onClick={() => setSalidaPara(inventario)}>
-                <ArrowUpIcon data-icon="inline-start" />
-                Registrar salida
-              </Button>
-            </div>
-          ) : configuracionStock && esAdministrador ? (
-            <div className="flex border-t bg-muted/20 p-3 sm:justify-end">
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={
-                  <Link
-                    href={`/dashboard/inventario/stock/${configuracionStock.id}/editar`}
-                  />
-                }
-              >
-                <PencilIcon data-icon="inline-start" />
-                Editar configuración
-              </Button>
-            </div>
-          ) : null}
-        </MostrarSiPuede>
       </div>
     </div>
   );

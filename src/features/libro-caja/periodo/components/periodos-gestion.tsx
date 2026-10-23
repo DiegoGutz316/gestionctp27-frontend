@@ -2,19 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, ListFilterIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { Home, ListFilterIcon, SearchIcon } from "lucide-react";
 import { AccionFlotante } from "@/components/accion-flotante";
 import { Badge } from "@/components/ui/badge";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -135,20 +135,10 @@ export function PeriodosGestion() {
               Ver periodo abierto
             </Button>
           ) : (
-            <>
-              <Button
-                className="hidden md:inline-flex"
-                nativeButton={false}
-                render={<Link href="/dashboard/libro-caja/periodos/nuevo" />}
-              >
-                <PlusIcon data-icon="inline-start" />
-                Abrir periodo
-              </Button>
-              <AccionFlotante
-                href="/dashboard/libro-caja/periodos/nuevo"
-                etiqueta="Abrir periodo"
-              />
-            </>
+            <AccionFlotante
+              href="/dashboard/libro-caja/periodos/nuevo"
+              etiqueta="Abrir periodo"
+            />
           )}
         </MostrarSiPuede>
       </div>
@@ -166,8 +156,8 @@ export function PeriodosGestion() {
           />
         </div>
 
-        <Sheet>
-          <SheetTrigger
+        <Dialog>
+          <DialogTrigger
             render={
               <Button type="button" variant="outline" className="shrink-0 gap-2 md:hidden" />
             }
@@ -179,13 +169,13 @@ export function PeriodosGestion() {
                 1
               </Badge>
             ) : null}
-          </SheetTrigger>
-          <SheetContent side="bottom" className="rounded-t-2xl">
-            <SheetHeader>
-              <SheetTitle>Filtros</SheetTitle>
-              <SheetDescription>Filtre los periodos por estado.</SheetDescription>
-            </SheetHeader>
-            <div className="px-4">
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Filtros</DialogTitle>
+              <DialogDescription>Filtre los periodos por estado.</DialogDescription>
+            </DialogHeader>
+            <div>
               <Select
                 items={filtroEstadoItems}
                 value={estado}
@@ -206,11 +196,11 @@ export function PeriodosGestion() {
                 </SelectContent>
               </Select>
             </div>
-            <SheetFooter>
-              <SheetClose render={<Button type="button" />}>Ver resultados</SheetClose>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+            <DialogFooter>
+              <DialogClose render={<Button type="button" />}>Ver resultados</DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Select
           items={filtroEstadoItems}

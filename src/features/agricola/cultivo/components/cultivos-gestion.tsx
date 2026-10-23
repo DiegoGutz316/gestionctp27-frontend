@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, PlusIcon } from "lucide-react";
+import { Home } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -12,7 +12,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+import { AccionFlotante } from "@/components/accion-flotante";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -120,14 +120,10 @@ export function CultivosGestion() {
         </div>
 
         <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
-          <Button
-            className="w-full sm:w-auto"
-            nativeButton={false}
-            render={<Link href="/dashboard/agricola/cultivos/nuevo" />}
-          >
-            <PlusIcon data-icon="inline-start" />
-            Registrar cultivo
-          </Button>
+          <AccionFlotante
+            href="/dashboard/agricola/cultivos/nuevo"
+            etiqueta="Registrar cultivo"
+          />
         </MostrarSiPuede>
       </div>
 

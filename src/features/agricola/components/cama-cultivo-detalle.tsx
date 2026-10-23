@@ -11,8 +11,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { AccionFlotante } from "@/components/accion-flotante";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
@@ -111,14 +111,11 @@ export function CamaCultivoDetalle({ id }: { id: number }) {
         </div>
 
         <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href={`/dashboard/agricola/${id}/editar`} />}
-          >
-            <PencilIcon data-icon="inline-start" />
-            Editar
-          </Button>
+          <AccionFlotante
+            href={`/dashboard/agricola/${id}/editar`}
+            etiqueta="Editar cama"
+            icono={<PencilIcon className="size-5" />}
+          />
         </MostrarSiPuede>
       </div>
 
