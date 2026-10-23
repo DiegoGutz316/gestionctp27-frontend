@@ -23,7 +23,7 @@ export function LandingHero() {
               className="text-[length:calc(2.2rem*var(--escala-texto,1))] font-semibold leading-[1.02] tracking-[-0.04em] text-tinta sm:text-[length:calc(3.4rem*var(--escala-texto,1))] sm:leading-[0.98] md:text-[length:calc(4.2rem*var(--escala-texto,1))] lg:text-[length:calc(4.6rem*var(--escala-texto,1))] lg:text-white"
             >
               {/* El espacio entre bloques evita que se lea "Profesional27"; visualmente no cambia. */}
-              <span className="block uppercase">Colegio Técnico Profesional</span>{" "}
+              <span className="block uppercase">Colegio Tecnico Profesional</span>{" "}
               <span className="block text-oliva lg:text-[#d5e0c4]">27 de Abril</span>
             </h1>
 
