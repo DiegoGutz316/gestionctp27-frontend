@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { Ban, Eye, ImageIcon, Megaphone, Pencil } from "lucide-react";
 
+import { AccionesMenu } from "@/components/acciones-menu";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -16,12 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 import { formatearFechaPublicacion } from "../fecha-aviso";
 import { useSrcFlyer } from "../hooks/aviso-hooks";
@@ -108,8 +104,7 @@ export function AvisosTabla({
         </p>
       ) : null}
 
-      <TooltipProvider>
-        <Table>
+      <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
               <TableHead className="hidden w-16 py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
@@ -182,60 +177,45 @@ export function AvisosTabla({
                     {ETIQUETA_ESTADO_AVISO[aviso.estado]}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  <div className="flex justify-end gap-1">
-                    <Link
-                      href={`/dashboard/comunicacion/avisos/${aviso.id}`}
-                      aria-label={`Ver detalle de ${aviso.titulo}`}
-                      className={`${buttonVariants({ variant: "outline", size: "sm" })} whitespace-nowrap`}
+                <TableCell className="text-right">
+                  <AccionesMenu aria-label={`Acciones de ${aviso.titulo}`}>
+                    <DropdownMenuItem
+                      render={
+                        <Link href={`/dashboard/comunicacion/avisos/${aviso.id}`} />
+                      }
                     >
-                      <Eye data-icon="inline-start" />
+                      <Eye />
                       Ver detalle
-                    </Link>
+                    </DropdownMenuItem>
 
                     <MostrarSiPuede modulo="REPORTES" nivel="COMPLETO">
-                      <Tooltip>
-                        <TooltipTrigger
-                          render={
-                            <Link
-                              href={`/dashboard/comunicacion/avisos/${aviso.id}/editar`}
-                              aria-label={`Editar ${aviso.titulo}`}
-                              className={buttonVariants({
-                                variant: "ghost",
-                                size: "icon-sm",
-                              })}
-                            />
-                          }
-                        >
-                          <Pencil />
-                        </TooltipTrigger>
-                        <TooltipContent>Editar</TooltipContent>
-                      </Tooltip>
+                      <DropdownMenuItem
+                        render={
+                          <Link
+                            href={`/dashboard/comunicacion/avisos/${aviso.id}/editar`}
+                          />
+                        }
+                      >
+                        <Pencil />
+                        Editar
+                      </DropdownMenuItem>
 
                       {aviso.estado === "ACTIVO" ? (
-                        <Tooltip>
-                          <TooltipTrigger
-                            type="button"
-                            aria-label={`Desactivar ${aviso.titulo}`}
-                            className={buttonVariants({
-                              variant: "ghost",
-                              size: "icon-sm",
-                            })}
-                            onClick={() => onDesactivar(aviso)}
-                          >
-                            <Ban />
-                          </TooltipTrigger>
-                          <TooltipContent>Desactivar</TooltipContent>
-                        </Tooltip>
+                        <DropdownMenuItem
+                          variant="destructive"
+                          onClick={() => onDesactivar(aviso)}
+                        >
+                          <Ban />
+                          Desactivar
+                        </DropdownMenuItem>
                       ) : null}
                     </MostrarSiPuede>
-                  </div>
+                  </AccionesMenu>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
-        </Table>
-      </TooltipProvider>
+      </Table>
     </div>
   );
 }

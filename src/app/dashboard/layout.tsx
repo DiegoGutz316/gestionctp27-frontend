@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/App-sidebar"
+import { BarraSuperiorMovil } from "@/components/barra-superior-movil"
 import { NavegacionMovil } from "@/components/navegacion-movil"
 import { SelectorTema } from "@/components/selector-tema"
 import {
@@ -22,6 +23,7 @@ export default function DashboardLayout({
               <SelectorTema />
             </div>
           </header>
+          <BarraSuperiorMovil />
           <main className="min-w-0 max-w-full flex-1 overflow-x-hidden overflow-y-auto p-4 pb-24 md:p-6 print:overflow-visible print:p-0">
             {children}
           </main>
