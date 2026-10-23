@@ -3,7 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Home, PlusIcon } from "lucide-react";
+import { Home, ListFilterIcon, PlusIcon } from "lucide-react";
+
+import { AccionFlotante } from "@/components/accion-flotante";
+import { Badge } from "@/components/ui/badge";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 import {
   Breadcrumb,
@@ -138,7 +151,7 @@ export function ProduccionConsulta() {
 
         <MostrarSiPuede modulo="PECUARIA" nivel="COMPLETO">
           <Button
-            className="w-full sm:w-auto"
+            className="hidden md:inline-flex"
             nativeButton={false}
             render={
               <Link
@@ -153,12 +166,88 @@ export function ProduccionConsulta() {
             <PlusIcon data-icon="inline-start" />
             Registrar producción
           </Button>
+          <AccionFlotante
+            href={
+              animalId
+                ? `/dashboard/pecuaria/produccion/nuevo?animalId=${animalId}`
+                : "/dashboard/pecuaria/produccion/nuevo"
+            }
+            etiqueta="Registrar producción"
+          />
         </MostrarSiPuede>
       </div>
 
       <PecuariaVistasNav />
 
-      <div className="grid gap-4 rounded-xl border bg-card p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3">
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger
+            render={<Button type="button" variant="outline" className="gap-2" />}
+          >
+            <ListFilterIcon className="size-4" />
+            Filtros
+            {[animalId, desde, tipoProduccion].filter(Boolean).length > 0 ? (
+              <Badge variant="secondary" className="h-5 min-w-5 justify-center rounded-full px-1.5">
+                {[animalId, desde, tipoProduccion].filter(Boolean).length}
+              </Badge>
+            ) : null}
+          </SheetTrigger>
+          <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl">
+            <SheetHeader>
+              <SheetTitle>Filtros</SheetTitle>
+              <SheetDescription>Animal, fecha y tipo de producción.</SheetDescription>
+            </SheetHeader>
+            <div className="flex flex-col gap-4 px-4">
+              <div className="space-y-2">
+                <Label htmlFor="filtro-animal-movil">Animal</Label>
+                <Select
+                  items={animalesItems}
+                  value={animalId === "" ? null : animalId}
+                  onValueChange={(valor) => setAnimalId((valor as string | null) ?? "")}
+                >
+                  <SelectTrigger id="filtro-animal-movil" className="w-full" disabled={animales.isLoading}>
+                    <SelectValue placeholder="Seleccione un animal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {animalesItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="filtro-desde-movil">A partir de</Label>
+                <Input id="filtro-desde-movil" type="date" value={desde} onChange={(event) => setDesde(event.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="filtro-tipo-movil">Tipo</Label>
+                <Select
+                  items={tiposFiltro}
+                  value={tipoProduccion === "" ? TODOS_LOS_TIPOS : tipoProduccion}
+                  onValueChange={(valor) => {
+                    const seleccionado = (valor as string | null) ?? TODOS_LOS_TIPOS;
+                    setTipoProduccion(seleccionado === TODOS_LOS_TIPOS ? "" : (seleccionado as TipoProduccion));
+                  }}
+                >
+                  <SelectTrigger id="filtro-tipo-movil" className="w-full">
+                    <SelectValue placeholder="Todos los tipos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tiposFiltro.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <SheetFooter>
+              <SheetClose render={<Button type="button" />}>Ver resultados</SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="hidden gap-4 rounded-xl border bg-card p-4 shadow-sm md:grid sm:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="filtro-animal">Animal</Label>
           <Select

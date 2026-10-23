@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ArrowUpDownIcon,
   Home,
+  ListFilterIcon,
   PlusIcon,
   SearchIcon,
   ShieldPlusIcon,
@@ -29,7 +30,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
+import { MenuFlotante } from "@/components/accion-flotante";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
@@ -103,10 +116,29 @@ export function AnimalesGestion() {
         </div>
 
         <MostrarSiPuede modulo="PECUARIA" nivel="COMPLETO">
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:justify-end">
+          <MenuFlotante
+            acciones={[
+              {
+                href: "/dashboard/pecuaria/nuevo",
+                etiqueta: "Registrar animal",
+                icono: <PlusIcon className="size-4" />,
+              },
+              {
+                href: "/dashboard/pecuaria/vacunas/nueva",
+                etiqueta: "Registrar vacuna",
+                icono: <ShieldPlusIcon className="size-4" />,
+              },
+              {
+                href: "/dashboard/pecuaria/desparasitaciones/nueva",
+                etiqueta: "Registrar desparasitación",
+                icono: <SyringeIcon className="size-4" />,
+              },
+            ]}
+          />
+          <div className="hidden gap-2 md:flex md:justify-end">
             <Button
               variant="outline"
-              className="w-full sm:w-auto"
+              className="w-auto"
               nativeButton={false}
               render={
                 <Link href="/dashboard/pecuaria/desparasitaciones/nueva" />
@@ -118,7 +150,7 @@ export function AnimalesGestion() {
 
             <Button
               variant="outline"
-              className="w-full sm:w-auto"
+              className="w-auto"
               nativeButton={false}
               render={<Link href="/dashboard/pecuaria/vacunas/nueva" />}
             >
@@ -127,7 +159,7 @@ export function AnimalesGestion() {
             </Button>
 
             <Button
-              className="w-full sm:w-auto"
+              className="w-auto"
               nativeButton={false}
               render={<Link href="/dashboard/pecuaria/nuevo" />}
             >
@@ -140,7 +172,7 @@ export function AnimalesGestion() {
 
       <PecuariaVistasNav />
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -153,6 +185,71 @@ export function AnimalesGestion() {
           />
         </div>
 
+        <Sheet>
+          <SheetTrigger
+            render={
+              <Button
+                type="button"
+                variant="outline"
+                className="shrink-0 gap-2 md:hidden"
+              />
+            }
+          >
+            <ListFilterIcon className="size-4" />
+            Filtros
+            {incluirInactivos ? (
+              <Badge
+                variant="secondary"
+                className="h-5 min-w-5 justify-center rounded-full px-1.5"
+              >
+                1
+              </Badge>
+            ) : null}
+          </SheetTrigger>
+          <SheetContent side="bottom" className="rounded-t-2xl">
+            <SheetHeader>
+              <SheetTitle>Filtros</SheetTitle>
+              <SheetDescription>Orden y animales inactivos.</SheetDescription>
+            </SheetHeader>
+            <div className="flex flex-col gap-4 px-4">
+              <div className="space-y-2">
+                <Label htmlFor="orden-animales-movil">Orden</Label>
+                <Select
+                  items={itemsOrden}
+                  value={orden}
+                  onValueChange={(valor) =>
+                    setOrden((valor as OrdenAnimales) ?? "NOMBRE")
+                  }
+                >
+                  <SelectTrigger id="orden-animales-movil" className="w-full">
+                    <SelectValue placeholder="Nombre" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {itemsOrden.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="incluir-inactivos-movil"
+                  checked={incluirInactivos}
+                  onCheckedChange={setIncluirInactivos}
+                />
+                <Label htmlFor="incluir-inactivos-movil">Ver inactivos</Label>
+              </div>
+            </div>
+            <SheetFooter>
+              <SheetClose render={<Button type="button" />}>
+                Ver resultados
+              </SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+
         <Select
           items={itemsOrden}
           value={orden}
@@ -163,7 +260,7 @@ export function AnimalesGestion() {
           <SelectTrigger
             id="orden-animales"
             aria-label="Ordenar animales"
-            className="w-44 shrink-0"
+            className="hidden w-44 shrink-0 md:flex"
           >
             <ArrowUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
             <SelectValue placeholder="Nombre" />
@@ -177,7 +274,7 @@ export function AnimalesGestion() {
           </SelectContent>
         </Select>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="hidden shrink-0 items-center gap-2 md:flex">
           <Switch
             id="incluir-inactivos"
             checked={incluirInactivos}

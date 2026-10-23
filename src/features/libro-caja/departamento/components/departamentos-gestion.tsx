@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Home, PlusIcon, SearchIcon } from "lucide-react";
+import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -82,7 +83,7 @@ export function DepartamentosGestion() {
         </div>
         <MostrarSiPuede modulo="LIBRO_CAJA" nivel="COMPLETO">
           <Button
-            className="w-full sm:w-auto"
+            className="hidden md:inline-flex"
             nativeButton={false}
             render={
               <Link href="/dashboard/libro-caja/departamentos/nuevo" />
@@ -91,6 +92,10 @@ export function DepartamentosGestion() {
             <PlusIcon data-icon="inline-start" />
             Registrar departamento
           </Button>
+          <AccionFlotante
+            href="/dashboard/libro-caja/departamentos/nuevo"
+            etiqueta="Registrar departamento"
+          />
         </MostrarSiPuede>
       </div>
 

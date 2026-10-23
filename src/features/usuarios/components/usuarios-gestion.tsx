@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PlusIcon, SearchIcon, Home } from "lucide-react";
+
+import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -103,13 +105,14 @@ export function UsuariosGestion() {
           </p>
         </div>
         <Button
-          className="w-full sm:w-auto"
+          className="hidden md:inline-flex"
           nativeButton={false}
           render={<Link href="/dashboard/usuarios/nuevo" />}
         >
           <PlusIcon data-icon="inline-start" />
           Crear usuario
         </Button>
+        <AccionFlotante href="/dashboard/usuarios/nuevo" etiqueta="Crear usuario" />
       </div>
 
       <div className="flex items-center gap-3">
