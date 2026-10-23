@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+import type {
+  CosechaRespuesta,
+  UnidadMedida,
+} from "@/features/agricola/cosecha/models/cosecha.model";
+import type {
+  ActividadAgricola,
+  TratamientoRespuesta,
+} from "@/features/agricola/tratamiento/models/tratamiento.model";
+
 function esFechaReal(valor: string): boolean {
   const fecha = new Date(`${valor}T00:00:00.000Z`);
   return !Number.isNaN(fecha.getTime()) && fecha.toISOString().slice(0, 10) === valor;
@@ -37,6 +46,16 @@ const cantidadSembradaSchema = z
       ),
   );
 
+export const UNIDADES_SIEMBRA = ["UNIDADES", "G", "KG"] as const;
+
+export type UnidadSiembra = (typeof UNIDADES_SIEMBRA)[number];
+
+export const ETIQUETA_UNIDAD_SIEMBRA: Record<UnidadSiembra, string> = {
+  UNIDADES: "unidades",
+  G: "g",
+  KG: "kg",
+};
+
 export const registrarSiembraSchema = z.object({
   camaId: z
     .string({ error: "Seleccione una cama de cultivo" })
@@ -44,13 +63,18 @@ export const registrarSiembraSchema = z.object({
     .regex(/^\d+$/, "Seleccione una cama de cultivo válida")
     .transform(Number)
     .pipe(z.number().int().positive("Seleccione una cama de cultivo válida")),
-  tipoCultivo: z
-    .string({ error: "El tipo de cultivo es obligatorio" })
-    .trim()
-    .min(1, "El tipo de cultivo es obligatorio")
-    .max(120, "El tipo de cultivo no puede superar 120 caracteres"),
+  cultivoId: z
+    .string({ error: "Seleccione un cultivo" })
+    .min(1, "Seleccione un cultivo")
+    .regex(/^\d+$/, "Seleccione un cultivo")
+    .transform(Number)
+    .pipe(z.number().int().positive("Seleccione un cultivo")),
   fechaSiembra: fechaSiembraSchema,
   cantidadSembrada: cantidadSembradaSchema,
+
+  unidadSembrada: z.enum(UNIDADES_SIEMBRA, {
+    error: "Seleccione la unidad de lo sembrado",
+  }),
 });
 
 export type RegistrarSiembra = z.output<typeof registrarSiembraSchema>;
@@ -61,7 +85,11 @@ export const siembraSchema = z.object({
   cama: z.object({ id: z.number(), codigo: z.string(), ubicacion: z.string() }),
   tipoCultivo: z.string(),
   fechaSiembra: z.string(),
+  cultivo: z
+    .object({ id: z.number(), nombre: z.string(), tipo: z.string() })
+    .nullable(),
   cantidadSembrada: z.number(),
+  unidadSembrada: z.enum(UNIDADES_SIEMBRA),
   finalizadaEn: z.string().nullable().optional(),
   motivoFinalizacion: z.string().nullable().optional(),
   motivoDetalle: z.string().nullable().optional(),
@@ -99,3 +127,12 @@ export function formatearFecha(valor: string): string {
 export function formatearCantidad(valor: number): string {
   return valor.toLocaleString("es-CR", { maximumFractionDigits: 2 });
 }
+
+/** Todo el ciclo de una siembra: lo sembrado, sus cuidados y lo cosechado. */
+export type SiembraDetalle = {
+  siembra: SiembraRespuesta;
+  cuidados: TratamientoRespuesta[];
+  cosechas: CosechaRespuesta[];
+  produccion: { unidadMedida: UnidadMedida; cantidad: number }[];
+  cuidadosPorActividad: { actividad: ActividadAgricola; cantidad: number }[];
+};

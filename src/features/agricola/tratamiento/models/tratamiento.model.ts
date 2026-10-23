@@ -111,6 +111,27 @@ export const ETIQUETA_UNIDAD_TRATAMIENTO: Record<UnidadTratamiento, string> = {
   UNIDADES: "unidades",
 };
 
+export const ACTIVIDADES_AGRICOLAS = [
+  "RIEGO",
+  "LIMPIEZA",
+  "FERTILIZACION",
+  "TRATAMIENTO",
+] as const;
+
+export type ActividadAgricola = (typeof ACTIVIDADES_AGRICOLAS)[number];
+
+export const ETIQUETA_ACTIVIDAD: Record<ActividadAgricola, string> = {
+  RIEGO: "Riego",
+  LIMPIEZA: "Limpieza",
+  FERTILIZACION: "Fertilización",
+  TRATAMIENTO: "Tratamiento",
+};
+
+/** Las labores en las que se aplica un producto. */
+export function usaProducto(actividad: string): boolean {
+  return actividad === "FERTILIZACION" || actividad === "TRATAMIENTO";
+}
+
 export const registrarTratamientoSchema = z.object({
   siembraId: z
     .string({ error: "Seleccione una cama con siembra activa" })
@@ -119,26 +140,50 @@ export const registrarTratamientoSchema = z.object({
     .transform(Number)
     .pipe(z.number().int().positive("Seleccione una cama con siembra activa")),
 
-  tipo: z.enum(TIPOS_TRATAMIENTO, {
-    error: "Seleccione un tipo de tratamiento",
+  actividad: z.enum(ACTIVIDADES_AGRICOLAS, {
+    error: "Seleccione la actividad realizada",
   }),
 
+  tipo: z.enum(TIPOS_TRATAMIENTO).optional(),
+
   producto: z
-    .string({ error: "El producto aplicado es obligatorio" })
+    .string()
     .trim()
-    .min(1, "El producto aplicado es obligatorio")
-    .max(120, "El producto aplicado no puede superar 120 caracteres"),
+    .max(120, "El producto aplicado no puede superar 120 caracteres")
+    .optional(),
 
   fecha: fechaTratamientoSchema,
 
-  cantidad: cantidadSchema,
+  cantidad: cantidadSchema.optional(),
 
-  unidad: z.enum(UNIDADES_TRATAMIENTO, {
-    error: "Seleccione una unidad",
-  }),
+  unidad: z.enum(UNIDADES_TRATAMIENTO).optional(),
 
   observaciones: z.string().trim().optional(),
 });
+
+/**
+ * El producto depende de la actividad: regar y limpiar no lo llevan;
+ * fertilizar y tratar lo exigen con su cantidad y su unidad. La misma regla
+ * vive en el backend; aquí evita el viaje.
+ */
+export const cuidadoSchema = registrarTratamientoSchema.superRefine(
+  (valor, ctx) => {
+    if (!usaProducto(valor.actividad)) return;
+
+    for (const [campo, mensaje] of [
+      ["tipo", "Seleccione un tipo de tratamiento"],
+      ["producto", "El producto aplicado es obligatorio"],
+      ["cantidad", "La cantidad aplicada es obligatoria"],
+      ["unidad", "Seleccione una unidad"],
+    ] as const) {
+      const dato = valor[campo];
+
+      if (dato === undefined || dato === "") {
+        ctx.addIssue({ code: "custom", path: [campo], message: mensaje });
+      }
+    }
+  },
+);
 
 export type RegistrarTratamiento =
   z.output<
@@ -163,15 +208,17 @@ export const tratamientoSchema = z.object({
     }),
   }),
 
-  tipo: z.enum(TIPOS_TRATAMIENTO),
+  actividad: z.enum(ACTIVIDADES_AGRICOLAS),
 
-  producto: z.string(),
+  tipo: z.enum(TIPOS_TRATAMIENTO).nullable(),
+
+  producto: z.string().nullable(),
 
   fecha: z.string(),
 
-  cantidad: z.number(),
+  cantidad: z.number().nullable(),
 
-  unidad: z.enum(UNIDADES_TRATAMIENTO),
+  unidad: z.enum(UNIDADES_TRATAMIENTO).nullable(),
 
   observaciones: z
     .string()

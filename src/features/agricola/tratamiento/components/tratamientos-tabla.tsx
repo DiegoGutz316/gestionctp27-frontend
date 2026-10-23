@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 
 import {
+  ETIQUETA_ACTIVIDAD,
   ETIQUETA_TIPO_TRATAMIENTO,
   ETIQUETA_UNIDAD_TRATAMIENTO,
   formatearCantidad,
@@ -95,18 +96,25 @@ export function TratamientosTabla({
                   <TableCell>{tratamiento.siembra.tipoCultivo}</TableCell>
                   <TableCell>
                     <span className="font-medium">
-                      {ETIQUETA_TIPO_TRATAMIENTO[tratamiento.tipo]}
+                      {ETIQUETA_ACTIVIDAD[tratamiento.actividad]}
                     </span>
-                    <span className="block text-xs text-muted-foreground">
-                      {tratamiento.producto}
-                    </span>
+                    {/* Un riego o una limpieza no llevan producto. */}
+                    {tratamiento.producto ? (
+                      <span className="block text-xs text-muted-foreground">
+                        {tratamiento.tipo
+                          ? `${ETIQUETA_TIPO_TRATAMIENTO[tratamiento.tipo]}: `
+                          : ""}
+                        {tratamiento.producto}
+                      </span>
+                    ) : null}
                   </TableCell>
                   <TableCell className="whitespace-nowrap">
                     {formatearFecha(tratamiento.fecha)}
                   </TableCell>
                   <TableCell className="text-center whitespace-nowrap tabular-nums">
-                    {formatearCantidad(tratamiento.cantidad)}{" "}
-                    {ETIQUETA_UNIDAD_TRATAMIENTO[tratamiento.unidad]}
+                    {tratamiento.cantidad !== null && tratamiento.unidad
+                      ? `${formatearCantidad(tratamiento.cantidad)} ${ETIQUETA_UNIDAD_TRATAMIENTO[tratamiento.unidad]}`
+                      : "—"}
                   </TableCell>
                   <TableCell className="whitespace-normal break-words text-muted-foreground">
                     {tratamiento.observaciones?.trim()
