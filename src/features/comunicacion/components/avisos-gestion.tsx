@@ -21,17 +21,13 @@ import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
 import { useAvisos } from "../hooks/aviso-hooks";
 import { getMensajeDeError } from "../servicios/aviso.service";
-import type { AvisoRespuesta, EstadoAviso } from "../validacion/aviso.validacion";
+import type { AvisoRespuesta } from "../validacion/aviso.validacion";
 import { AvisoDesactivarDialog } from "./aviso-desactivar-dialog";
+import {
+  AvisosFiltrosSheet,
+  type FiltroEstadoAviso,
+} from "./avisos-filtros-sheet";
 import { AvisosTabla } from "./avisos-tabla";
-
-type FiltroEstado = "TODOS" | EstadoAviso;
-
-const FILTROS: { id: FiltroEstado; etiqueta: string }[] = [
-  { id: "TODOS", etiqueta: "Todos" },
-  { id: "ACTIVO", etiqueta: "Activos" },
-  { id: "INACTIVO", etiqueta: "Inactivos" },
-];
 
 export function AvisosGestion() {
   const { puede } = useAuth();
@@ -39,7 +35,8 @@ export function AvisosGestion() {
   const [pagina, setPagina] = useState(1);
   const [texto, setTexto] = useState("");
   const [q, setQ] = useState("");
-  const [estado, setEstado] = useState<FiltroEstado>("TODOS");
+  const [estado, setEstado] = useState<FiltroEstadoAviso>("TODOS");
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
   const [avisoADesactivar, setAvisoADesactivar] =
     useState<AvisoRespuesta | null>(null);
 
@@ -105,8 +102,8 @@ export function AvisosGestion() {
         </MostrarSiPuede>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <div className="relative min-w-0">
+      <div className="flex items-center gap-3">
+        <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={texto}
@@ -118,33 +115,19 @@ export function AvisosGestion() {
         </div>
 
         {puedeAdministrar ? (
-          <div
-            className="grid grid-cols-3 gap-2"
-            role="group"
-            aria-label="Filtrar por estado"
-          >
-            {FILTROS.map((filtro) => {
-              const activo = estado === filtro.id;
-              return (
-                <button
-                  key={filtro.id}
-                  type="button"
-                  aria-pressed={activo}
-                  onClick={() => {
-                    setEstado(filtro.id);
-                    setPagina(1);
-                  }}
-                  className={`cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium transition ${
-                    activo
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {filtro.etiqueta}
-                </button>
-              );
-            })}
-          </div>
+          <AvisosFiltrosSheet
+            abierto={filtrosAbiertos}
+            onAbiertoChange={setFiltrosAbiertos}
+            estado={estado}
+            onEstadoChange={(valor) => {
+              setEstado(valor);
+              setPagina(1);
+            }}
+            onLimpiar={() => {
+              setEstado("TODOS");
+              setPagina(1);
+            }}
+          />
         ) : null}
       </div>
 
