@@ -35,7 +35,7 @@ export const ESPECIALIDADES: Especialidad[] = [
     descripcion: "Desarrollo de software, diseño digital y tecnologías web.",
     acento: "var(--acento-digital)",
     foto: "/landing/especialidades/diseno-desarrollo-digital.jpg",
-    fotoAlt: "Persona trabajando en diseño y desarrollo digital",
+    fotoAlt: "Computadora portátil sobre una mesa, con código de programación en la pantalla",
   },
   {
     icono: ChefHat,
