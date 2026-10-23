@@ -85,7 +85,11 @@ export const crearAnimalSchema = z
       error: "Seleccione un estado",
     }),
 
-    observaciones: z.string().trim().optional(),
+    observaciones: z
+      .string()
+      .trim()
+      .max(1000, "Las observaciones no pueden superar 1000 caracteres")
+      .optional(),
   })
   .superRefine((datos, contexto) => {
     if (datos.tipoInventario === "GANADO_BOVINO") {

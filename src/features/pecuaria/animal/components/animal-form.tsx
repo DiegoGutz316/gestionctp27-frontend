@@ -439,6 +439,7 @@ export function AnimalForm() {
                 <Input
                   id={field.name}
                   placeholder="Ej: Animal en buenas condiciones"
+                  maxLength={1000}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}

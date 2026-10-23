@@ -493,6 +493,7 @@ export function AnimalEditarForm({
 
                 <Input
                   id={field.name}
+                  maxLength={1000}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
