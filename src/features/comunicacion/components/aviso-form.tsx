@@ -36,12 +36,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 
-import { avisosQueryKey, useEditarAviso, useRegistrarAviso } from "../hooks/aviso-hooks";
+import {
+  avisosQueryKey,
+  useEditarAviso,
+  useRegistrarAviso,
+  useSrcFlyer,
+} from "../hooks/aviso-hooks";
 import {
   getMensajeDeError,
   quitarFlyerAviso,
   subirFlyerAviso,
-  urlFlyerAviso,
 } from "../servicios/aviso.service";
 import {
   CATEGORIAS_AVISO,
@@ -104,6 +108,10 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
   const entradaFlyer = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const esEdicion = Boolean(aviso);
+  const srcGuardado = useSrcFlyer(
+    aviso && aviso.tieneFlyer && !quitarFlyer && !vistaFlyer ? aviso : null,
+  );
+  const srcFlyer = vistaFlyer ?? srcGuardado;
 
   const elegirFlyer = (archivo: File | null) => {
     setVistaFlyer((anterior) => {
@@ -176,7 +184,7 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
       );
     }
 
-    router.push(esEdicion ? "/dashboard/comunicacion/avisos" : "/dashboard");
+    router.push("/dashboard/comunicacion/avisos");
   };
 
   const form = useForm({
@@ -440,18 +448,24 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
             }}
           />
 
-          {vistaFlyer || (aviso?.tieneFlyer && !quitarFlyer) ? (
+          {srcFlyer || (aviso?.tieneFlyer && !quitarFlyer) ? (
             <div className="overflow-hidden rounded-xl border border-dashed border-border bg-muted/30">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={vistaFlyer ?? (aviso ? urlFlyerAviso(aviso.id) : "")}
-                alt={
-                  vistaFlyer
-                    ? "Vista previa del flyer"
-                    : `Flyer de ${aviso?.titulo ?? "aviso"}`
-                }
-                className="mx-auto max-h-80 w-auto max-w-full object-contain p-3"
-              />
+              {srcFlyer ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={srcFlyer}
+                  alt={
+                    vistaFlyer
+                      ? "Vista previa del flyer"
+                      : `Flyer de ${aviso?.titulo ?? "aviso"}`
+                  }
+                  className="mx-auto max-h-80 w-auto max-w-full object-contain p-3"
+                />
+              ) : (
+                <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  Cargando imagen…
+                </p>
+              )}
               <div className="flex flex-col gap-2 border-t bg-card px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
                 <p className="truncate text-xs text-muted-foreground">
                   {flyer?.name ?? "Flyer actual"}

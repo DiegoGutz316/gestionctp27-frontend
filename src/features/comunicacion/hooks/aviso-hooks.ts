@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -8,10 +9,13 @@ import {
   desactivarAviso,
   editarAviso,
   obtenerAviso,
+  obtenerFlyerGestion,
   registrarAviso,
+  urlFlyerAviso,
 } from "../servicios/aviso.service";
 import type {
   ConsultarAvisos,
+  EstadoAviso,
   RegistrarAviso,
 } from "../validacion/aviso.validacion";
 
@@ -69,6 +73,57 @@ export function useEditarAviso() {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: avisosQueryKey }),
   });
+}
+
+/**
+ * El aviso activo usa la imagen pública. El inactivo se pide con la sesión,
+ * porque esa imagen no se publica.
+ */
+export function useSrcFlyer(
+  aviso: { id: number; estado: EstadoAviso; tieneFlyer: boolean } | null,
+): string | null {
+  const id = aviso?.id ?? 0;
+  const estado = aviso?.estado ?? null;
+  const tieneFlyer = aviso?.tieneFlyer ?? false;
+
+  const [src, setSrc] = useState<string | null>(() =>
+    tieneFlyer && estado === "ACTIVO" ? urlFlyerAviso(id) : null,
+  );
+
+  useEffect(() => {
+    if (!tieneFlyer || id <= 0) {
+      setSrc(null);
+      return;
+    }
+
+    if (estado === "ACTIVO") {
+      setSrc(urlFlyerAviso(id));
+      return;
+    }
+
+    let cancelado = false;
+    let objeto: string | null = null;
+
+    void obtenerFlyerGestion(id)
+      .then((url) => {
+        if (cancelado) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+        objeto = url;
+        setSrc(url);
+      })
+      .catch(() => {
+        if (!cancelado) setSrc(null);
+      });
+
+    return () => {
+      cancelado = true;
+      if (objeto) URL.revokeObjectURL(objeto);
+    };
+  }, [id, estado, tieneFlyer]);
+
+  return src;
 }
 
 export function useDesactivarAviso() {

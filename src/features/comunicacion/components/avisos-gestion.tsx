@@ -56,13 +56,14 @@ export function AvisosGestion() {
   const consulta = useAvisos({
     pagina,
     q: q || undefined,
-    estado: puedeAdministrar ? estado : estado === "INACTIVO" ? "INACTIVO" : "ACTIVO",
+    estado: puedeAdministrar ? estado : "ACTIVO",
   });
 
   const avisos = consulta.data?.datos ?? [];
   const meta = consulta.data?.meta;
   const total = meta?.total ?? 0;
-  const hayFiltro = q.length > 0 || estado !== "TODOS";
+  const hayFiltro =
+    q.length > 0 || (puedeAdministrar && estado !== "TODOS");
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
@@ -122,33 +123,35 @@ export function AvisosGestion() {
           />
         </div>
 
-        <div
-          className="flex min-w-0 gap-1 overflow-x-auto overscroll-x-contain"
-          role="group"
-          aria-label="Filtrar por estado"
-        >
-          {FILTROS.map((filtro) => {
-            const activo = estado === filtro.id;
-            return (
-              <button
-                key={filtro.id}
-                type="button"
-                aria-pressed={activo}
-                onClick={() => {
-                  setEstado(filtro.id);
-                  setPagina(1);
-                }}
-                className={`shrink-0 cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium whitespace-nowrap transition md:py-1.5 ${
-                  activo
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {filtro.etiqueta}
-              </button>
-            );
-          })}
-        </div>
+        {puedeAdministrar ? (
+          <div
+            className="flex min-w-0 gap-1 overflow-x-auto overscroll-x-contain"
+            role="group"
+            aria-label="Filtrar por estado"
+          >
+            {FILTROS.map((filtro) => {
+              const activo = estado === filtro.id;
+              return (
+                <button
+                  key={filtro.id}
+                  type="button"
+                  aria-pressed={activo}
+                  onClick={() => {
+                    setEstado(filtro.id);
+                    setPagina(1);
+                  }}
+                  className={`shrink-0 cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium whitespace-nowrap transition md:py-1.5 ${
+                    activo
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {filtro.etiqueta}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
 
         {hayFiltro ? (
           <Button

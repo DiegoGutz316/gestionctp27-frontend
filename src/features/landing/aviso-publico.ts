@@ -18,30 +18,56 @@ export function etiquetaCategoria(aviso: AvisoPublico): string | null {
   return categoria ? ETIQUETA_CATEGORIA_AVISO[categoria] : null;
 }
 
-export function formatearFechaAviso(valor: string): string {
-  const [anio, mes, dia] = valor.slice(0, 10).split("-").map(Number);
-  if (!anio || !mes || !dia) return valor;
+const ZONA_COSTA_RICA = "America/Costa_Rica";
 
-  return new Date(anio, mes - 1, dia).toLocaleDateString("es-CR", {
+/** Día de calendario en Costa Rica. Una fecha AAAA-MM-DD no se desplaza. */
+export function diaCalendario(valor: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) return valor;
+
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return valor.slice(0, 10);
+
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: ZONA_COSTA_RICA,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(fecha);
+}
+
+export function formatearFechaAviso(valor: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+    const [anio, mes, dia] = valor.split("-").map(Number);
+    if (!anio || !mes || !dia) return valor;
+
+    return new Date(anio, mes - 1, dia).toLocaleDateString("es-CR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return valor;
+
+  return fecha.toLocaleDateString("es-CR", {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: ZONA_COSTA_RICA,
   });
 }
 
 export function fechasDelAviso(aviso: AvisoPublico): {
-  publicacion: string;
-  actividad: string | null;
+  actividad: string;
+  publicacion: string | null;
 } {
-  const actividadExplicita = aviso.fechaActividad?.trim() || null;
-  const publicacion = aviso.creadoEn?.trim() || aviso.fecha;
-  const actividad = aviso.creadoEn
-    ? actividadExplicita ?? aviso.fecha
-    : actividadExplicita;
+  const actividad = aviso.fechaActividad?.trim() || aviso.fecha;
+  const creado = aviso.creadoEn?.trim() || null;
 
-  if (actividad && actividad.slice(0, 10) === publicacion.slice(0, 10)) {
-    return { publicacion, actividad: null };
+  if (!creado || diaCalendario(creado) === diaCalendario(actividad)) {
+    return { actividad, publicacion: null };
   }
 
-  return { publicacion, actividad };
+  return { actividad, publicacion: creado };
 }

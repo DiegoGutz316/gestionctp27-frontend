@@ -23,7 +23,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { urlFlyerAviso } from "../servicios/aviso.service";
+import { formatearFechaPublicacion } from "../fecha-aviso";
+import { useSrcFlyer } from "../hooks/aviso-hooks";
 import {
   ETIQUETA_CATEGORIA_AVISO,
   ETIQUETA_ESTADO_AVISO,
@@ -162,7 +163,9 @@ export function AvisosTabla({
                   {formatearFecha(aviso.fecha)}
                 </TableCell>
                 <TableCell className="hidden whitespace-nowrap text-muted-foreground md:table-cell">
-                  {aviso.creadoEn ? formatearFecha(aviso.creadoEn) : "—"}
+                  {aviso.creadoEn
+                    ? formatearFechaPublicacion(aviso.creadoEn)
+                    : "—"}
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -241,7 +244,9 @@ export function AvisosTabla({
 }
 
 function Miniatura({ aviso }: { aviso: AvisoRespuesta }) {
-  if (!aviso.tieneFlyer) {
+  const src = useSrcFlyer(aviso.tieneFlyer ? aviso : null);
+
+  if (!src) {
     return (
       <span className="flex size-10 items-center justify-center rounded-md bg-muted text-muted-foreground">
         <ImageIcon className="size-4" />
@@ -252,7 +257,7 @@ function Miniatura({ aviso }: { aviso: AvisoRespuesta }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={urlFlyerAviso(aviso.id)}
+      src={src}
       alt=""
       className="size-10 rounded-md border bg-muted object-contain"
     />
