@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 import { animalSchema } from "../../animal/validacion/animal.validacion";
-import { TIPOS_PRODUCCION } from "../models/produccion.model";
+import {
+  TIPOS_PRODUCCION,
+  tiposProduccionDeEspecie,
+} from "../models/produccion.model";
 
 const cantidadSchema = z
   .string({ error: "La cantidad es obligatoria" })
@@ -42,6 +45,33 @@ export const registrarProduccionSchema = z.object({
       "La fecha de producción debe tener un formato válido",
     ),
 });
+
+/**
+ * Esquema de registro que además exige que el tipo corresponda a la especie
+ * del animal. La especie no viaja en el formulario, así que se recibe una
+ * función que la busca por `animalId`. Si la especie no se conoce, no se marca
+ * error aquí y decide el backend.
+ */
+export function crearRegistrarProduccionSchema(
+  especieDeAnimal: (animalId: number) => string | undefined,
+) {
+  return registrarProduccionSchema.superRefine((datos, contexto) => {
+    const permitidos = tiposProduccionDeEspecie(
+      especieDeAnimal(datos.animalId),
+    );
+
+    if (
+      permitidos.length > 0 &&
+      !permitidos.includes(datos.tipoProduccion)
+    ) {
+      contexto.addIssue({
+        code: "custom",
+        path: ["tipoProduccion"],
+        message: "El tipo de producción no corresponde a la especie del animal",
+      });
+    }
+  });
+}
 
 export type RegistrarProduccion = z.output<typeof registrarProduccionSchema>;
 export type RegistrarProduccionInput = z.input<typeof registrarProduccionSchema>;
