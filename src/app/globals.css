@@ -452,6 +452,18 @@ html[data-escala-ampliada] {
   display: none;
 }
 
+/* Hoja del libro de caja: fondo claro fijo. En modo oscuro el texto del
+   sistema es claro y se pierde sobre el amarillo, el azul y el blanco. */
+.libro-asientos,
+.libro-asientos th,
+.libro-asientos td {
+  color: #111111;
+}
+
+.libro-asientos tfoot {
+  background: transparent;
+}
+
 /* Plantilla oficial MEP: Arial en el cuerpo, Calibri en observaciones.
    En el celular conserva el ancho del formulario y se desplaza de lado,
    para que las columnas no aplasten el texto unas letras sobre otras. */

@@ -174,7 +174,7 @@ export function AsientosLibro({
         </p>
       ) : null}
 
-      <div className="overflow-x-auto rounded-xl border bg-white shadow-xs">
+      <div className="libro-asientos overflow-x-auto rounded-xl border bg-white shadow-xs">
         <Table className="font-[Arial,Helvetica,sans-serif]">
           <TableHeader>
             <TableRow className="bg-[#ffff99] hover:bg-[#ffff99]">
