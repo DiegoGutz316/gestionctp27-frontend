@@ -45,6 +45,12 @@ export const editarUsuarioSchema = z.object({
     error: "Seleccione un rol válido",
   }),
   activo: z.boolean({ error: "El estado activo debe ser verdadero o falso" }),
+  contrasena: z
+    .string()
+    .max(72, "La contraseña no puede superar 72 caracteres")
+    .refine((valor) => valor.length === 0 || valor.length >= 8, {
+      error: "La contraseña debe tener al menos 8 caracteres",
+    }),
 });
 
 export type EditarUsuario = z.output<typeof editarUsuarioSchema>;

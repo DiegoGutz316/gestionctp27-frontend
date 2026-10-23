@@ -29,7 +29,7 @@ export function ProductosTabla({
 }: ProductosTablaProps) {
   return (
     <div className="overflow-x-auto rounded-xl border bg-card shadow-sm">
-      <Table className="min-w-[1000px]">
+      <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -37,16 +37,16 @@ export function ProductosTabla({
             </TableHead>
             {/* Backlog 4.7: la categoría es una columna propia, no solo el
                 subtítulo del nombre, para que el orden por categoría se lea. */}
-            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
               Categoría
             </TableHead>
-            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
               Unidad
             </TableHead>
-            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
               Departamento
             </TableHead>
-            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
               Ubicación
             </TableHead>
             <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -71,16 +71,16 @@ export function ProductosTabla({
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-5 w-20" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-5 w-16" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-5 w-24" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-5 w-28" />
                   </TableCell>
                   <TableCell>

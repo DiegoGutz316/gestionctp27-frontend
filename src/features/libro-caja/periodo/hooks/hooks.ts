@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   EditarPeriodo,
   FiltrarPeriodos,
+  PieInformeRespuesta,
   SolicitarFondo,
 } from "../validacion/periodo.validacion";
 import type { CrearAsiento } from "../validacion/asiento.validacion";
@@ -11,11 +12,18 @@ import {
   abrirPeriodo,
   cerrarPeriodo,
   editarPeriodo,
+  guardarPieInforme,
   listarPeriodos,
   obtenerPeriodo,
   solicitarFondo,
 } from "../servicios/periodo.service";
-import { crearAsiento, listarAsientos } from "../servicios/asiento.service";
+import {
+  actualizarAsiento,
+  crearAsiento,
+  eliminarAsiento,
+  listarAsientos,
+  reintentarConsulta,
+} from "../servicios/asiento.service";
 
 export const periodosQueryKey = ["libro-caja", "periodos"] as const;
 
@@ -105,8 +113,55 @@ export function useAsientos(periodoId: number, fondoId: number) {
 export function useCrearAsiento(periodoId: number, fondoId: number) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (datos: CrearAsiento) =>
-      crearAsiento(periodoId, fondoId, datos),
+    mutationFn: ({
+      datos,
+      idempotencyKey,
+    }: {
+      datos: CrearAsiento;
+      idempotencyKey: string;
+    }) => crearAsiento(periodoId, fondoId, datos, idempotencyKey),
+    retry: reintentarConsulta,
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: asientosQueryKey(periodoId, fondoId),
+      }),
+  });
+}
+
+export function useActualizarAsiento(periodoId: number, fondoId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      asientoId,
+      datos,
+    }: {
+      asientoId: number;
+      datos: CrearAsiento;
+    }) => actualizarAsiento(periodoId, fondoId, asientoId, datos),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: asientosQueryKey(periodoId, fondoId),
+      }),
+  });
+}
+
+export function useEliminarAsiento(periodoId: number, fondoId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (asientoId: number) =>
+      eliminarAsiento(periodoId, fondoId, asientoId),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: asientosQueryKey(periodoId, fondoId),
+      }),
+  });
+}
+
+export function useGuardarPieInforme(periodoId: number, fondoId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (datos: PieInformeRespuesta) =>
+      guardarPieInforme(periodoId, fondoId, datos),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: asientosQueryKey(periodoId, fondoId),

@@ -7,6 +7,12 @@ export const configuracionStockSchema = z.object({
   activo: z.boolean(),
   creadoEn: z.string(),
   actualizadoEn: z.string(),
+  producto: z
+    .object({
+      id: z.number(),
+      nombre: z.string(),
+    })
+    .optional(),
 });
 
 export type ConfiguracionStock = z.infer<typeof configuracionStockSchema>;

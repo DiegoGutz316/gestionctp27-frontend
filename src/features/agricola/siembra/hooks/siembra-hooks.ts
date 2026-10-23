@@ -10,6 +10,7 @@ import type {
 } from "../models/siembra.model";
 import {
   consultarSiembras,
+  obtenerDetalleSiembra,
   finalizarSiembra,
   registrarSiembra,
 } from "../servicios/siembra.service";
@@ -21,6 +22,14 @@ export function useSiembras(filtros: ConsultarSiembras = {}) {
     queryKey: [...siembrasQueryKey, filtros],
     queryFn: () => consultarSiembras(filtros),
     placeholderData: (anterior) => anterior,
+  });
+}
+
+export function useDetalleSiembra(id: number) {
+  return useQuery({
+    queryKey: [...siembrasQueryKey, "detalle", id],
+    queryFn: () => obtenerDetalleSiembra(id),
+    enabled: Number.isFinite(id) && id > 0,
   });
 }
 

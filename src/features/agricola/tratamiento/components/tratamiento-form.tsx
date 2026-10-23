@@ -27,7 +27,10 @@ import {
   ETIQUETA_UNIDAD_TRATAMIENTO,
   fechaHoyLocal,
   nombreDeCama,
-  registrarTratamientoSchema,
+  ACTIVIDADES_AGRICOLAS,
+  ETIQUETA_ACTIVIDAD,
+  cuidadoSchema,
+  usaProducto,
   TIPOS_TRATAMIENTO,
   UNIDADES_TRATAMIENTO,
 } from "../models/tratamiento.model";
@@ -71,10 +74,39 @@ export function TratamientoForm() {
   const siembraDeCama = (camaId: string) =>
     activas.find((siembra) => String(siembra.cama.id) === camaId);
 
+  /**
+   * Un riego o una limpieza no llevan producto: los campos quedan vacios en
+   * el formulario y aqui se quitan, porque el backend rechaza que vengan.
+   */
+  const actividadesItems = ACTIVIDADES_AGRICOLAS.map((actividad) => ({
+    value: actividad,
+    label: ETIQUETA_ACTIVIDAD[actividad],
+  }));
+
+  const limpiarSegunActividad = (valor: Record<string, string>) => {
+    const comun = {
+      siembraId: valor.siembraId,
+      actividad: valor.actividad,
+      fecha: valor.fecha,
+      observaciones: valor.observaciones?.trim() ? valor.observaciones : undefined,
+    };
+
+    return usaProducto(valor.actividad)
+      ? {
+          ...comun,
+          tipo: valor.tipo === "" ? undefined : valor.tipo,
+          producto: valor.producto === "" ? undefined : valor.producto,
+          cantidad: valor.cantidad === "" ? undefined : valor.cantidad,
+          unidad: valor.unidad === "" ? undefined : valor.unidad,
+        }
+      : comun;
+  };
+
   const form = useForm({
     defaultValues: {
       camaId: "",
       siembraId: "",
+      actividad: "",
       tipo: "",
       producto: "",
       fecha: "",
@@ -84,7 +116,7 @@ export function TratamientoForm() {
     },
     validators: {
       onSubmit: ({ value }) => {
-        const errores = zodValidator(registrarTratamientoSchema)({ value });
+        const errores = zodValidator(cuidadoSchema)({ value: limpiarSegunActividad(value) });
         if (errores) return errores;
 
         const siembra = siembraDeCama(value.camaId);
@@ -102,9 +134,9 @@ export function TratamientoForm() {
     },
     onSubmit: async ({ value }) => {
       try {
-        const datos = registrarTratamientoSchema.parse(value);
+        const datos = cuidadoSchema.parse(limpiarSegunActividad(value));
         await registrar.mutateAsync(datos);
-        toast.success("Tratamiento registrado correctamente.");
+        toast.success("Cuidado registrado correctamente.");
         router.push("/dashboard/agricola/tratamientos");
       } catch (error) {
         toast.error(getMensajeDeError(error));
@@ -195,6 +227,50 @@ export function TratamientoForm() {
           }}
         </form.Field>
 
+        <form.Field name="actividad">
+          {(field) => {
+            const errors = fieldErrors(field.state.meta.errors);
+            const invalid = errors.length > 0;
+
+            return (
+              <Field data-invalid={invalid}>
+                <FieldLabel htmlFor={field.name} required>
+                  Actividad
+                </FieldLabel>
+                <Select
+                  items={actividadesItems}
+                  value={field.state.value === "" ? null : field.state.value}
+                  onValueChange={(valor) =>
+                    field.handleChange((valor as string | null) ?? "")
+                  }
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    className="w-full"
+                    aria-invalid={invalid}
+                    onBlur={field.handleBlur}
+                  >
+                    <SelectValue placeholder="¿Qué se hizo?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {actividadesItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError errors={errors} />
+              </Field>
+            );
+          }}
+        </form.Field>
+
+        {/* El producto solo aparece en las labores que lo gastan. */}
+        <form.Subscribe selector={(estado) => estado.values.actividad}>
+          {(actividad) =>
+            usaProducto(actividad) ? (
+              <>
         <form.Field name="tipo">
           {(field) => {
             const errors = fieldErrors(field.state.meta.errors);
@@ -258,8 +334,17 @@ export function TratamientoForm() {
             );
           }}
         </form.Field>
+              </>
+            ) : null
+          }
+        </form.Subscribe>
 
         <div className="grid gap-4 sm:grid-cols-3">
+          {/* Cantidad y unidad solo cuando se aplica un producto. */}
+          <form.Subscribe selector={(estado) => estado.values.actividad}>
+            {(actividad) =>
+              usaProducto(actividad) ? (
+                <>
           <form.Field name="cantidad">
             {(field) => {
               const errors = fieldErrors(field.state.meta.errors);
@@ -326,6 +411,12 @@ export function TratamientoForm() {
               );
             }}
           </form.Field>
+                </>
+              ) : null
+            }
+          </form.Subscribe>
+
+
 
           <form.Field name="fecha">
             {(field) => {

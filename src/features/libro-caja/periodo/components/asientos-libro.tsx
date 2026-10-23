@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Home, Printer } from "lucide-react";
 import {
@@ -23,14 +24,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
+import { useAuth } from "@/features/auth/context/auth-context";
 import {
   formatearColones,
   formatearFechaInstante,
   formatearFechaPeriodo,
 } from "@/features/libro-caja/formato";
 import { ETIQUETA_ESTADO_PERIODO } from "../models/periodo.model";
+import type { AsientoRespuesta } from "../validacion/asiento.validacion";
 import { useAsientos } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/asiento.service";
+import { AsientoAnularDialog } from "./asiento-anular-dialog";
+import { AsientoEditarDialog } from "./asiento-editar-dialog";
 import { AsientoForm } from "./asiento-form";
 
 function celdaMonto(monto: number): string {
@@ -45,6 +50,9 @@ export function AsientosLibro({
   fondoId: number;
 }) {
   const libro = useAsientos(periodoId, fondoId);
+  const { puede } = useAuth();
+  const [editando, setEditando] = useState<AsientoRespuesta | null>(null);
+  const [anulando, setAnulando] = useState<AsientoRespuesta | null>(null);
 
   if (libro.isLoading) {
     return (
@@ -68,6 +76,8 @@ export function AsientosLibro({
   const datos = libro.data;
   const abierto = datos.periodo.estado === "ABIERTO";
   const fondoListo = datos.fondo.estado === "SOLICITADO";
+  const puedeCorregir =
+    abierto && fondoListo && puede("LIBRO_CAJA", "COMPLETO");
   const unidad = datos.fondo.departamento.nombreUnidad;
 
   return (
@@ -179,6 +189,9 @@ export function AsientosLibro({
               <TableCell className="py-2 text-right text-sm font-bold tabular-nums">
                 {formatearColones(datos.fondoInicial)}
               </TableCell>
+              {puedeCorregir ? (
+                <TableCell className="print:hidden" />
+              ) : null}
             </TableRow>
             <TableRow className="hover:bg-transparent">
               <TableHead className="border border-black py-2 text-center text-sm font-normal text-black">
@@ -202,13 +215,18 @@ export function AsientosLibro({
               <TableHead className="border border-black bg-[#deeaf6] py-2 text-center text-sm font-bold text-black">
                 Saldo
               </TableHead>
+              {puedeCorregir ? (
+                <TableHead className="print:hidden border border-black bg-[#deeaf6] py-2 text-center text-sm font-bold text-black">
+                  <span className="sr-only">Acciones</span>
+                </TableHead>
+              ) : null}
             </TableRow>
           </TableHeader>
           <TableBody>
             {datos.asientos.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={puedeCorregir ? 8 : 7}
                   className="border border-black py-8 text-center text-sm text-muted-foreground"
                 >
                   Todavía no hay ingresos ni egresos en este departamento.
@@ -239,6 +257,28 @@ export function AsientosLibro({
                 <TableCell className="border border-black bg-[#deeaf6] py-2 text-right tabular-nums">
                   {formatearColones(asiento.saldo)}
                 </TableCell>
+                {puedeCorregir ? (
+                  <TableCell className="print:hidden border border-black py-2 text-center">
+                    <div className="flex justify-center gap-1">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setEditando(asiento)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => setAnulando(asiento)}
+                      >
+                        Anular
+                      </Button>
+                    </div>
+                  </TableCell>
+                ) : null}
               </TableRow>
             ))}
           </TableBody>
@@ -259,10 +299,32 @@ export function AsientosLibro({
               <TableCell className="border border-black py-2 text-right font-bold tabular-nums">
                 {formatearColones(datos.totales.saldo)}
               </TableCell>
+              {puedeCorregir ? (
+                <TableCell className="print:hidden border border-black" />
+              ) : null}
             </TableRow>
           </TableFooter>
         </Table>
       </div>
+
+      <AsientoEditarDialog
+        key={editando?.id ?? 0}
+        libro={datos}
+        asiento={editando}
+        open={editando !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) setEditando(null);
+        }}
+      />
+      <AsientoAnularDialog
+        periodoId={periodoId}
+        fondoId={fondoId}
+        asiento={anulando}
+        open={anulando !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) setAnulando(null);
+        }}
+      />
     </section>
   );
 }

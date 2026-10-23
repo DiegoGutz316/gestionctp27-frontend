@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Home } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import {
@@ -11,6 +12,14 @@ import {
 import type { DepartamentoRespuesta } from "@/features/libro-caja/departamento/validacion/departamento.validacion";
 import { VALOR_MAXIMO_FONDO_TEXTO } from "../models/periodo.model";
 import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import {
   Field,
   FieldDescription,
@@ -24,19 +33,63 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
-import { useDepartamentos } from "@/features/libro-caja/departamento/hooks/hooks";
+import { useDepartamentosActivos } from "@/features/libro-caja/departamento/hooks/hooks";
 import { useAbrirPeriodo, usePeriodos } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/periodo.service";
 
-const LIMITE_DEPARTAMENTOS = 100;
+export function AbrirPeriodoVista() {
+  return (
+    <section className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-5">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              render={<Link href="/dashboard" />}
+              className="flex items-center gap-1.5"
+            >
+              <Home className="size-3.5" />
+              Inicio
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/dashboard/libro-caja" />}>
+              Libro de caja
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              render={<Link href="/dashboard/libro-caja/periodos" />}
+            >
+              Periodos
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Abrir</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-color-company">
+          Abrir periodo
+        </h1>
+        <p className="mt-0.5 text-sm text-muted-foreground">
+          El fondo de cada departamento queda registrado al abrir el periodo,
+          incluso cuando es ₡0,00.
+        </p>
+      </div>
+
+      <PeriodoForm />
+    </section>
+  );
+}
 
 export function PeriodoForm() {
   const router = useRouter();
-  const departamentos = useDepartamentos({
-    pagina: 1,
-    limite: LIMITE_DEPARTAMENTOS,
-    activo: true,
-  });
+  const departamentos = useDepartamentosActivos();
   const periodosAbiertos = usePeriodos({
     estado: "ABIERTO",
     pagina: 1,
@@ -102,7 +155,7 @@ export function PeriodoForm() {
     );
   }
 
-  const lista = departamentos.data?.datos ?? [];
+  const lista = departamentos.data ?? [];
   if (lista.length === 0) {
     return (
       <FieldDescription>

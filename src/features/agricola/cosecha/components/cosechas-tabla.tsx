@@ -64,11 +64,11 @@ export function CosechasTabla({
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead>Cultivo</TableHead>
-            <TableHead className="w-40">Ubicación</TableHead>
-            <TableHead className="w-36">Cama de cultivo</TableHead>
-            <TableHead className="w-40">Fecha de cosecha</TableHead>
+            <TableHead className="hidden w-40 md:table-cell">Ubicación</TableHead>
+            <TableHead className="hidden w-36 sm:table-cell">Cama de cultivo</TableHead>
+            <TableHead className="hidden w-40 sm:table-cell">Fecha de cosecha</TableHead>
             <TableHead className="w-40 text-center">Cantidad obtenida</TableHead>
-            <TableHead>Observaciones</TableHead>
+            <TableHead className="hidden md:table-cell">Observaciones</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -79,19 +79,19 @@ export function CosechasTabla({
                   <TableCell>
                     <Skeleton className="h-4 w-24" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-4 w-28" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     <Skeleton className="h-4 w-20" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     <Skeleton className="h-4 w-24" />
                   </TableCell>
                   <TableCell>
                     <Skeleton className="mx-auto h-4 w-16" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-4 w-48" />
                   </TableCell>
                 </TableRow>
@@ -127,20 +127,20 @@ export function CosechasTabla({
                 <TableRow key={cosecha.id}>
                   <TableCell className="font-medium">
                     {cosecha.siembra.tipoCultivo}
-                    <span className="block text-xs text-muted-foreground">
+                    <span className="hidden text-xs text-muted-foreground sm:block">
                       Sembrada el {formatearFecha(cosecha.siembra.fechaSiembra)}
                     </span>
                   </TableCell>
 
-                  <TableCell className="whitespace-nowrap">
+                  <TableCell className="hidden whitespace-nowrap md:table-cell">
                     {cosecha.siembra.cama.ubicacion}
                   </TableCell>
 
-                  <TableCell className="font-medium whitespace-nowrap">
+                  <TableCell className="hidden font-medium whitespace-nowrap sm:table-cell">
                     {cosecha.siembra.cama.codigo}
                   </TableCell>
 
-                  <TableCell className="whitespace-nowrap">
+                  <TableCell className="hidden whitespace-nowrap sm:table-cell">
                     {formatearFecha(cosecha.fecha)}
                   </TableCell>
 
@@ -151,7 +151,7 @@ export function CosechasTabla({
                     )}
                   </TableCell>
 
-                  <TableCell className="whitespace-normal break-words text-muted-foreground">
+                  <TableCell className="hidden whitespace-normal break-words text-muted-foreground md:table-cell">
                     {cosecha.observaciones?.trim()
                       ? cosecha.observaciones
                       : "Sin observaciones"}

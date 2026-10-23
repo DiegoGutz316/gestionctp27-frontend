@@ -22,18 +22,7 @@ export default async function EditarStockPage({
 
   return (
     <RequerirPermiso modulo="INVENTARIO" nivel="COMPLETO">
-      <main className="mx-auto w-full max-w-lg">
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Editar configuración de stock
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Actualice el stock mínimo o el precio. Las existencias se gestionan
-            por separado mediante entradas y salidas.
-          </p>
-        </header>
-        <StockEditar id={configuracionId} />
-      </main>
+      <StockEditar id={configuracionId} />
     </RequerirPermiso>
   );
 }

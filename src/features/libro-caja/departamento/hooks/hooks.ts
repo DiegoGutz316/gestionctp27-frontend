@@ -5,11 +5,13 @@ import type {
   EditarDepartamento,
   FiltrarDepartamentos,
 } from "../validacion/departamento.validacion";
+import { periodosQueryKey } from "@/features/libro-caja/periodo/hooks/hooks";
 import {
   crearDepartamento,
   desactivarDepartamento,
   editarDepartamento,
   listarDepartamentos,
+  listarDepartamentosActivos,
   obtenerDepartamento,
 } from "../servicios/departamento.service";
 
@@ -26,6 +28,13 @@ export function useDepartamentos(
   });
 }
 
+export function useDepartamentosActivos() {
+  return useQuery({
+    queryKey: [...departamentosQueryKey, "activos", "todos"],
+    queryFn: listarDepartamentosActivos,
+  });
+}
+
 export function useDepartamento(id: number) {
   return useQuery({
     queryKey: [...departamentosQueryKey, id],
@@ -38,8 +47,10 @@ export function useCrearDepartamento() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: crearDepartamento,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: departamentosQueryKey }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: departamentosQueryKey });
+      void queryClient.invalidateQueries({ queryKey: periodosQueryKey });
+    },
   });
 }
 

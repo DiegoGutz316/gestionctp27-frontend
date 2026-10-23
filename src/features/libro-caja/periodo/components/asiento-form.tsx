@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import {
@@ -15,6 +16,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ApiError } from "@/lib/api";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 import { VALOR_MAXIMO_FONDO_TEXTO } from "../models/periodo.model";
@@ -25,6 +27,14 @@ import {
 } from "../validacion/asiento.validacion";
 import { useCrearAsiento } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/asiento.service";
+
+function esClaveYaUsada(error: unknown): boolean {
+  return (
+    error instanceof ApiError &&
+    error.status === 409 &&
+    error.message.includes("Idempotency-Key")
+  );
+}
 
 function fechaInicial(inicio: string, fin: string): string {
   const hoy = fechaHoyLocal();
@@ -40,6 +50,11 @@ export function AsientoForm({
   const crear = useCrearAsiento(libro.periodo.id, libro.fondo.id);
   const inicio = fechaPeriodoIso(libro.periodo.fechaInicio);
   const fin = fechaPeriodoIso(libro.periodo.fechaFin);
+  const idempotencyKey = useRef<string | null>(null);
+
+  function rotarClave() {
+    idempotencyKey.current = globalThis.crypto.randomUUID();
+  }
 
   const valoresIniciales: CrearAsientoInput = {
     fecha: fechaInicial(inicio, fin),
@@ -56,10 +71,22 @@ export function AsientoForm({
     },
     onSubmit: async ({ value }) => {
       try {
-        await crear.mutateAsync(crearAsientoSchema.parse(value));
+        idempotencyKey.current ??= globalThis.crypto.randomUUID();
+        await crear.mutateAsync({
+          datos: crearAsientoSchema.parse(value),
+          idempotencyKey: idempotencyKey.current,
+        });
         toast.success("Asiento registrado.");
+        rotarClave();
         form.reset();
       } catch (error) {
+        if (esClaveYaUsada(error)) {
+          rotarClave();
+          toast.error(
+            "El envío anterior ya se había guardado. Revise el libro y, si estos datos son otro asiento, envíelo otra vez.",
+          );
+          return;
+        }
         toast.error(getMensajeDeError(error));
       }
     },

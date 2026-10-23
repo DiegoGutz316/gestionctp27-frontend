@@ -173,7 +173,7 @@ export function PeriodoDetalle({ id }: { id: number }) {
               <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Unidad
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
                 Tipo
               </TableHead>
               <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -182,7 +182,7 @@ export function PeriodoDetalle({ id }: { id: number }) {
               <TableHead className="py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Monto
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
                 Registrado
               </TableHead>
               <TableHead className="w-[1%] py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -216,7 +216,7 @@ export function PeriodoDetalle({ id }: { id: number }) {
                   <TableCell className="py-3 font-medium">
                     {fondo.departamento.nombreUnidad}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Badge variant="secondary">
                       {fondo.departamento.tipoActividad}
                     </Badge>
@@ -239,7 +239,7 @@ export function PeriodoDetalle({ id }: { id: number }) {
                       ? formatearColones(fondo.montoSolicitado)
                       : "—"}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
                     {fondo.estado === "SOLICITADO" && fondo.solicitadoEn
                       ? formatearFechaHora(fondo.solicitadoEn)
                       : "—"}
@@ -254,20 +254,23 @@ export function PeriodoDetalle({ id }: { id: number }) {
                           <Link
                             href={`/dashboard/libro-caja/periodos/${id}/fondos/${fondo.id}`}
                             prefetch={false}
+                            aria-label={`Ver libro de ${fondo.departamento.nombreUnidad}`}
                           />
                         }
                       >
                         <BookOpen data-icon="inline-start" />
-                        Ver libro
+                        <span className="hidden sm:inline">Ver libro</span>
                       </Button>
                       {puedePedir ? (
                         <MostrarSiPuede modulo="LIBRO_CAJA" nivel="COMPLETO">
                           <Button
                             size="sm"
                             variant="outline"
+                            aria-label={`Solicitar fondo de ${fondo.departamento.nombreUnidad}`}
                             onClick={() => setFondoASolicitar(fondo)}
                           >
-                            Solicitar fondo
+                            <span className="hidden sm:inline">Solicitar fondo</span>
+                            <span className="sm:hidden">Pedir</span>
                           </Button>
                         </MostrarSiPuede>
                       ) : null}

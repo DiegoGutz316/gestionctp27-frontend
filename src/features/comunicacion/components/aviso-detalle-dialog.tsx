@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
 
-import { urlFlyerAviso } from "../servicios/aviso.service";
+import { formatearFechaPublicacion } from "../fecha-aviso";
+import { useSrcFlyer } from "../hooks/aviso-hooks";
 import {
   ETIQUETA_CATEGORIA_AVISO,
   ETIQUETA_ESTADO_AVISO,
@@ -26,6 +27,8 @@ type Props = {
 };
 
 export function AvisoDetalleDialog({ aviso, onCerrar }: Props) {
+  const srcFlyer = useSrcFlyer(aviso?.tieneFlyer ? aviso : null);
+
   return (
     <Dialog
       open={aviso !== null}
@@ -36,11 +39,11 @@ export function AvisoDetalleDialog({ aviso, onCerrar }: Props) {
       <DialogContent className="max-h-[92vh] gap-0 overflow-y-auto p-0 sm:max-w-2xl">
         {aviso ? (
           <>
-            {aviso.tieneFlyer ? (
+            {srcFlyer ? (
               <div className="flex items-center justify-center bg-muted/40 px-4 py-6 sm:px-8">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={urlFlyerAviso(aviso.id)}
+                  src={srcFlyer}
                   alt={`Flyer de ${aviso.titulo}`}
                   className="max-h-[58vh] w-full object-contain"
                 />
@@ -88,7 +91,7 @@ export function AvisoDetalleDialog({ aviso, onCerrar }: Props) {
                     <dt className="font-medium text-foreground">
                       Fecha de publicación
                     </dt>
-                    <dd>{formatearFecha(aviso.creadoEn)}</dd>
+                    <dd>{formatearFechaPublicacion(aviso.creadoEn)}</dd>
                   </div>
                 ) : null}
               </dl>

@@ -4,12 +4,15 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 
 import { FinalizarSiembraDialog } from "./finalizar-siembra-dialog";
 import {
   ETIQUETA_MOTIVO_FINALIZACION,
+  ETIQUETA_UNIDAD_SIEMBRA,
   formatearCantidad,
   formatearFecha,
   type MotivoFinalizacion,
@@ -34,8 +37,8 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead>Cultivo</TableHead>
-            <TableHead>Cama</TableHead>
-            <TableHead>Fecha de siembra</TableHead>
+            <TableHead className="hidden sm:table-cell">Cama</TableHead>
+            <TableHead className="hidden md:table-cell">Fecha de siembra</TableHead>
             <TableHead className="text-right">Cantidad</TableHead>
             <TableHead className="text-right">Ciclo</TableHead>
           </TableRow>
@@ -44,8 +47,8 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
           {cargando && Array.from({ length: 4 }).map((_, index) => (
             <TableRow key={`skeleton-${index}`}>
               <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+              <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-28" /></TableCell>
+              <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-24" /></TableCell>
               <TableCell><Skeleton className="ml-auto h-4 w-16" /></TableCell>
               <TableCell><Skeleton className="ml-auto h-8 w-24" /></TableCell>
             </TableRow>
@@ -58,13 +61,21 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
           ) : null}
           {siembras.map((siembra) => (
             <TableRow key={siembra.id}>
-              <TableCell className="font-medium">{siembra.tipoCultivo}</TableCell>
-              <TableCell>
-                <span className="font-medium">{siembra.cama.codigo}</span>
-                <span className="block text-xs text-muted-foreground">{siembra.cama.ubicacion}</span>
+              <TableCell className="font-medium">
+                {/* El ciclo completo: cuidados y cosechas de esta siembra. */}
+                <Link
+                  href={`/dashboard/agricola/siembras/${siembra.id}`}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {siembra.tipoCultivo}
+                </Link>
               </TableCell>
-              <TableCell>{formatearFecha(siembra.fechaSiembra)}</TableCell>
-              <TableCell className="text-right tabular-nums">{formatearCantidad(siembra.cantidadSembrada)}</TableCell>
+              <TableCell className="hidden whitespace-normal sm:table-cell">
+                <span className="font-medium">{siembra.cama.codigo}</span>
+                <span className="hidden text-xs text-muted-foreground md:block">{siembra.cama.ubicacion}</span>
+              </TableCell>
+              <TableCell className="hidden md:table-cell">{formatearFecha(siembra.fechaSiembra)}</TableCell>
+              <TableCell className="text-right tabular-nums">{formatearCantidad(siembra.cantidadSembrada)} {ETIQUETA_UNIDAD_SIEMBRA[siembra.unidadSembrada]}</TableCell>
               <TableCell className="text-right">
                 {siembra.finalizadaEn ? (
                   <span className="text-sm text-muted-foreground">

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
@@ -9,11 +10,19 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCamasCultivo } from "@/features/agricola/hooks/cama-cultivo-hooks";
+import { useCultivos } from "@/features/agricola/cultivo/hooks/cultivo-hooks";
+import { ETIQUETA_TIPO_CULTIVO } from "@/features/agricola/cultivo/models/cultivo.model";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 
 import { useRegistrarSiembra } from "../hooks/siembra-hooks";
-import { fechaHoyLocal, registrarSiembraSchema } from "../models/siembra.model";
+import {
+  ETIQUETA_UNIDAD_SIEMBRA,
+  UNIDADES_SIEMBRA,
+  fechaHoyLocal,
+  registrarSiembraSchema,
+  type UnidadSiembra,
+} from "../models/siembra.model";
 import { getMensajeDeError } from "../servicios/siembra.service";
 
 export function SiembraForm() {
@@ -28,8 +37,26 @@ export function SiembraForm() {
     label: `${/^cama\b/i.test(cama.codigo.trim()) ? cama.codigo.trim() : `Cama ${cama.codigo.trim()}`} — ${cama.ubicacion}`,
   }));
 
+  // Solo los activos: un cultivo desactivado no debe poder sembrarse.
+  const cultivos = useCultivos({ soloActivos: true });
+  const cultivosItems = (cultivos.data ?? []).map((cultivo) => ({
+    value: String(cultivo.id),
+    label: `${cultivo.nombre} · ${ETIQUETA_TIPO_CULTIVO[cultivo.tipo]}`,
+  }));
+
+  const unidadesItems = UNIDADES_SIEMBRA.map((unidad) => ({
+    value: unidad,
+    label: ETIQUETA_UNIDAD_SIEMBRA[unidad],
+  }));
+
   const form = useForm({
-    defaultValues: { camaId: "", tipoCultivo: "", fechaSiembra: "", cantidadSembrada: "" },
+    defaultValues: {
+      camaId: "",
+      cultivoId: "",
+      fechaSiembra: "",
+      cantidadSembrada: "",
+      unidadSembrada: "UNIDADES" as UnidadSiembra,
+    },
     validators: { onSubmit: zodValidator(registrarSiembraSchema) },
     onSubmit: async ({ value }) => {
       try {
@@ -89,22 +116,45 @@ export function SiembraForm() {
           }}
         </form.Field>
 
-        <form.Field name="tipoCultivo">
+        <form.Field name="cultivoId">
           {(field) => {
             const errors = fieldErrors(field.state.meta.errors);
             const invalid = errors.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name} required>Tipo de cultivo</FieldLabel>
-                <Input
-                  id={field.name}
-                  placeholder="Ej: Tomate"
-                  maxLength={120}
-                  aria-invalid={invalid}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                />
+                <FieldLabel htmlFor={field.name} required>Cultivo</FieldLabel>
+                <Select
+                  items={cultivosItems}
+                  value={field.state.value === "" ? null : field.state.value}
+                  onValueChange={(valor) => field.handleChange((valor as string | null) ?? "")}
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    className="w-full"
+                    aria-invalid={invalid}
+                    onBlur={field.handleBlur}
+                    disabled={cultivos.isPending || cultivosItems.length === 0}
+                  >
+                    <SelectValue placeholder={cultivos.isPending ? "Cargando cultivos…" : "Seleccione un cultivo"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cultivosItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {cultivos.isError ? (
+                  <p className="text-sm text-destructive">No se pudieron cargar los cultivos registrados.</p>
+                ) : null}
+                {!cultivos.isPending && !cultivos.isError && cultivosItems.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No hay cultivos registrados.{" "}
+                    <Link href="/dashboard/agricola/cultivos/nuevo" className="underline underline-offset-4">
+                      Registre uno primero
+                    </Link>
+                    .
+                  </p>
+                ) : null}
                 <FieldError errors={errors} />
               </Field>
             );
@@ -158,11 +208,51 @@ export function SiembraForm() {
               );
             }}
           </form.Field>
+
+          <form.Field name="unidadSembrada">
+            {(field) => {
+              const errors = fieldErrors(field.state.meta.errors);
+              const invalid = errors.length > 0;
+              return (
+                <Field data-invalid={invalid}>
+                  <FieldLabel htmlFor={field.name} required>
+                    Unidad
+                  </FieldLabel>
+                  <Select
+                    items={unidadesItems}
+                    value={field.state.value}
+                    onValueChange={(valor) =>
+                      field.handleChange(
+                        ((valor as string | null) ?? "UNIDADES") as UnidadSiembra,
+                      )
+                    }
+                  >
+                    <SelectTrigger
+                      id={field.name}
+                      className="w-full"
+                      aria-invalid={invalid}
+                      onBlur={field.handleBlur}
+                    >
+                      <SelectValue placeholder="Seleccione una unidad" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {unidadesItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError errors={errors} />
+                </Field>
+              );
+            }}
+          </form.Field>
         </div>
 
         <form.Subscribe selector={(state) => state.isSubmitting || registrar.isPending}>
           {(guardando) => (
-            <Button type="submit" disabled={guardando || camasItems.length === 0}>
+            <Button type="submit" disabled={guardando || camasItems.length === 0 || cultivosItems.length === 0}>
               {guardando ? "Guardando…" : "Registrar siembra"}
             </Button>
           )}

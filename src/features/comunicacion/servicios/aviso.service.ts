@@ -14,6 +14,24 @@ export function urlFlyerAviso(id: number) {
   return `${API_URL}/comunicacion/avisos/${id}/flyer`;
 }
 
+/** Imagen del panel, también si el aviso está inactivo. Devuelve una URL local. */
+export async function obtenerFlyerGestion(id: number): Promise<string> {
+  const respuesta = await fetch(
+    `${API_URL}/comunicacion/avisos/${id}/flyer/gestion`,
+    { credentials: "include" },
+  );
+
+  if (!respuesta.ok) {
+    const body = await respuesta.text().catch(() => "");
+    throw new ApiError(
+      respuesta.status,
+      body || `Error ${respuesta.status} al consultar el flyer`,
+    );
+  }
+
+  return URL.createObjectURL(await respuesta.blob());
+}
+
 const LIMITE_PAGINA_PUBLICA = 100;
 const MAX_PAGINAS_CALENDARIO = 10;
 

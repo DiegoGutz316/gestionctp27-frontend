@@ -21,17 +21,7 @@ export default async function EditarPeriodoPage({
 
   return (
     <RequerirPermiso modulo="LIBRO_CAJA" nivel="COMPLETO">
-      <main className="mx-auto w-full max-w-lg">
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight text-color-company">
-            Editar periodo
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Actualice el nombre y las fechas de un periodo abierto.
-          </p>
-        </header>
-        <PeriodoEditar id={periodoId} />
-      </main>
+      <PeriodoEditar id={periodoId} />
     </RequerirPermiso>
   );
 }

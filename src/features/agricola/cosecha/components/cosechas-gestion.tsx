@@ -38,7 +38,10 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { fechaHoyCR } from "@/lib/fechas";
 
 import { useCosechas } from "../hooks/cosecha-hooks";
-import { resumirTotales } from "../models/cosecha.model";
+import {
+  formatearCantidadConUnidad,
+  resumirTotales,
+} from "../models/cosecha.model";
 import { rangosRapidos } from "../models/rangos-fecha";
 import { getMensajeDeError } from "../servicios/cosecha.service";
 import { CosechasTabla } from "./cosechas-tabla";
@@ -150,6 +153,7 @@ export function CosechasGestion() {
   // Lo cosechado en todo el filtro, no en la página visible: es la cifra que
   // le importa a un docente, y contar registros no se la da.
   const totales = resumirTotales(consulta.data?.totales ?? []);
+  const porCultivo = consulta.data?.totalesPorCultivo ?? [];
   const hayFiltros = Boolean(
     cultivoDebounced || ubicacion || camaId || desde || hasta,
   );
@@ -314,6 +318,23 @@ export function CosechasGestion() {
                       totales ? ` · ${totales}` : ""
                     }`}
           </p>
+
+          {/* Cuanto se produjo de cada cultivo, sin mezclar unidades. */}
+          {porCultivo.length > 0 ? (
+            <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+              {porCultivo.map((total) => (
+                <li
+                  key={`${total.cultivo}-${total.unidadMedida}`}
+                  className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"
+                >
+                  <span className="font-medium text-foreground">
+                    {total.cultivo}
+                  </span>{" "}
+                  {formatearCantidadConUnidad(total.cantidad, total.unidadMedida)}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
