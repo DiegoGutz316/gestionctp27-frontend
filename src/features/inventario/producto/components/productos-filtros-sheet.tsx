@@ -25,10 +25,13 @@ import {
   DEPARTAMENTOS,
   ETIQUETA_DEPARTAMENTO,
   ETIQUETA_TIPO_PRODUCTO,
+  ETIQUETA_ORDEN_PRODUCTOS,
   ETIQUETA_UBICACION,
+  ORDENES_PRODUCTOS,
   TIPOS_PRODUCTO,
   UBICACIONES,
   type Departamento,
+  type OrdenProductos,
   type TipoProducto,
   type Ubicacion,
 } from "../models/producto.model";
@@ -51,6 +54,11 @@ const filtroDepartamentoItems = [
   })),
 ];
 
+const filtroOrdenItems = ORDENES_PRODUCTOS.map((orden) => ({
+  value: orden,
+  label: ETIQUETA_ORDEN_PRODUCTOS[orden],
+}));
+
 const filtroUbicacionItems = [
   { value: TODOS, label: "Todas las ubicaciones" },
   ...UBICACIONES.map((ubicacion) => ({
@@ -66,9 +74,11 @@ type ProductosFiltrosSheetProps = {
   tipoProducto: TipoProducto | "todos";
   departamento: Departamento | "todos";
   ubicacion: Ubicacion | "todos";
+  orden: OrdenProductos;
   onTipoProductoChange: (valor: TipoProducto | "todos") => void;
   onDepartamentoChange: (valor: Departamento | "todos") => void;
   onUbicacionChange: (valor: Ubicacion | "todos") => void;
+  onOrdenChange: (valor: OrdenProductos) => void;
   onLimpiar: () => void;
 };
 
@@ -79,9 +89,11 @@ export function ProductosFiltrosSheet({
   tipoProducto,
   departamento,
   ubicacion,
+  orden,
   onTipoProductoChange,
   onDepartamentoChange,
   onUbicacionChange,
+  onOrdenChange,
   onLimpiar,
 }: ProductosFiltrosSheetProps) {
   return (
@@ -115,6 +127,28 @@ export function ProductosFiltrosSheet({
         </SheetHeader>
 
         <div className="flex flex-1 flex-col gap-4 px-4">
+          <Field className="md:hidden">
+            <FieldLabel htmlFor="filtro-orden">Orden</FieldLabel>
+            <Select
+              items={filtroOrdenItems}
+              value={orden}
+              onValueChange={(valor) => {
+                onOrdenChange((valor as OrdenProductos) ?? "NOMBRE");
+              }}
+            >
+              <SelectTrigger id="filtro-orden" className="w-full">
+                <SelectValue placeholder="Nombre" />
+              </SelectTrigger>
+              <SelectContent>
+                {filtroOrdenItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+
           <Field>
             <FieldLabel htmlFor="filtro-tipo">Tipo de producto</FieldLabel>
             <Select

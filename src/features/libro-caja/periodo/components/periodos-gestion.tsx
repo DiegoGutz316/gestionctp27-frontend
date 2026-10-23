@@ -2,7 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, PlusIcon, SearchIcon } from "lucide-react";
+import { Home, ListFilterIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { AccionFlotante } from "@/components/accion-flotante";
+import { Badge } from "@/components/ui/badge";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -123,19 +135,25 @@ export function PeriodosGestion() {
               Ver periodo abierto
             </Button>
           ) : (
-            <Button
-              className="w-full sm:w-auto"
-              nativeButton={false}
-              render={<Link href="/dashboard/libro-caja/periodos/nuevo" />}
-            >
-              <PlusIcon data-icon="inline-start" />
-              Abrir periodo
-            </Button>
+            <>
+              <Button
+                className="hidden md:inline-flex"
+                nativeButton={false}
+                render={<Link href="/dashboard/libro-caja/periodos/nuevo" />}
+              >
+                <PlusIcon data-icon="inline-start" />
+                Abrir periodo
+              </Button>
+              <AccionFlotante
+                href="/dashboard/libro-caja/periodos/nuevo"
+                etiqueta="Abrir periodo"
+              />
+            </>
           )}
         </MostrarSiPuede>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -148,6 +166,52 @@ export function PeriodosGestion() {
           />
         </div>
 
+        <Sheet>
+          <SheetTrigger
+            render={
+              <Button type="button" variant="outline" className="shrink-0 gap-2 md:hidden" />
+            }
+          >
+            <ListFilterIcon className="size-4" />
+            Filtros
+            {estado !== TODOS ? (
+              <Badge variant="secondary" className="h-5 min-w-5 justify-center rounded-full px-1.5">
+                1
+              </Badge>
+            ) : null}
+          </SheetTrigger>
+          <SheetContent side="bottom" className="rounded-t-2xl">
+            <SheetHeader>
+              <SheetTitle>Filtros</SheetTitle>
+              <SheetDescription>Filtre los periodos por estado.</SheetDescription>
+            </SheetHeader>
+            <div className="px-4">
+              <Select
+                items={filtroEstadoItems}
+                value={estado}
+                onValueChange={(valor) => {
+                  setEstado((valor as EstadoPeriodo | "todos") ?? TODOS);
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger id="filtro-estado-periodo-movil" className="w-full">
+                  <SelectValue placeholder="Todos los estados" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filtroEstadoItems.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <SheetFooter>
+              <SheetClose render={<Button type="button" />}>Ver resultados</SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+
         <Select
           items={filtroEstadoItems}
           value={estado}
@@ -159,7 +223,7 @@ export function PeriodosGestion() {
           <SelectTrigger
             id="filtro-estado-periodo"
             aria-label="Filtrar por estado"
-            className="w-48 shrink-0"
+            className="hidden w-48 shrink-0 md:flex"
           >
             <SelectValue placeholder="Todos los estados" />
           </SelectTrigger>

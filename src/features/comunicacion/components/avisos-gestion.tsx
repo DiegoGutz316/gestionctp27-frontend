@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Home, Megaphone, Search, X } from "lucide-react";
 
+import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -101,17 +102,21 @@ export function AvisosGestion() {
 
         <MostrarSiPuede modulo="REPORTES" nivel="COMPLETO">
           <Button
-            className="w-full sm:w-auto"
+            className="hidden md:inline-flex"
             nativeButton={false}
             render={<Link href="/dashboard/comunicacion/avisos/nuevo" />}
           >
             <Megaphone data-icon="inline-start" />
             Publicar aviso
           </Button>
+          <AccionFlotante
+            href="/dashboard/comunicacion/avisos/nuevo"
+            etiqueta="Publicar aviso"
+          />
         </MostrarSiPuede>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input

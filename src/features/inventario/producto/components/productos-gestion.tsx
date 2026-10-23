@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpDownIcon, PlusIcon, SearchIcon, Home } from "lucide-react";
+import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
   Breadcrumb,
@@ -121,14 +122,20 @@ export function ProductosGestion() {
           </p>
         </div>
         {usuario?.rol === "ADMINISTRADOR" ? (
-          <Button
-            className="w-full sm:w-auto"
-            nativeButton={false}
-            render={<Link href="/dashboard/inventario/nuevo" />}
-          >
-            <PlusIcon data-icon="inline-start" />
-            Registrar producto
-          </Button>
+          <>
+            <Button
+              className="hidden md:inline-flex"
+              nativeButton={false}
+              render={<Link href="/dashboard/inventario/nuevo" />}
+            >
+              <PlusIcon data-icon="inline-start" />
+              Registrar producto
+            </Button>
+            <AccionFlotante
+              href="/dashboard/inventario/nuevo"
+              etiqueta="Registrar producto"
+            />
+          </>
         ) : null}
       </div>
 
@@ -157,7 +164,7 @@ export function ProductosGestion() {
           <SelectTrigger
             id="orden-productos"
             aria-label="Ordenar productos"
-            className="w-44 shrink-0"
+            className="hidden w-44 shrink-0 md:flex"
           >
             <ArrowUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
             <SelectValue placeholder="Nombre" />
@@ -188,6 +195,11 @@ export function ProductosGestion() {
           }}
           onUbicacionChange={(valor) => {
             setUbicacion(valor);
+            setPage(1);
+          }}
+          orden={orden}
+          onOrdenChange={(valor) => {
+            setOrden(valor);
             setPage(1);
           }}
           onLimpiar={limpiarFiltros}

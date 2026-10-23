@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Home, PlusIcon } from "lucide-react";
 
+import { AccionFlotante } from "@/components/accion-flotante";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -181,13 +183,17 @@ export function TratamientosGestion() {
 
         <MostrarSiPuede modulo="AGRICOLA" nivel="COMPLETO">
           <Button
-            className="w-full sm:w-auto"
+            className="hidden md:inline-flex"
             nativeButton={false}
             render={<Link href="/dashboard/agricola/tratamientos/nuevo" />}
           >
             <PlusIcon data-icon="inline-start" />
             Registrar tratamiento
           </Button>
+          <AccionFlotante
+            href="/dashboard/agricola/tratamientos/nuevo"
+            etiqueta="Registrar tratamiento"
+          />
         </MostrarSiPuede>
       </div>
 
