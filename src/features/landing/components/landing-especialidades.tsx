@@ -2,16 +2,21 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
 import { ESPECIALIDADES } from "../datos-institucionales";
+import { BotonEscuchar } from "./boton-escuchar";
 
 export function LandingEspecialidades() {
   return (
-    <section id="especialidades" className="scroll-mt-20 bg-landing py-24 sm:py-28">
+    <section
+      id="especialidades"
+      aria-labelledby="especialidades-titulo"
+      className="scroll-mt-20 bg-landing py-24 sm:py-28"
+    >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="max-w-2xl">
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-malva">
             Especialidades
           </span>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
+          <h2 id="especialidades-titulo" className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
             Nuestras especialidades técnicas
           </h2>
         </div>
@@ -23,7 +28,7 @@ export function LandingEspecialidades() {
               key={especialidad.nombre}
               className={indice >= 3 ? "lg:col-span-3" : "lg:col-span-2"}
             >
-              <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-tinta/8 bg-tarjeta shadow-[0_10px_30px_-22px_rgba(37,38,36,0.4)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgba(37,38,36,0.38)]">
+              <article id={`especialidad-${indice}`} className="group flex h-full flex-col overflow-hidden rounded-3xl border border-tinta/8 bg-tarjeta shadow-[0_10px_30px_-22px_rgba(37,38,36,0.4)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgba(37,38,36,0.38)]">
                 <div className="relative aspect-[16/10] w-full overflow-hidden">
                   <Image
                     src={especialidad.foto}
@@ -47,6 +52,12 @@ export function LandingEspecialidades() {
                   >
                     <especialidad.icono className="size-5" style={{ color: especialidad.acento }} />
                   </div>
+                  {/* Sobre la foto, con el mismo fondo que el icono de la esquina izquierda. */}
+                  <BotonEscuchar
+                    etiqueta={especialidad.nombre}
+                    objetivo={`especialidad-${indice}`}
+                    className="absolute right-4 bottom-4 bg-tarjeta/90 shadow-sm backdrop-blur hover:bg-tarjeta"
+                  />
                 </div>
 
                 <div className="flex flex-1 items-start justify-between gap-4 p-6">

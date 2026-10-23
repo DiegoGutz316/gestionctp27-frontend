@@ -34,7 +34,7 @@ export function LandingProposito() {
           </span>
           <h2
             id="proposito-titulo"
-            className="mt-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem]"
+            className="mt-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-[length:calc(2.75rem*var(--escala-texto,1))]"
           >
             Formamos para el trabajo, el emprendimiento y el futuro.
           </h2>

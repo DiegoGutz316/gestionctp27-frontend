@@ -18,7 +18,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col font-sans antialiased">
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var g=localStorage.getItem("theme");var o=g==="dark"||((g==null||g==="system")&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;r.classList.toggle("dark",o);r.style.colorScheme=o?"dark":"light";}catch(e){}})();`,
+            __html: `(function(){try{var g=localStorage.getItem("theme");var o=g==="dark"||((g==null||g==="system")&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;r.classList.toggle("dark",o);r.style.colorScheme=o?"dark":"light";}catch(e){}try{if(location.pathname==="/"){var s=Number(localStorage.getItem("escala-texto"));if([0.9,1.125,1.25,1.5].indexOf(s)!==-1){r.style.setProperty("--escala-texto",String(s));if(s>1)r.setAttribute("data-escala-ampliada","");}}}catch(e){}})();`,
           }}
         />
         <Providers>{children}</Providers>

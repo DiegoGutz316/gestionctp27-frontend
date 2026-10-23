@@ -31,6 +31,7 @@ import {
 } from "../calendario-institucional";
 import { categoriaDeAviso, etiquetaCategoria } from "../aviso-publico";
 import { AvisoPublicoDialog } from "./aviso-publico-dialog";
+import { BotonEscuchar } from "./boton-escuchar";
 
 const ESTILO_CATEGORIA: Record<CategoriaAviso, { badge: string; punto: string }> =
   {
@@ -68,9 +69,13 @@ export function LandingCalendario() {
     [consulta.data],
   );
 
+  const cargando = !montado || consulta.isPending;
+
   let cuerpo: ReactNode;
-  if (!montado || consulta.isPending) {
+  let estado: string;
+  if (cargando) {
     cuerpo = <EsqueletoCalendario />;
+    estado = MENSAJE_CARGANDO;
   } else if (consulta.isError) {
     cuerpo = (
       <ErrorCalendario
@@ -78,35 +83,89 @@ export function LandingCalendario() {
         onReintentar={() => void consulta.refetch()}
       />
     );
+    estado = MENSAJE_ERROR;
   } else {
     cuerpo = <CalendarioCargado avisos={avisos} />;
+    estado =
+      avisos.length === 0
+        ? MENSAJE_SIN_AVISOS
+        : `Calendario cargado: ${avisos.length} ${
+            avisos.length === 1 ? "actividad publicada" : "actividades publicadas"
+          }.`;
+  }
+
+  // Lo que lee el botón de audio: los avisos ya cargados o el estado actual.
+  function textoParaLeer(): string {
+    const encabezado = `${TITULO}. ${DESCRIPCION}`;
+    if (cargando) return `${encabezado} ${MENSAJE_CARGANDO}`;
+    if (consulta.isError) return `${encabezado} ${MENSAJE_ERROR}`;
+    if (avisos.length === 0) return `${encabezado} ${MENSAJE_SIN_AVISOS}`;
+
+    const hoy = claveDesdeDate(new Date());
+    const proximos = avisos
+      .map((aviso) => ({ aviso, clave: claveFechaValida(aviso.fecha) ?? "" }))
+      .filter(({ clave }) => clave >= hoy)
+      .sort((a, b) => a.clave.localeCompare(b.clave))
+      .map(({ aviso }) => aviso);
+    if (proximos.length === 0) {
+      return `${encabezado} No hay actividades próximas por ahora.`;
+    }
+    return [
+      encabezado,
+      `Próximas actividades: ${proximos.length}.`,
+      ...proximos.map(
+        (aviso) => `${fechaLargaAviso(aviso.fecha)}. ${aviso.titulo}. ${aviso.descripcion}`,
+      ),
+    ].join(" ");
   }
 
   return (
     <section
       id="calendario"
+      aria-labelledby="calendario-titulo"
       className="scroll-mt-24 bg-landing py-24 sm:py-28"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <Encabezado />
-        {cuerpo}
+        <Encabezado obtenerTexto={textoParaLeer} />
+        {/* Fuera del contenedor con aria-busy para que el anuncio no se silencie. */}
+        <p role="status" className="sr-only">
+          {estado}
+        </p>
+        <div aria-busy={cargando}>{cuerpo}</div>
       </div>
     </section>
   );
 }
 
-function Encabezado() {
+const TITULO = "Calendario Institucional";
+const DESCRIPCION =
+  "Consulta actividades, comunicados y eventos importantes del colegio.";
+const MENSAJE_CARGANDO = "Cargando el calendario institucional.";
+const MENSAJE_ERROR =
+  "No se pudo cargar el calendario institucional. Verifica la conexión e inténtalo nuevamente.";
+const MENSAJE_SIN_AVISOS = "Aún no hay actividades publicadas.";
+
+function Encabezado({ obtenerTexto }: { obtenerTexto: () => string }) {
   return (
     <div className="flex items-start gap-4">
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-oliva text-sobre-oliva">
+      <div className="relative flex size-12 shrink-0 items-center justify-center rounded-2xl bg-oliva text-sobre-oliva">
         <CalendarDays className="size-5" aria-hidden />
+        {/* Bajo el icono y fuera del flujo: no angosta el texto ni cambia la altura. */}
+        <BotonEscuchar
+          etiqueta="Calendario"
+          obtenerTexto={obtenerTexto}
+          className="absolute top-full left-1/2 mt-2 -translate-x-1/2"
+        />
       </div>
       <div>
-        <h2 className="text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
-          Calendario Institucional
+        <h2
+          id="calendario-titulo"
+          className="text-3xl font-semibold tracking-tight text-tinta sm:text-4xl"
+        >
+          {TITULO}
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-tinta/60 sm:text-base">
-          Consulta actividades, comunicados y eventos importantes del colegio.
+          {DESCRIPCION}
         </p>
       </div>
     </div>
@@ -249,7 +308,7 @@ function CalendarioMes({
             <div
               key={dia}
               role="columnheader"
-              className="pb-2 text-center text-[11px] font-medium tracking-wide text-tinta/45 sm:text-xs"
+              className="pb-2 text-center text-[length:calc(0.6875rem*var(--escala-texto,1))] font-medium tracking-wide text-tinta/45 sm:text-xs"
             >
               {dia}
             </div>
@@ -304,7 +363,7 @@ function CalendarioMes({
                     </span>
                     {tituloActividad ? (
                       <span
-                        className="mt-0.5 line-clamp-2 w-full text-center text-[9px] leading-tight font-medium text-oliva sm:text-[10px]"
+                        className="mt-0.5 line-clamp-2 w-full text-center text-[length:calc(0.5625rem*var(--escala-texto,1))] leading-tight font-medium text-oliva sm:text-[length:calc(0.625rem*var(--escala-texto,1))]"
                       >
                         {tituloActividad}
                       </span>
@@ -633,11 +692,7 @@ function ErrorCalendario({
 
 function EsqueletoCalendario() {
   return (
-    <div
-      className="mt-10 grid gap-6 md:grid-cols-2 md:gap-8"
-      aria-busy="true"
-    >
-      <p className="sr-only">Cargando el calendario institucional</p>
+    <div className="mt-10 grid gap-6 md:grid-cols-2 md:gap-8">
       <div className="space-y-6">
         <div className={cn("rounded-2xl bg-tarjeta p-4 sm:p-6", SOMBRA)}>
           <div className="flex items-center justify-between">
