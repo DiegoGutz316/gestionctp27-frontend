@@ -64,6 +64,18 @@ export const editarCultivoSchema = registrarCultivoSchema.extend({
 
 export type EditarCultivo = z.output<typeof editarCultivoSchema>;
 
+/**
+ * Lo que viaja en el `PATCH`: solo los campos que el usuario cambió, para no
+ * pisar lo que otra persona haya editado mientras el formulario estaba
+ * abierto. `descripcion: null` es la forma de borrarla; omitirla la conserva.
+ */
+export type CambiosDeCultivo = {
+  nombre?: string;
+  tipo?: TipoCultivo;
+  descripcion?: string | null;
+  activo?: boolean;
+};
+
 export const cultivoSchema = z.object({
   id: z.number(),
   nombre: z.string(),

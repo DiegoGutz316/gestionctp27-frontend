@@ -10,8 +10,8 @@ import {
   registrarCultivo,
 } from "../servicios/cultivo.service";
 import type {
+  CambiosDeCultivo,
   ConsultarCultivos,
-  EditarCultivo,
 } from "../models/cultivo.model";
 
 export const cultivosQueryKey = ["agricola", "cultivos"] as const;
@@ -35,7 +35,7 @@ export function useEditarCultivo(id: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (datos: EditarCultivo) => editarCultivo(id, datos),
+    mutationFn: (datos: CambiosDeCultivo) => editarCultivo(id, datos),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: cultivosQueryKey }),
   });

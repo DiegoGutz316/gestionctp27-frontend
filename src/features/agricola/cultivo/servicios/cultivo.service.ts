@@ -1,9 +1,9 @@
 import { api } from "@/lib/api";
 
 import type {
+  CambiosDeCultivo,
   ConsultarCultivos,
   CultivoRespuesta,
-  EditarCultivo,
   RegistrarCultivo,
 } from "../models/cultivo.model";
 
@@ -19,7 +19,7 @@ export function obtenerCultivo(id: number) {
   return api.get<CultivoRespuesta>(`/agricola/cultivos/${id}`);
 }
 
-export function editarCultivo(id: number, datos: EditarCultivo) {
+export function editarCultivo(id: number, datos: CambiosDeCultivo) {
   return api.patch<CultivoRespuesta>(`/agricola/cultivos/${id}`, datos);
 }
 
