@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Home, Search, X } from "lucide-react";
+import { Home, ListFilterIcon, Search } from "lucide-react";
 
 import { AccionFlotante } from "@/components/accion-flotante";
 import { ControlesPaginacion } from "@/components/controles-paginacion";
+import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,6 +16,16 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 import { useAuth } from "@/features/auth/context/auth-context";
@@ -121,50 +132,109 @@ export function AvisosGestion() {
         </div>
 
         {puedeAdministrar ? (
-          <div
-            className="flex min-w-0 gap-1 overflow-x-auto overscroll-x-contain"
-            role="group"
-            aria-label="Filtrar por estado"
-          >
-            {FILTROS.map((filtro) => {
-              const activo = estado === filtro.id;
-              return (
-                <button
-                  key={filtro.id}
-                  type="button"
-                  aria-pressed={activo}
-                  onClick={() => {
-                    setEstado(filtro.id);
-                    setPagina(1);
-                  }}
-                  className={`shrink-0 cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium whitespace-nowrap transition md:py-1.5 ${
-                    activo
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:text-foreground"
-                  }`}
+          <>
+            <Dialog>
+              <DialogTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="shrink-0 gap-2 md:hidden"
+                  />
+                }
+              >
+                <ListFilterIcon className="size-4" />
+                Filtros
+                {estado !== "TODOS" ? (
+                  <Badge
+                    variant="secondary"
+                    className="h-5 min-w-5 justify-center rounded-full px-1.5"
+                  >
+                    1
+                  </Badge>
+                ) : null}
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Filtros</DialogTitle>
+                  <DialogDescription>
+                    Filtre los avisos por estado.
+                  </DialogDescription>
+                </DialogHeader>
+                <div
+                  className="flex flex-col gap-2"
+                  role="group"
+                  aria-label="Filtrar por estado"
                 >
-                  {filtro.etiqueta}
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
+                  {FILTROS.map((filtro) => {
+                    const activo = estado === filtro.id;
+                    return (
+                      <button
+                        key={filtro.id}
+                        type="button"
+                        aria-pressed={activo}
+                        onClick={() => {
+                          setEstado(filtro.id);
+                          setPagina(1);
+                        }}
+                        className={`cursor-pointer rounded-md px-3 py-2.5 text-left text-sm font-medium transition ${
+                          activo
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {filtro.etiqueta}
+                      </button>
+                    );
+                  })}
+                </div>
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={estado === "TODOS"}
+                    onClick={() => {
+                      setEstado("TODOS");
+                      setPagina(1);
+                    }}
+                  >
+                    Limpiar
+                  </Button>
+                  <DialogClose render={<Button type="button" />}>
+                    Ver resultados
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
-        {hayFiltro ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setTexto("");
-              setQ("");
-              setEstado("TODOS");
-              setPagina(1);
-            }}
-          >
-            <X data-icon="inline-start" />
-            Limpiar filtros
-          </Button>
+            <div
+              className="hidden shrink-0 gap-1 md:flex"
+              role="group"
+              aria-label="Filtrar por estado"
+            >
+              {FILTROS.map((filtro) => {
+                const activo = estado === filtro.id;
+                return (
+                  <button
+                    key={filtro.id}
+                    type="button"
+                    aria-pressed={activo}
+                    onClick={() => {
+                      setEstado(filtro.id);
+                      setPagina(1);
+                    }}
+                    className={`shrink-0 cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition ${
+                      activo
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {filtro.etiqueta}
+                  </button>
+                );
+              })}
+            </div>
+          </>
         ) : null}
       </div>
 
