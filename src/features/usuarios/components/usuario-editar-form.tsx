@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useAuth } from "@/features/auth/context/auth-context";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 import { useEditarUsuario } from "../hooks/hooks";
@@ -48,13 +49,16 @@ export function UsuarioEditarForm({
   usuario: UsuarioRespuesta;
 }) {
   const router = useRouter();
+  const { usuario: sesion } = useAuth();
   const editarUsuario = useEditarUsuario(usuario.id);
+  const esSuCuenta = sesion?.id === usuario.id;
 
   const valoresIniciales: EditarUsuarioInput = {
     nombre: usuario.nombre,
     correo: usuario.correo,
     rol: usuario.rol,
     activo: usuario.activo,
+    contrasena: "",
   };
 
   const form = useForm({
@@ -137,6 +141,32 @@ export function UsuarioEditarForm({
           }}
         </form.Field>
 
+        <form.Field name="contrasena">
+          {(field) => {
+            const errors = fieldErrors(field.state.meta.errors);
+            const invalid = errors.length > 0;
+            return (
+              <Field data-invalid={invalid}>
+                <FieldLabel htmlFor={field.name}>Nueva contraseña</FieldLabel>
+                <Input
+                  id={field.name}
+                  type="password"
+                  placeholder="Mínimo 8 caracteres"
+                  autoComplete="new-password"
+                  aria-invalid={invalid}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                />
+                <FieldDescription>
+                  Opcional. Si la deja vacía, se conserva la contraseña actual.
+                </FieldDescription>
+                <FieldError errors={errors} />
+              </Field>
+            );
+          }}
+        </form.Field>
+
         <form.Field name="rol">
           {(field) => {
             const errors = fieldErrors(field.state.meta.errors);
@@ -175,36 +205,39 @@ export function UsuarioEditarForm({
           }}
         </form.Field>
 
-        <form.Field name="activo">
-          {(field) => {
-            const errors = fieldErrors(field.state.meta.errors);
-            const invalid = errors.length > 0;
-            return (
-              <Field orientation="horizontal" data-invalid={invalid}>
-                <FieldContent>
-                  <FieldLabel htmlFor={field.name} required>
-                    Usuario activo
-                  </FieldLabel>
-                  <FieldDescription>
-                    Si está inactivo, no podrá iniciar sesión en el sistema.
-                  </FieldDescription>
-                  {invalid ? <FieldError errors={errors} /> : null}
-                </FieldContent>
-                <Switch
-                  id={field.name}
-                  checked={field.state.value}
-                  onCheckedChange={(checked) => field.handleChange(checked)}
-                  aria-invalid={invalid}
-                />
-              </Field>
-            );
-          }}
-        </form.Field>
+        {sesion && esSuCuenta ? (
+          <p className="text-sm text-muted-foreground">
+            No puede desactivar su propia cuenta.
+          </p>
+        ) : null}
+        {sesion && !esSuCuenta ? (
+          <form.Field name="activo">
+            {(field) => {
+              const errors = fieldErrors(field.state.meta.errors);
+              const invalid = errors.length > 0;
+              return (
+                <Field orientation="horizontal" data-invalid={invalid}>
+                  <FieldContent>
+                    <FieldLabel htmlFor={field.name} required>
+                      Usuario activo
+                    </FieldLabel>
+                    <FieldDescription>
+                      Si está inactivo, no podrá iniciar sesión en el sistema.
+                    </FieldDescription>
+                    {invalid ? <FieldError errors={errors} /> : null}
+                  </FieldContent>
+                  <Switch
+                    id={field.name}
+                    checked={field.state.value}
+                    onCheckedChange={(checked) => field.handleChange(checked)}
+                    aria-invalid={invalid}
+                  />
+                </Field>
+              );
+            }}
+          </form.Field>
+        ) : null}
       </FieldGroup>
-
-      <p className="text-xs text-muted-foreground">
-        La contraseña no se puede cambiar desde esta pantalla.
-      </p>
 
       <form.Subscribe
         selector={(state) => state.isSubmitting || editarUsuario.isPending}

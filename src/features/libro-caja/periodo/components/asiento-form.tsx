@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import {
@@ -40,6 +41,11 @@ export function AsientoForm({
   const crear = useCrearAsiento(libro.periodo.id, libro.fondo.id);
   const inicio = fechaPeriodoIso(libro.periodo.fechaInicio);
   const fin = fechaPeriodoIso(libro.periodo.fechaFin);
+  const idempotencyKey = useRef<string | null>(null);
+
+  function rotarClave() {
+    idempotencyKey.current = globalThis.crypto.randomUUID();
+  }
 
   const valoresIniciales: CrearAsientoInput = {
     fecha: fechaInicial(inicio, fin),
@@ -56,8 +62,13 @@ export function AsientoForm({
     },
     onSubmit: async ({ value }) => {
       try {
-        await crear.mutateAsync(crearAsientoSchema.parse(value));
+        idempotencyKey.current ??= globalThis.crypto.randomUUID();
+        await crear.mutateAsync({
+          datos: crearAsientoSchema.parse(value),
+          idempotencyKey: idempotencyKey.current,
+        });
         toast.success("Asiento registrado.");
+        rotarClave();
         form.reset();
       } catch (error) {
         toast.error(getMensajeDeError(error));

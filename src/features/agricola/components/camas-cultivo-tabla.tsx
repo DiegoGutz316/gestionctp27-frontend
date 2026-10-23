@@ -52,8 +52,8 @@ export function CamasCultivoTabla({
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead>Cama</TableHead>
-            <TableHead>Ubicación</TableHead>
-            <TableHead>Cultivo actual</TableHead>
+            <TableHead className="hidden md:table-cell">Ubicación</TableHead>
+            <TableHead className="hidden sm:table-cell">Cultivo actual</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
@@ -66,10 +66,10 @@ export function CamasCultivoTabla({
                 <TableCell>
                   <Skeleton className="h-4 w-20" />
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <Skeleton className="h-4 w-28" />
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden sm:table-cell">
                   <Skeleton className="h-4 w-24" />
                 </TableCell>
                 <TableCell>
@@ -120,9 +120,11 @@ export function CamasCultivoTabla({
                 </Link>
               </TableCell>
 
-              <TableCell>{cama.ubicacion}</TableCell>
+              <TableCell className="hidden md:table-cell">{cama.ubicacion}</TableCell>
 
-              <TableCell>{cama.cultivoActual?.trim() || "—"}</TableCell>
+              <TableCell className="hidden sm:table-cell">
+                {cama.cultivoActual?.trim() || "—"}
+              </TableCell>
 
               <TableCell>
                 <Badge variant="secondary">

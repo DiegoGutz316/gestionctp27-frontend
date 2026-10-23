@@ -42,7 +42,7 @@ export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
       </h2>
 
       <div className="overflow-x-auto rounded-xl border bg-card shadow-sm">
-        <Table className="min-w-[760px]">
+        <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
               <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -54,10 +54,10 @@ export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
               <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Fecha
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
                 Detalle
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
                 Responsable
               </TableHead>
             </TableRow>
@@ -76,10 +76,10 @@ export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
                     <TableCell>
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <Skeleton className="h-5 w-32" />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <Skeleton className="h-5 w-28" />
                     </TableCell>
                   </TableRow>
@@ -134,12 +134,12 @@ export function MovimientosTabla({ inventarioId }: { inventarioId: number }) {
                     {movimiento.fecha}
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <span className="text-sm text-muted-foreground">
                     {movimiento.origen ?? movimiento.motivo ?? "—"}
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <span className="text-sm text-foreground">
                     {movimiento.responsable?.nombre ?? "Migración del sistema"}
                   </span>

@@ -57,7 +57,7 @@ export function PeriodosTabla({
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Periodo
             </TableHead>
-            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
               Fechas
             </TableHead>
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -76,7 +76,7 @@ export function PeriodosTabla({
                   <TableCell>
                     <Skeleton className="h-4 w-40" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-4 w-48" />
                   </TableCell>
                   <TableCell>
@@ -127,7 +127,7 @@ export function PeriodosTabla({
                   {periodo.nombre}
                 </Link>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden md:table-cell">
                 <span className="text-sm text-foreground">
                   {formatearFechaPeriodo(periodo.fechaInicio)} –{" "}
                   {formatearFechaPeriodo(periodo.fechaFin)}

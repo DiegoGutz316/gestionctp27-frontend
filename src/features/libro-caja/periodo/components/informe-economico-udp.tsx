@@ -37,11 +37,13 @@ function CampoInforme({
   value,
   onChange,
   ariaLabel,
+  maxLength,
   className = "",
 }: {
   value: string;
   onChange: (valor: string) => void;
   ariaLabel: string;
+  maxLength: number;
   className?: string;
 }) {
   return (
@@ -49,6 +51,7 @@ function CampoInforme({
       type="text"
       value={value}
       aria-label={ariaLabel}
+      maxLength={maxLength}
       className={`w-full ${className}`}
       onChange={(evento) => onChange(evento.target.value)}
     />
@@ -290,6 +293,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.observaciones[0]}
                 ariaLabel="Observación 1"
+                maxLength={300}
                 onChange={(valor) =>
                   actualizarPie({
                     observaciones: [valor, pie.observaciones[1], pie.observaciones[2]],
@@ -306,6 +310,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.observaciones[1]}
                 ariaLabel="Observación 2"
+                maxLength={300}
                 onChange={(valor) =>
                   actualizarPie({
                     observaciones: [pie.observaciones[0], valor, pie.observaciones[2]],
@@ -322,6 +327,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.observaciones[2]}
                 ariaLabel="Observación 3"
+                maxLength={300}
                 onChange={(valor) =>
                   actualizarPie({
                     observaciones: [pie.observaciones[0], pie.observaciones[1], valor],
@@ -340,6 +346,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.director}
                 ariaLabel="Nombre del director o directora"
+                maxLength={120}
                 className="inline w-[calc(100%-8rem)]"
                 onChange={(valor) => actualizarPie({ director: valor })}
               />
@@ -349,6 +356,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.presidente}
                 ariaLabel="Nombre del presidente de la Junta Administrativa"
+                maxLength={120}
                 className="inline w-[calc(100%-8rem)]"
                 onChange={(valor) => actualizarPie({ presidente: valor })}
               />
@@ -361,6 +369,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.tesorera}
                 ariaLabel="Nombre de la tesorera o contadora"
+                maxLength={120}
                 className="inline w-[calc(100%-8rem)]"
                 onChange={(valor) => actualizarPie({ tesorera: valor })}
               />
@@ -392,6 +401,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.firmaDirector}
                 ariaLabel="Firma del director o directora"
+                maxLength={120}
                 className="inline w-[calc(100%-3rem)]"
                 onChange={(valor) => actualizarPie({ firmaDirector: valor })}
               />
@@ -401,6 +411,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.firmaPresidente}
                 ariaLabel="Firma del presidente de la Junta Administrativa"
+                maxLength={120}
                 className="inline w-[calc(100%-3rem)]"
                 onChange={(valor) => actualizarPie({ firmaPresidente: valor })}
               />
@@ -413,6 +424,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.firmaTesorera}
                 ariaLabel="Firma de la tesorera o contadora"
+                maxLength={120}
                 className="inline w-[calc(100%-3rem)]"
                 onChange={(valor) => actualizarPie({ firmaTesorera: valor })}
               />
@@ -427,6 +439,7 @@ export function InformeEconomicoUdp({
               <CampoInforme
                 value={pie.coordinador}
                 ariaLabel="Nombre del coordinador técnico"
+                maxLength={120}
                 className="inline w-[16rem] text-center font-bold"
                 onChange={(valor) => actualizarPie({ coordinador: valor })}
               />

@@ -67,7 +67,7 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
       ) : null}
 
       <TableRow className="transition-colors hover:bg-muted/30">
-        <TableCell>
+        <TableCell className="whitespace-normal">
           <Link
             href={`/dashboard/inventario/${producto.id}`}
             className="flex items-center gap-3"
@@ -86,22 +86,22 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
         </TableCell>
         {/* Backlog 4.7: la categoría dejó de ser el subtítulo del nombre y pasó
             a columna propia, para poder ordenar por ella y leerlo. */}
-        <TableCell>
+        <TableCell className="hidden md:table-cell">
           <Badge variant="secondary">
             {ETIQUETA_TIPO_PRODUCTO[producto.tipoProducto]}
           </Badge>
         </TableCell>
-        <TableCell>
+        <TableCell className="hidden md:table-cell">
           <span className="text-sm text-foreground">
             {ETIQUETA_UNIDAD_MEDIDA[producto.unidadMedida]}
           </span>
         </TableCell>
-        <TableCell>
+        <TableCell className="hidden md:table-cell">
           <span className="text-sm text-foreground">
             {ETIQUETA_DEPARTAMENTO[producto.departamento]}
           </span>
         </TableCell>
-        <TableCell>
+        <TableCell className="hidden md:table-cell">
           <span className="text-sm text-foreground">
             {ETIQUETA_UBICACION[producto.ubicacion]}
           </span>
@@ -116,7 +116,7 @@ export function ProductoFila({ producto }: { producto: ProductoRespuesta }) {
               {stockBajo ? (
                 <Badge
                   variant="secondary"
-                  className="rounded-full border-transparent bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200"
+                  className="hidden rounded-full border-transparent bg-orange-100 text-orange-800 sm:inline-flex dark:bg-orange-900/40 dark:text-orange-200"
                 >
                   <TriangleAlertIcon className="size-3" aria-hidden="true" />
                   Stock bajo

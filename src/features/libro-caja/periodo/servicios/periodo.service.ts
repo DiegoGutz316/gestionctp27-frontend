@@ -5,6 +5,7 @@ import type {
   FiltrarPeriodos,
   FondoRespuesta,
   PeriodoDetalleRespuesta,
+  PieInformeRespuesta,
   ResultadoPaginadoPeriodos,
   SolicitarFondo,
 } from "../validacion/periodo.validacion";
@@ -41,6 +42,17 @@ export function solicitarFondo(
 ) {
   return api.post<FondoRespuesta>(
     `/libro-caja/periodos/${periodoId}/fondos/${fondoId}/solicitar`,
+    datos,
+  );
+}
+
+export function guardarPieInforme(
+  periodoId: number,
+  fondoId: number,
+  datos: PieInformeRespuesta,
+) {
+  return api.patch<FondoRespuesta>(
+    `/libro-caja/periodos/${periodoId}/fondos/${fondoId}/informe`,
     datos,
   );
 }

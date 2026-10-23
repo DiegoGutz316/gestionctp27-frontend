@@ -50,8 +50,8 @@ export function VacunasHistorial({ animalId }: { animalId: number }) {
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead className="w-32">Fecha</TableHead>
             <TableHead>Tipo de vacuna</TableHead>
-            <TableHead>Dosis</TableHead>
-            <TableHead>Observaciones</TableHead>
+            <TableHead className="hidden sm:table-cell">Dosis</TableHead>
+            <TableHead className="hidden md:table-cell">Observaciones</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -65,10 +65,10 @@ export function VacunasHistorial({ animalId }: { animalId: number }) {
                   <TableCell>
                     <Skeleton className="h-4 w-32" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     <Skeleton className="h-4 w-16" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-4 w-48" />
                   </TableCell>
                 </TableRow>
@@ -109,10 +109,10 @@ export function VacunasHistorial({ animalId }: { animalId: number }) {
                   <TableCell className="font-medium whitespace-normal">
                     {registro.tipoVacuna}
                   </TableCell>
-                  <TableCell className="whitespace-nowrap">
+                  <TableCell className="hidden whitespace-nowrap sm:table-cell">
                     {registro.dosis}
                   </TableCell>
-                  <TableCell className="whitespace-normal break-words">
+                  <TableCell className="hidden whitespace-normal break-words md:table-cell">
                     {registro.observaciones?.trim() ? (
                       registro.observaciones
                     ) : (

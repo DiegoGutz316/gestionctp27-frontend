@@ -27,7 +27,11 @@ export function obtenerUsuario(id: string) {
 }
 
 export function editarUsuario(id: string, datos: EditarUsuario) {
-  return api.patch<UsuarioRespuesta>(`/usuarios/${id}`, datos);
+  const { contrasena, ...resto } = datos;
+  return api.patch<UsuarioRespuesta>(`/usuarios/${id}`, {
+    ...resto,
+    ...(contrasena ? { contrasena } : {}),
+  });
 }
 
 /** Desactivación lógica: PATCH /usuarios/:id/desactivar */

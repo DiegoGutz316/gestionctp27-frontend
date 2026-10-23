@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { FileSpreadsheet, Home, Printer } from "lucide-react";
 import { toast } from "sonner";
@@ -14,16 +14,38 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/features/auth/context/auth-context";
 import { useColegio } from "@/features/libro-caja/colegio/hooks/hooks";
 import { getMensajeDeError as getMensajeColegio } from "@/features/libro-caja/colegio/servicios/colegio.service";
-import { useAsientos } from "../hooks/hooks";
+import { useAsientos, useGuardarPieInforme } from "../hooks/hooks";
 import { getMensajeDeError } from "../servicios/asiento.service";
 import { descargarInformeEconomicoExcel } from "../servicios/informe-excel";
+import type { PieInformeRespuesta } from "../validacion/periodo.validacion";
 import {
   InformeEconomicoUdp,
   PIE_INFORME_VACIO,
   type PieInformeUdp,
 } from "./informe-economico-udp";
+
+function pieDesdeServidor(
+  valor: PieInformeRespuesta | null | undefined,
+): PieInformeUdp {
+  if (!valor) return PIE_INFORME_VACIO;
+  return {
+    observaciones: [
+      valor.observaciones[0] ?? "",
+      valor.observaciones[1] ?? "",
+      valor.observaciones[2] ?? "",
+    ],
+    director: valor.director,
+    presidente: valor.presidente,
+    tesorera: valor.tesorera,
+    firmaDirector: valor.firmaDirector,
+    firmaPresidente: valor.firmaPresidente,
+    firmaTesorera: valor.firmaTesorera,
+    coordinador: valor.coordinador,
+  };
+}
 
 export function InformeEconomico({
   periodoId,
@@ -32,10 +54,37 @@ export function InformeEconomico({
   periodoId: number;
   fondoId: number;
 }) {
+  const { puede } = useAuth();
+  const puedeGuardar = puede("LIBRO_CAJA", "COMPLETO");
   const colegio = useColegio();
   const libro = useAsientos(periodoId, fondoId);
+  const guardar = useGuardarPieInforme(periodoId, fondoId);
+  const guardarPie = useRef(guardar.mutate);
+  guardarPie.current = guardar.mutate;
   const [descargandoExcel, setDescargandoExcel] = useState(false);
-  const [pie, setPie] = useState<PieInformeUdp>(PIE_INFORME_VACIO);
+  const [pieLocal, setPieLocal] = useState<PieInformeUdp | null>(null);
+  const pieServidor = useMemo(
+    () => pieDesdeServidor(libro.data?.fondo.pieInforme),
+    [libro.data?.fondo.pieInforme],
+  );
+  const pie = pieLocal ?? pieServidor;
+
+  useEffect(() => {
+    setPieLocal(null);
+  }, [fondoId]);
+
+  useEffect(() => {
+    if (!puedeGuardar || !libro.data) return;
+    if (JSON.stringify(pie) === JSON.stringify(pieServidor)) return;
+
+    const timer = window.setTimeout(() => {
+      guardarPie.current(pie, {
+        onError: (error) => toast.error(getMensajeDeError(error)),
+      });
+    }, 600);
+
+    return () => window.clearTimeout(timer);
+  }, [pie, pieServidor, libro.data, puedeGuardar]);
 
   if (colegio.isLoading || libro.isLoading) {
     return (
@@ -154,7 +203,7 @@ export function InformeEconomico({
             colegio={datosColegio}
             libro={datosLibro}
             pie={pie}
-            onPieChange={setPie}
+            onPieChange={setPieLocal}
           />
         </div>
       </div>

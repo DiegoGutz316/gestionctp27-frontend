@@ -10,6 +10,7 @@ import {
   desactivarDepartamento,
   editarDepartamento,
   listarDepartamentos,
+  listarDepartamentosActivos,
   obtenerDepartamento,
 } from "../servicios/departamento.service";
 
@@ -23,6 +24,13 @@ export function useDepartamentos(
     queryKey: [...departamentosQueryKey, filtros],
     queryFn: () => listarDepartamentos(filtros),
     enabled: opciones.enabled ?? true,
+  });
+}
+
+export function useDepartamentosActivos() {
+  return useQuery({
+    queryKey: [...departamentosQueryKey, "activos", "todos"],
+    queryFn: listarDepartamentosActivos,
   });
 }
 

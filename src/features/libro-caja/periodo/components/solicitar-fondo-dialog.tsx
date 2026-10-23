@@ -115,7 +115,7 @@ export function SolicitarFondoDialog({
                       id={field.name}
                       type="number"
                       step="0.01"
-                      min="0.01"
+                      min="0"
                       inputMode="decimal"
                       aria-invalid={invalid}
                       value={field.state.value}
@@ -125,7 +125,8 @@ export function SolicitarFondoDialog({
                       }
                     />
                     <FieldDescription>
-                      Colones, máximo 2 decimales. Tope {VALOR_MAXIMO_FONDO_TEXTO}.
+                      Puede ser ₡0,00. Colones, máximo 2 decimales. Tope{" "}
+                      {VALOR_MAXIMO_FONDO_TEXTO}.
                     </FieldDescription>
                     <FieldError errors={errors} />
                   </Field>

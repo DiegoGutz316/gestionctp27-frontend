@@ -113,19 +113,19 @@ export function AvisosTabla({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
-              <TableHead className="w-16 py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="hidden w-16 py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
                 Flyer
               </TableHead>
               <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Título
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
                 Categoría
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:table-cell">
                 Fecha del aviso
               </TableHead>
-              <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
                 Fecha de publicación
               </TableHead>
               <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -139,16 +139,16 @@ export function AvisosTabla({
           <TableBody>
             {avisos.map((aviso) => (
               <TableRow key={aviso.id}>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <Miniatura aviso={aviso} />
                 </TableCell>
-                <TableCell className="max-w-xs">
+                <TableCell className="max-w-xs whitespace-normal">
                   <p className="font-medium text-foreground">{aviso.titulo}</p>
-                  <p className="line-clamp-1 text-xs text-muted-foreground">
+                  <p className="mt-0.5 line-clamp-1 hidden text-xs text-muted-foreground md:block">
                     {aviso.descripcion}
                   </p>
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <Badge
                     variant="secondary"
                     className="bg-muted font-normal text-muted-foreground"
@@ -158,10 +158,10 @@ export function AvisosTabla({
                       : "Sin categoría"}
                   </Badge>
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-muted-foreground">
+                <TableCell className="hidden whitespace-nowrap text-muted-foreground sm:table-cell">
                   {formatearFecha(aviso.fecha)}
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-muted-foreground">
+                <TableCell className="hidden whitespace-nowrap text-muted-foreground md:table-cell">
                   {aviso.creadoEn ? formatearFecha(aviso.creadoEn) : "—"}
                 </TableCell>
                 <TableCell>

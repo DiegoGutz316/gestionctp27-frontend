@@ -7,6 +7,8 @@ import type {
   ResultadoPaginadoDepartamentos,
 } from "../validacion/departamento.validacion";
 
+const LIMITE_PAGINA = 100;
+
 export function listarDepartamentos(filtros: FiltrarDepartamentos = {}) {
   return api.get<ResultadoPaginadoDepartamentos>(
     "/libro-caja/departamentos",
@@ -18,6 +20,26 @@ export function listarDepartamentos(filtros: FiltrarDepartamentos = {}) {
       limite: filtros.limite,
     },
   );
+}
+
+export async function listarDepartamentosActivos() {
+  const primera = await listarDepartamentos({
+    pagina: 1,
+    limite: LIMITE_PAGINA,
+    activo: true,
+  });
+  const acumulado = [...primera.datos];
+
+  for (let pagina = 2; pagina <= primera.meta.totalPaginas; pagina += 1) {
+    const siguiente = await listarDepartamentos({
+      pagina,
+      limite: LIMITE_PAGINA,
+      activo: true,
+    });
+    acumulado.push(...siguiente.datos);
+  }
+
+  return acumulado;
 }
 
 export function crearDepartamento(datos: CrearDepartamento) {
