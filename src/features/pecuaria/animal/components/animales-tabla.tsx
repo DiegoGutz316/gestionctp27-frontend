@@ -77,11 +77,11 @@ export function AnimalesTabla({
               Nombre
             </TableHead>
 
-            <TableHead>
+            <TableHead className="hidden md:table-cell">
               Especie
             </TableHead>
 
-            <TableHead>
+            <TableHead className="hidden md:table-cell">
               Raza
             </TableHead>
 
@@ -111,11 +111,11 @@ export function AnimalesTabla({
                   <Skeleton className="h-4 w-28" />
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <Skeleton className="h-4 w-24" />
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <Skeleton className="h-4 w-24" />
                 </TableCell>
 
@@ -183,11 +183,11 @@ export function AnimalesTabla({
                   {animal.nombre}
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   {etiquetaEspecie(animal.especie)}
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   {animal.raza}
                 </TableCell>
 

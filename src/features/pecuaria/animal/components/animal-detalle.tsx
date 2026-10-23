@@ -232,8 +232,8 @@ export function AnimalDetalle({ id }: { id: number }) {
                 <TableRow className="bg-muted/30 hover:bg-muted/30">
                   <TableHead>Fecha</TableHead>
                   <TableHead>Condición observada</TableHead>
-                  <TableHead>Diagnóstico</TableHead>
-                  <TableHead>Observaciones</TableHead>
+                  <TableHead className="hidden md:table-cell">Diagnóstico</TableHead>
+                  <TableHead className="hidden md:table-cell">Observaciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -257,8 +257,12 @@ export function AnimalDetalle({ id }: { id: number }) {
                           ]
                         }
                       </TableCell>
-                      <TableCell>{registro.diagnostico ?? "—"}</TableCell>
-                      <TableCell>{registro.observaciones ?? "—"}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {registro.diagnostico ?? "—"}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {registro.observaciones ?? "—"}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}

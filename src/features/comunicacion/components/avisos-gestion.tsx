@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Archive, BadgeCheck, FileText, Home, Megaphone, Search, X } from "lucide-react";
+import { Home, Megaphone, Search, X } from "lucide-react";
 
 import { ControlesPaginacion } from "@/components/controles-paginacion";
 import {
@@ -58,20 +58,10 @@ export function AvisosGestion() {
     q: q || undefined,
     estado: puedeAdministrar ? estado : estado === "INACTIVO" ? "INACTIVO" : "ACTIVO",
   });
-  const conteoActivos = useAvisos({ pagina: 1, limite: 1, estado: "ACTIVO" });
-  const conteoInactivos = useAvisos(
-    { pagina: 1, limite: 1, estado: "INACTIVO" },
-    { enabled: puedeAdministrar },
-  );
 
   const avisos = consulta.data?.datos ?? [];
   const meta = consulta.data?.meta;
-  const activos = conteoActivos.data?.meta.total;
-  const inactivos = puedeAdministrar
-    ? conteoInactivos.data?.meta.total
-    : undefined;
-  const total =
-    activos != null && inactivos != null ? activos + inactivos : undefined;
+  const total = meta?.total ?? 0;
   const hayFiltro = q.length > 0 || estado !== "TODOS";
 
   return (
@@ -99,9 +89,12 @@ export function AvisosGestion() {
           <h1 className="text-2xl font-semibold tracking-tight">
             Avisos institucionales
           </h1>
-          <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-            Administra los comunicados, actividades y publicaciones visibles en
-            la página institucional.
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {consulta.isLoading
+              ? "Cargando avisos…"
+              : consulta.isError
+                ? "No se pudo cargar el listado."
+                : `${total} aviso${total === 1 ? "" : "s"}`}
           </p>
         </div>
 
@@ -117,25 +110,7 @@ export function AvisosGestion() {
         </MostrarSiPuede>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <TarjetaConteo
-          icono={<FileText className="size-4" />}
-          etiqueta="Total de avisos"
-          valor={total}
-        />
-        <TarjetaConteo
-          icono={<BadgeCheck className="size-4" />}
-          etiqueta="Avisos activos"
-          valor={activos}
-        />
-        <TarjetaConteo
-          icono={<Archive className="size-4" />}
-          etiqueta="Avisos inactivos"
-          valor={inactivos}
-        />
-      </div>
-
-      <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-sm md:flex-row md:items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -163,7 +138,7 @@ export function AvisosGestion() {
                   setEstado(filtro.id);
                   setPagina(1);
                 }}
-                className={`shrink-0 rounded-md px-3 py-2.5 text-sm font-medium whitespace-nowrap transition md:py-1.5 ${
+                className={`shrink-0 cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium whitespace-nowrap transition md:py-1.5 ${
                   activo
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:text-foreground"
@@ -219,29 +194,5 @@ export function AvisosGestion() {
         }}
       />
     </section>
-  );
-}
-
-function TarjetaConteo({
-  icono,
-  etiqueta,
-  valor,
-}: {
-  icono: ReactNode;
-  etiqueta: string;
-  valor: number | undefined;
-}) {
-  return (
-    <article className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3 shadow-sm">
-      <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-        {icono}
-      </span>
-      <div>
-        <p className="text-xs text-muted-foreground">{etiqueta}</p>
-        <p className="text-xl font-semibold tracking-tight">
-          {valor == null ? "—" : valor}
-        </p>
-      </div>
-    </article>
   );
 }

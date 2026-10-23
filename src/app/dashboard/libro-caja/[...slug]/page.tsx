@@ -116,34 +116,14 @@ export default async function LibroCajaRutaAnidadaPage({
   if (ruta.tipo === "editar-periodo") {
     return (
       <RequerirPermiso modulo="LIBRO_CAJA" nivel="COMPLETO">
-        <main className="mx-auto w-full max-w-lg">
-          <header className="mb-6">
-            <h1 className="text-2xl font-semibold tracking-tight text-color-company">
-              Editar periodo
-            </h1>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              Actualice el nombre y las fechas de un periodo abierto.
-            </p>
-          </header>
-          <PeriodoEditar id={ruta.periodoId} />
-        </main>
+        <PeriodoEditar id={ruta.periodoId} />
       </RequerirPermiso>
     );
   }
 
   return (
     <RequerirPermiso modulo="LIBRO_CAJA" nivel="COMPLETO">
-      <main className="mx-auto w-full max-w-lg">
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight text-color-company">
-            Editar departamento
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Actualice el nombre de la unidad y el tipo de actividad.
-          </p>
-        </header>
-        <DepartamentoEditar id={ruta.departamentoId} />
-      </main>
+      <DepartamentoEditar id={ruta.departamentoId} />
     </RequerirPermiso>
   );
 }

@@ -54,7 +54,7 @@ export function DesparasitacionesHistorial({
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead className="w-32">Fecha</TableHead>
             <TableHead>Producto aplicado</TableHead>
-            <TableHead>Observaciones</TableHead>
+            <TableHead className="hidden md:table-cell">Observaciones</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -68,7 +68,7 @@ export function DesparasitacionesHistorial({
                   <TableCell>
                     <Skeleton className="h-4 w-32" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-4 w-48" />
                   </TableCell>
                 </TableRow>
@@ -109,7 +109,7 @@ export function DesparasitacionesHistorial({
                   <TableCell className="font-medium whitespace-normal">
                     {registro.producto}
                   </TableCell>
-                  <TableCell className="whitespace-normal break-words">
+                  <TableCell className="hidden whitespace-normal break-words md:table-cell">
                     {registro.observaciones?.trim() ? (
                       registro.observaciones
                     ) : (

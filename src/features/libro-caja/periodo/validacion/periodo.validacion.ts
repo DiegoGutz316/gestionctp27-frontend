@@ -110,8 +110,8 @@ export const solicitarFondoSchema = z.object({
       "El monto solicitado debe ser un número válido",
     )
     .transform((valor) => Number(valor))
-    .refine((valor) => valor > 0, {
-      error: "El monto solicitado debe ser mayor que 0",
+    .refine((valor) => valor >= 0, {
+      error: "El monto solicitado no puede ser negativo",
     })
     .refine((valor) => valor <= VALOR_MAXIMO_FONDO, {
       error: `El monto solicitado no puede superar ${VALOR_MAXIMO_FONDO_TEXTO}`,
@@ -124,12 +124,26 @@ export const solicitarFondoSchema = z.object({
 export type SolicitarFondo = z.output<typeof solicitarFondoSchema>;
 export type SolicitarFondoInput = z.input<typeof solicitarFondoSchema>;
 
+export const pieInformeSchema = z.object({
+  observaciones: z.tuple([z.string(), z.string(), z.string()]),
+  director: z.string(),
+  presidente: z.string(),
+  tesorera: z.string(),
+  firmaDirector: z.string(),
+  firmaPresidente: z.string(),
+  firmaTesorera: z.string(),
+  coordinador: z.string(),
+});
+
+export type PieInformeRespuesta = z.infer<typeof pieInformeSchema>;
+
 export const fondoSchema = z.object({
   id: z.number(),
   montoSolicitado: z.number().nullable(),
   estado: z.enum(ESTADOS_FONDO),
   solicitadoEn: z.string().nullable(),
   departamento: departamentoSchema,
+  pieInforme: pieInformeSchema.nullable(),
   creadoEn: z.string(),
   actualizadoEn: z.string(),
 });

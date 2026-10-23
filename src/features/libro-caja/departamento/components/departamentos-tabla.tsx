@@ -52,7 +52,7 @@ export function DepartamentosTabla({
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Unidad
             </TableHead>
-            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
               Tipo de actividad
             </TableHead>
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -71,7 +71,7 @@ export function DepartamentosTabla({
                   <TableCell>
                     <Skeleton className="h-4 w-40" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-5 w-28" />
                   </TableCell>
                   <TableCell>
@@ -119,7 +119,7 @@ export function DepartamentosTabla({
                   {departamento.nombreUnidad}
                 </p>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden md:table-cell">
                 <Badge variant="secondary">{departamento.tipoActividad}</Badge>
               </TableCell>
               <TableCell>

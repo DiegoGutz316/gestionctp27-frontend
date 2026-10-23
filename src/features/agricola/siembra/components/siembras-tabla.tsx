@@ -37,8 +37,8 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <TableHead>Cultivo</TableHead>
-            <TableHead>Cama</TableHead>
-            <TableHead>Fecha de siembra</TableHead>
+            <TableHead className="hidden sm:table-cell">Cama</TableHead>
+            <TableHead className="hidden md:table-cell">Fecha de siembra</TableHead>
             <TableHead className="text-right">Cantidad</TableHead>
             <TableHead className="text-right">Ciclo</TableHead>
           </TableRow>
@@ -47,8 +47,8 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
           {cargando && Array.from({ length: 4 }).map((_, index) => (
             <TableRow key={`skeleton-${index}`}>
               <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+              <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-28" /></TableCell>
+              <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-24" /></TableCell>
               <TableCell><Skeleton className="ml-auto h-4 w-16" /></TableCell>
               <TableCell><Skeleton className="ml-auto h-8 w-24" /></TableCell>
             </TableRow>
@@ -70,11 +70,11 @@ export function SiembrasTabla({ cargando, error, siembras, hayFiltros }: Props) 
                   {siembra.tipoCultivo}
                 </Link>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden whitespace-normal sm:table-cell">
                 <span className="font-medium">{siembra.cama.codigo}</span>
-                <span className="block text-xs text-muted-foreground">{siembra.cama.ubicacion}</span>
+                <span className="hidden text-xs text-muted-foreground md:block">{siembra.cama.ubicacion}</span>
               </TableCell>
-              <TableCell>{formatearFecha(siembra.fechaSiembra)}</TableCell>
+              <TableCell className="hidden md:table-cell">{formatearFecha(siembra.fechaSiembra)}</TableCell>
               <TableCell className="text-right tabular-nums">{formatearCantidad(siembra.cantidadSembrada)} {ETIQUETA_UNIDAD_SIEMBRA[siembra.unidadSembrada]}</TableCell>
               <TableCell className="text-right">
                 {siembra.finalizadaEn ? (

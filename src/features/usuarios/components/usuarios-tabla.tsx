@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuth } from "@/features/auth/context/auth-context";
 import { ETIQUETA_ROL } from "../models/usuario.model";
 import type { UsuarioRespuesta } from "../validacion/usuario.validacion";
 import { UsuarioDesactivarDialog } from "./usuario-desactivar-dialog";
@@ -40,6 +41,7 @@ export function UsuariosTabla({
   error,
   usuarios,
 }: UsuariosTablaProps) {
+  const { usuario: sesion } = useAuth();
   const [usuarioADesactivar, setUsuarioADesactivar] =
     useState<UsuarioRespuesta | null>(null);
 
@@ -58,7 +60,7 @@ export function UsuariosTabla({
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Usuario
             </TableHead>
-            <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="hidden py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase md:table-cell">
               Rol
             </TableHead>
             <TableHead className="py-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -83,7 +85,7 @@ export function UsuariosTabla({
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-5 w-28" />
                   </TableCell>
                   <TableCell>
@@ -129,7 +131,7 @@ export function UsuariosTabla({
               key={usuario.id}
               className="transition-colors hover:bg-muted/30"
             >
-              <TableCell className="py-3">
+              <TableCell className="py-3 whitespace-normal">
                 <div className="flex items-center gap-3">
                   <Avatar className="size-9">
                     <AvatarFallback className="bg-muted text-xs font-medium">
@@ -140,13 +142,13 @@ export function UsuariosTabla({
                     <p className="truncate font-medium text-foreground">
                       {usuario.nombre}
                     </p>
-                    <p className="truncate text-xs text-muted-foreground">
+                    <p className="hidden truncate text-xs text-muted-foreground sm:block">
                       {usuario.correo}
                     </p>
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden md:table-cell">
                 <span className="text-sm text-foreground">
                   {ETIQUETA_ROL[usuario.rol]}
                 </span>
@@ -173,7 +175,7 @@ export function UsuariosTabla({
                     <PencilIcon />
                     Editar
                   </DropdownMenuItem>
-                  {usuario.activo ? (
+                  {usuario.activo && sesion && usuario.id !== sesion.id ? (
                     <DropdownMenuItem
                       variant="destructive"
                       onClick={() => setUsuarioADesactivar(usuario)}
