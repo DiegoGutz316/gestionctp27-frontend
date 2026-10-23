@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { fechaHoyCR } from "@/lib/fechas";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 
@@ -368,6 +369,7 @@ export function AnimalForm() {
                 <Input
                   id={field.name}
                   type="date"
+                  max={fechaHoyCR()}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
