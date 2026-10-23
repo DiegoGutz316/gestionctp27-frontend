@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { fechaHoyCR } from "@/lib/fechas";
+
 /**
  * Backlog 5.5: estados de un aviso institucional. Deben coincidir con el enum
  * del backend.
@@ -41,13 +43,16 @@ export const ETIQUETA_CATEGORIA_AVISO: Record<CategoriaAviso, string> = {
  * regular solo mira la forma del texto y deja pasar fechas que no existen en
  * el calendario, como 2026-02-31.
  *
- * A diferencia del resto del sistema, aquí **sí** se admiten fechas futuras:
- * un aviso anuncia una actividad que todavía no ocurrió.
+ * Un aviso anuncia algo que todavía no pasó, así que hoy y las fechas
+ * posteriores sí; ayer y las anteriores no.
  */
 const fechaAvisoSchema = z
   .string({ error: "La fecha del aviso es obligatoria" })
   .min(1, "La fecha del aviso es obligatoria")
-  .pipe(z.iso.date({ error: "Ingrese una fecha válida" }));
+  .pipe(z.iso.date({ error: "Ingrese una fecha válida" }))
+  .refine((fecha) => fecha >= fechaHoyCR(), {
+    error: "La fecha del aviso debe ser hoy o posterior",
+  });
 
 export const registrarAvisoSchema = z.object({
   titulo: z

@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+import { fechaHoyCR } from "@/lib/fechas";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 
@@ -349,11 +350,10 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
                     Fecha de la actividad o comunicado
                   </FieldLabel>
 
-                  {/* Sin `max`: un aviso anuncia algo que todavía no ocurrió,
-                      así que las fechas futuras son lo normal aquí. */}
                   <Input
                     id={field.name}
                     type="date"
+                    min={fechaHoyCR()}
                     aria-invalid={invalid}
                     value={field.state.value}
                     onBlur={field.handleBlur}
@@ -361,7 +361,7 @@ export function AvisoForm({ aviso }: { aviso?: AvisoRespuesta }) {
                   />
 
                   <FieldDescription>
-                    Indica la fecha a la que corresponde el aviso.
+                    Solo hoy o una fecha posterior. Ayer y los días anteriores no se pueden usar.
                   </FieldDescription>
 
                   <FieldError errors={errors} />
