@@ -1,5 +1,7 @@
 import { ApiError, api, getMensajeDeError } from "@/lib/api";
 import type {
+  ActualizarPerfil,
+  CambiarContrasena,
   LoginDatos,
   RespuestaLogin,
   UsuarioSesion,
@@ -18,6 +20,17 @@ export function obtenerPerfil() {
   return api.get<UsuarioSesion>("/auth/perfil");
 }
 
+export function actualizarPerfil(datos: ActualizarPerfil) {
+  return api.patch<UsuarioSesion>("/auth/perfil", datos);
+}
+
+export function cambiarContrasena(datos: CambiarContrasena) {
+  return api.patch<{ ok: boolean }>("/auth/perfil/contrasena", {
+    contrasenaActual: datos.contrasenaActual,
+    contrasenaNueva: datos.contrasenaNueva,
+  });
+}
+
 /** Backlog 1.6: matriz de permisos del rol de la sesión actual. */
 export function obtenerPermisos() {
   return api.get<RespuestaPermisos>("/auth/permisos");
@@ -27,6 +40,13 @@ export function getMensajeDeErrorAuth(error: unknown): string {
   return getMensajeDeError(error, {
     401: "El correo o la contraseña no son correctos.",
     403: "Esta cuenta está desactivada. Comuníquese con el administrador.",
+  });
+}
+
+export function getMensajeDeErrorPerfil(error: unknown): string {
+  return getMensajeDeError(error, {
+    401: "La contraseña actual no es correcta.",
+    409: "Ya existe un usuario registrado con ese correo.",
   });
 }
 

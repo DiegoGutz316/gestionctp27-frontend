@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { CircleUserRound, LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -74,6 +74,10 @@ export function BarraSuperiorMovil() {
             ) : null}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem render={<Link href="/dashboard/perfil" />}>
+            <CircleUserRound />
+            Mi perfil
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => void cerrarSesion()}>
             <LogOut />
             Cerrar sesión

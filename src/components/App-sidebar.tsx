@@ -769,6 +769,7 @@ export function AppSidebar() {
                 <DropdownMenuSeparator className="bg-[#edf0eb] dark:bg-secondary" />
 
                 <DropdownMenuItem
+                  render={<Link href="/dashboard/perfil" />}
                   className="
                     cursor-pointer
                     rounded-xl

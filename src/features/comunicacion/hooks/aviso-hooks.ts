@@ -76,8 +76,8 @@ export function useEditarAviso() {
 }
 
 /**
- * Foto del panel: se pide con la sesión. Así un aviso inactivo o sin imagen
- * no dispara un 404 en la ruta pública.
+ * Foto del panel. Los avisos activos usan la URL pública (el navegador la
+ * cachea). Los inactivos van por la ruta con sesión, que no responde 404.
  */
 export function useSrcFlyer(
   aviso: { id: number; estado: EstadoAviso; tieneFlyer: boolean } | null,
@@ -91,6 +91,11 @@ export function useSrcFlyer(
   useEffect(() => {
     if (!tieneFlyer || id <= 0) {
       setSrc(null);
+      return;
+    }
+
+    if (estado === "ACTIVO") {
+      setSrc(urlFlyerAviso(id));
       return;
     }
 
@@ -114,7 +119,7 @@ export function useSrcFlyer(
       cancelado = true;
       if (objeto) URL.revokeObjectURL(objeto);
     };
-  }, [id, tieneFlyer]);
+  }, [id, estado, tieneFlyer]);
 
   return src;
 }
