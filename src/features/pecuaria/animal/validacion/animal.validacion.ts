@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { fechaHoyCR } from "@/lib/fechas";
+
 import {
   CATEGORIAS_BOVINAS,
   ESPECIES_ANIMAL,
@@ -68,12 +70,15 @@ export const crearAnimalSchema = z
       .min(1, "La raza del animal es obligatoria")
       .max(100, "La raza no puede superar 100 caracteres"),
 
+    // `z.iso.date()` y no una expresión regular: la regular dejaba pasar fechas
+    // que no existen (2026-02-31). Mismo patrón que Vacuna y Desparasitación.
     fechaNacimiento: z
       .string({ error: "La fecha de nacimiento es obligatoria" })
       .min(1, "La fecha de nacimiento es obligatoria")
-      .regex(
-        /^\d{4}-\d{2}-\d{2}$/,
-        "La fecha de nacimiento debe tener un formato válido",
+      .pipe(z.iso.date({ error: "Ingrese una fecha válida" }))
+      .refine(
+        (valor) => valor <= fechaHoyCR(),
+        "La fecha de nacimiento no puede ser futura",
       ),
 
     estado: z.enum(ESTADOS_ANIMAL, {
