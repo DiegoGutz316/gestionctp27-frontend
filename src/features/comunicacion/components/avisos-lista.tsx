@@ -10,8 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MostrarSiPuede } from "@/features/auth/components/mostrar-si-puede";
 import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
 
-import { urlFlyerAviso } from "../servicios/aviso.service";
-
+import { useSrcFlyer } from "../hooks/aviso-hooks";
 import type { AvisoRespuesta } from "../validacion/aviso.validacion";
 
 type Props = {
@@ -140,14 +139,7 @@ export function AvisosLista({
               </div>
             </div>
 
-            {aviso.tieneFlyer ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={urlFlyerAviso(aviso.id)}
-                alt={`Flyer de ${aviso.titulo}`}
-                className="mt-3 max-h-64 w-full rounded-lg border object-contain"
-              />
-            ) : null}
+            <FlyerLista aviso={aviso} />
 
             <p className="mt-2 text-sm whitespace-pre-line text-muted-foreground">
               {aviso.descripcion}
@@ -156,5 +148,20 @@ export function AvisosLista({
         </Card>
       ))}
     </div>
+  );
+}
+
+function FlyerLista({ aviso }: { aviso: AvisoRespuesta }) {
+  const src = useSrcFlyer(aviso.tieneFlyer ? aviso : null);
+
+  if (!src) return null;
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={`Flyer de ${aviso.titulo}`}
+      className="mt-3 max-h-64 w-full rounded-lg border object-contain"
+    />
   );
 }

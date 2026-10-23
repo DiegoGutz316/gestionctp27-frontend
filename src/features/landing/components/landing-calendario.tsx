@@ -6,8 +6,10 @@ import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAvisosCalendario } from "@/features/comunicacion/hooks/aviso-hooks";
-import { urlFlyerAviso } from "@/features/comunicacion/servicios/aviso.service";
+import {
+  useAvisosCalendario,
+  useSrcFlyerPublico,
+} from "@/features/comunicacion/hooks/aviso-hooks";
 import type {
   AvisoPublico,
   CategoriaAviso,
@@ -556,18 +558,19 @@ function DetalleEvento({
 }
 
 function FlyerEvento({ aviso }: { aviso: AvisoPublico }) {
-  const [roto, setRoto] = useState(false);
-  const mostrar = aviso.tieneFlyer && !roto;
+  const src = useSrcFlyerPublico(aviso);
 
   return (
     <div className="flex h-72 items-center justify-center overflow-hidden rounded-2xl bg-crema sm:h-80">
-      {mostrar ? (
+      {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={urlFlyerAviso(aviso.id)}
+          src={src}
           alt={`Flyer de ${aviso.titulo}`}
           className="max-h-full max-w-full object-contain p-3"
-          onError={() => setRoto(true)}
+          onError={(evento) => {
+            evento.currentTarget.style.display = "none";
+          }}
         />
       ) : (
         <PlaceholderFlyer />

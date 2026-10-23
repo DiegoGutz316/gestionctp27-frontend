@@ -43,11 +43,16 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 /**
- * La landing no usa la sesión. Consultarla ahí responde 401 y el navegador
- * lo muestra como fallo, aunque sea el caso normal de un visitante anónimo.
+ * La landing y la ficha pública de un aviso no usan la sesión. Consultarla
+ * ahí responde 401 y el navegador lo muestra como fallo, aunque sea el caso
+ * normal de un visitante anónimo.
  */
 function rutaSinSesion(pathname: string): boolean {
-  return pathname === "/";
+  return (
+    pathname === "/" ||
+    pathname === "/avisos" ||
+    pathname.startsWith("/avisos/")
+  );
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

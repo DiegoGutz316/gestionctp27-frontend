@@ -7,8 +7,7 @@ import { CalendarDays, Eye, Megaphone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatearFecha } from "@/features/agricola/siembra/models/siembra.model";
 
-import { useAvisos } from "../hooks/aviso-hooks";
-import { urlFlyerAviso } from "../servicios/aviso.service";
+import { useAvisos, useSrcFlyer } from "../hooks/aviso-hooks";
 import {
   ETIQUETA_CATEGORIA_AVISO,
   ETIQUETA_ESTADO_AVISO,
@@ -75,7 +74,7 @@ export function DashboardAvisos() {
               className="border-b border-[#e5e2dc] dark:border-border last:border-0"
             >
               <Link
-                href={`/dashboard/comunicacion/avisos/${aviso.id}`}
+                href={`/dashboard/comunicacion/avisos/detalle/${aviso.id}`}
                 className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-[#f3f1ec]/70 dark:hover:bg-accent sm:gap-4"
               >
                 <Miniatura aviso={aviso} />
@@ -127,7 +126,9 @@ function recientes(avisos: AvisoRespuesta[]) {
 }
 
 function Miniatura({ aviso }: { aviso: AvisoRespuesta }) {
-  if (!aviso.tieneFlyer) {
+  const src = useSrcFlyer(aviso.tieneFlyer ? aviso : null);
+
+  if (!src) {
     return (
       <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-card text-[#7fa36a] dark:text-primary sm:size-24">
         <Megaphone className="size-5" />
@@ -138,11 +139,7 @@ function Miniatura({ aviso }: { aviso: AvisoRespuesta }) {
   return (
     <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white dark:bg-card sm:size-24">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={urlFlyerAviso(aviso.id)}
-        alt=""
-        className="max-h-full max-w-full object-contain"
-      />
+      <img src={src} alt="" className="max-h-full max-w-full object-contain" />
     </span>
   );
 }

@@ -76,8 +76,8 @@ export function useEditarAviso() {
 }
 
 /**
- * El aviso activo usa la imagen pública. El inactivo se pide con la sesión,
- * porque esa imagen no se publica.
+ * Foto del panel: se pide con la sesión. Así un aviso inactivo o sin imagen
+ * no dispara un 404 en la ruta pública.
  */
 export function useSrcFlyer(
   aviso: { id: number; estado: EstadoAviso; tieneFlyer: boolean } | null,
@@ -86,18 +86,11 @@ export function useSrcFlyer(
   const estado = aviso?.estado ?? null;
   const tieneFlyer = aviso?.tieneFlyer ?? false;
 
-  const [src, setSrc] = useState<string | null>(() =>
-    tieneFlyer && estado === "ACTIVO" ? urlFlyerAviso(id) : null,
-  );
+  const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
     if (!tieneFlyer || id <= 0) {
       setSrc(null);
-      return;
-    }
-
-    if (estado === "ACTIVO") {
-      setSrc(urlFlyerAviso(id));
       return;
     }
 
@@ -121,7 +114,27 @@ export function useSrcFlyer(
       cancelado = true;
       if (objeto) URL.revokeObjectURL(objeto);
     };
-  }, [id, estado, tieneFlyer]);
+  }, [id, tieneFlyer]);
+
+  return src;
+}
+
+/** Foto de la landing. Si el aviso no tiene imagen, no se pide el archivo. */
+export function useSrcFlyerPublico(
+  aviso: { id: number; tieneFlyer: boolean } | null,
+): string | null {
+  const id = aviso?.id ?? 0;
+  const tieneFlyer = aviso?.tieneFlyer ?? false;
+  const [src, setSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!tieneFlyer || id <= 0) {
+      setSrc(null);
+      return;
+    }
+
+    setSrc(urlFlyerAviso(id));
+  }, [id, tieneFlyer]);
 
   return src;
 }

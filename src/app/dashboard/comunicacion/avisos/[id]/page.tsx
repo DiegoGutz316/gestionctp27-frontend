@@ -1,20 +1,10 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { RequerirPermiso } from "@/features/auth/components/requerir-permiso";
-import { AvisoDetalle } from "@/features/comunicacion/components/aviso-detalle";
-
-export const metadata: Metadata = {
-  title: "Detalle del aviso | GestiónCTP27",
-};
-
-export default async function DetalleAvisoPage({
+export default async function DetalleAvisoRedireccion({
   params,
-}: Readonly<{ params: Promise<{ id: string }> }>) {
+}: Readonly<{
+  params: Promise<{ id: string }>;
+}>) {
   const { id } = await params;
-
-  return (
-    <RequerirPermiso modulo="REPORTES" nivel="LECTURA">
-      <AvisoDetalle id={id} />
-    </RequerirPermiso>
-  );
+  redirect(`/dashboard/comunicacion/avisos/detalle/${id}`);
 }

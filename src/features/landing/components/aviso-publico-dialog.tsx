@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { urlFlyerAviso } from "@/features/comunicacion/servicios/aviso.service";
+import { useSrcFlyerPublico } from "@/features/comunicacion/hooks/aviso-hooks";
 import type { AvisoPublico } from "@/features/comunicacion/validacion/aviso.validacion";
 
 import {
@@ -26,6 +26,7 @@ type Props = {
 
 export function AvisoPublicoDialog({ aviso, onCerrar }: Props) {
   const fechas = aviso ? fechasDelAviso(aviso) : null;
+  const srcFlyer = useSrcFlyerPublico(aviso);
 
   return (
     <Dialog
@@ -39,13 +40,16 @@ export function AvisoPublicoDialog({ aviso, onCerrar }: Props) {
       >
         {aviso && fechas ? (
           <>
-            {aviso.tieneFlyer ? (
+            {srcFlyer ? (
               <div className="flex items-center justify-center bg-crema px-4 py-6 sm:px-8 sm:py-8">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={urlFlyerAviso(aviso.id)}
+                  src={srcFlyer}
                   alt={`Flyer de ${aviso.titulo}`}
                   className="max-h-[62vh] w-full object-contain"
+                  onError={(evento) => {
+                    evento.currentTarget.style.display = "none";
+                  }}
                 />
               </div>
             ) : null}

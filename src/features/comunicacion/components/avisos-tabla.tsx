@@ -138,7 +138,7 @@ export function AvisosTabla({
                 </TableCell>
                 <TableCell className="max-w-xs whitespace-normal">
                   <Link
-                    href={`/dashboard/comunicacion/avisos/${aviso.id}`}
+                    href={`/dashboard/comunicacion/avisos/detalle/${aviso.id}`}
                     className="font-medium text-foreground underline-offset-2 hover:underline"
                   >
                     {aviso.titulo}
@@ -181,7 +181,7 @@ export function AvisosTabla({
                   <AccionesMenu aria-label={`Acciones de ${aviso.titulo}`}>
                     <DropdownMenuItem
                       render={
-                        <Link href={`/dashboard/comunicacion/avisos/${aviso.id}`} />
+                        <Link href={`/dashboard/comunicacion/avisos/detalle/${aviso.id}`} />
                       }
                     >
                       <Eye />

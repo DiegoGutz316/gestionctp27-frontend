@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { CalendarDays, ImageIcon } from "lucide-react";
 
-import { useAvisosCalendario } from "@/features/comunicacion/hooks/aviso-hooks";
-import { urlFlyerAviso } from "@/features/comunicacion/servicios/aviso.service";
+import {
+  useAvisosCalendario,
+  useSrcFlyerPublico,
+} from "@/features/comunicacion/hooks/aviso-hooks";
 
 import {
   etiquetaCategoria,
@@ -19,6 +21,7 @@ export function AvisoPublicoPagina({ id }: { id: string }) {
     consulta.data?.find((item) => item.id === avisoId) ?? null;
   const fechas = aviso ? fechasDelAviso(aviso) : null;
   const categoria = aviso ? etiquetaCategoria(aviso) : null;
+  const srcFlyer = useSrcFlyerPublico(aviso);
 
   return (
     <div className="min-h-svh bg-landing text-tinta">
@@ -49,13 +52,16 @@ export function AvisoPublicoPagina({ id }: { id: string }) {
 
         {aviso && fechas ? (
           <article className="overflow-hidden rounded-2xl bg-tarjeta shadow-sm">
-            {aviso.tieneFlyer ? (
+            {srcFlyer ? (
               <div className="flex items-center justify-center bg-crema px-4 py-6">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={urlFlyerAviso(aviso.id)}
+                  src={srcFlyer}
                   alt={`Flyer de ${aviso.titulo}`}
                   className="max-h-[70vh] w-full object-contain"
+                  onError={(evento) => {
+                    evento.currentTarget.style.display = "none";
+                  }}
                 />
               </div>
             ) : (
