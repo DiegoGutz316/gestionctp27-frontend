@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -27,15 +28,15 @@ import { useAnimales } from "@/features/pecuaria/animal/hooks/hooks";
 import { useRegistrarProduccion } from "../hooks/hooks";
 import {
   ETIQUETA_TIPO_PRODUCCION,
-  TIPOS_PRODUCCION,
   UNIDAD_TIPO_PRODUCCION,
   esAnimalActivo,
   etiquetaEspecieProduccion,
   fechaHoyLocal,
+  tiposProduccionDeEspecie,
   type TipoProduccion,
 } from "../models/produccion.model";
 import { getMensajeDeError } from "../servicios/produccion.service";
-import { registrarProduccionSchema } from "../validacion/produccion.validacion";
+import { crearRegistrarProduccionSchema } from "../validacion/produccion.validacion";
 
 export function ProduccionForm() {
   const router = useRouter();
@@ -57,10 +58,9 @@ export function ProduccionForm() {
   const etiquetaAnimalPreseleccionado = animalPreseleccionado
     ? `${animalPreseleccionado.codigo} — ${animalPreseleccionado.nombre} (${etiquetaEspecieProduccion(animalPreseleccionado.especie)})`
     : "";
-  const tiposItems = TIPOS_PRODUCCION.map((tipo) => ({
-    value: tipo,
-    label: `${ETIQUETA_TIPO_PRODUCCION[tipo]} (${UNIDAD_TIPO_PRODUCCION[tipo]})`,
-  }));
+  const registrarProduccionSchema = crearRegistrarProduccionSchema(
+    (animalId) => activos.find((animal) => animal.id === animalId)?.especie,
+  );
 
   const form = useForm({
     defaultValues: {
@@ -87,6 +87,32 @@ export function ProduccionForm() {
       }
     },
   });
+
+  const animalId = useStore(form.store, (estado) => estado.values.animalId);
+  const tipoActual = useStore(
+    form.store,
+    (estado) => estado.values.tipoProduccion,
+  );
+  const especie = activos.find(
+    (animal) => String(animal.id) === animalId,
+  )?.especie;
+  const tiposItems = tiposProduccionDeEspecie(especie).map((tipo) => ({
+    value: tipo,
+    label: `${ETIQUETA_TIPO_PRODUCCION[tipo]} (${UNIDAD_TIPO_PRODUCCION[tipo]})`,
+  }));
+
+  // Al cambiar de animal se descarta un tipo que su especie no admite, y si la
+  // especie admite uno solo se deja elegido. Cubre también el animal que llega
+  // por `?animalId=` y la lista de animales que termina de cargar después.
+  useEffect(() => {
+    const permitidos = tiposProduccionDeEspecie(especie);
+
+    if (tipoActual !== "" && !permitidos.includes(tipoActual)) {
+      form.setFieldValue("tipoProduccion", "");
+    } else if (tipoActual === "" && permitidos.length === 1) {
+      form.setFieldValue("tipoProduccion", permitidos[0]);
+    }
+  }, [especie, tipoActual, form]);
 
   return (
     <form
@@ -175,9 +201,16 @@ export function ProduccionForm() {
                     id={field.name}
                     className="w-full"
                     aria-invalid={invalid}
+                    disabled={!especie}
                     onBlur={field.handleBlur}
                   >
-                    <SelectValue placeholder="Seleccione un tipo" />
+                    <SelectValue
+                      placeholder={
+                        especie
+                          ? "Seleccione un tipo"
+                          : "Primero seleccione un animal"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {tiposItems.map((item) => (
