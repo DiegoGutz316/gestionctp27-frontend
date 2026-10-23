@@ -92,8 +92,8 @@ export type AvisoRespuesta = z.infer<typeof avisoSchema>;
 /**
  * Aviso que devuelve `GET /comunicacion/avisos/publicos`.
  * El endpoint ya aplica las reglas de activos y vigentes.
- * `creadoEn`, `categoria`, `fechaActividad`, `prioridad` y `estado` se leen
- * solo si el backend los envía; el contrato mínimo sigue siendo el actual.
+ * `creadoEn` es el momento de publicación. `categoria`, `fechaActividad`,
+ * `prioridad` y `estado` se leen solo si el backend los envía.
  */
 export type AvisoPublico = {
   id: number;

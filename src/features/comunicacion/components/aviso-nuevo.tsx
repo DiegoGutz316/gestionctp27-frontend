@@ -37,6 +37,16 @@ export function AvisoNuevo() {
           <BreadcrumbSeparator />
 
           <BreadcrumbItem>
+            <BreadcrumbLink
+              render={<Link href="/dashboard/comunicacion/avisos" />}
+            >
+              Avisos
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+
+          <BreadcrumbSeparator />
+
+          <BreadcrumbItem>
             <BreadcrumbPage>Publicar aviso</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
