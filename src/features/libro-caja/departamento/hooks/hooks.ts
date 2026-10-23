@@ -67,7 +67,9 @@ export function useDesactivarDepartamento() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => desactivarDepartamento(id),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: departamentosQueryKey }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: departamentosQueryKey });
+      void queryClient.invalidateQueries({ queryKey: periodosQueryKey });
+    },
   });
 }
