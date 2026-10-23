@@ -14,7 +14,7 @@ const ENLACES = [
 
 const TITULO_COLUMNA = "text-xs font-semibold uppercase tracking-[0.16em] text-pie-texto/55";
 const ENLACE =
-  "transition-colors hover:text-pie-texto focus-visible:outline-none focus-visible:underline";
+  "rounded-sm transition-colors hover:text-pie-texto focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-pie-texto/60 focus-visible:ring-offset-2 focus-visible:ring-offset-pie";
 
 export function LandingFooter() {
   return (
