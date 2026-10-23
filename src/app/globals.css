@@ -452,13 +452,43 @@ html[data-escala-ampliada] {
   display: none;
 }
 
-/* Plantilla oficial MEP: Arial en el cuerpo, Calibri en observaciones. */
+/* Plantilla oficial MEP: Arial en el cuerpo, Calibri en observaciones.
+   En el celular conserva el ancho del formulario y se desplaza de lado,
+   para que las columnas no aplasten el texto unas letras sobre otras. */
+.informe-udp {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+.informe-udp table {
+  min-width: 46rem;
+}
+
 .informe-udp,
 .informe-udp table,
 .informe-udp th,
 .informe-udp td {
   font-family: Arial, Helvetica, sans-serif !important;
   font-variant-numeric: normal;
+}
+
+.informe-udp th,
+.informe-udp td {
+  line-height: 1.35;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+
+html[data-escala-ampliada] .informe-udp,
+html[data-escala-ampliada] .informe-udp * {
+  overflow-wrap: normal;
+  hyphens: manual;
 }
 
 .informe-udp .fuente-calibri {
@@ -524,5 +554,11 @@ html[data-escala-ampliada] {
   .informe-udp {
     width: 100% !important;
     max-width: none !important;
+    overflow: visible !important;
+  }
+
+  .informe-udp table {
+    min-width: 0 !important;
+    width: 100% !important;
   }
 }

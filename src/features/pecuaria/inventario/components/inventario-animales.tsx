@@ -97,7 +97,7 @@ export function InventarioAnimales({
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-[1100px] flex-1 flex-col gap-6">
+    <section className="mx-auto flex w-full min-w-0 max-w-[1100px] flex-1 flex-col gap-6">
       <div className="print:hidden space-y-6">
         <Breadcrumb>
           <BreadcrumbList>
@@ -163,6 +163,10 @@ export function InventarioAnimales({
           </p>
         ) : null}
       </div>
+
+      <p className="text-sm text-muted-foreground md:hidden print:hidden">
+        Deslice la plantilla hacia el lado para leerla completa.
+      </p>
 
       {tipo === "ganado-bovino" ? (
         <InventarioGanadoBovino

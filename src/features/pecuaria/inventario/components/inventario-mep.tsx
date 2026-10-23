@@ -60,7 +60,7 @@ export function EncabezadoInventarioMep({
       <tr>
         <td
           colSpan={colSpan}
-          className="border-x-2 border-black py-0.5 text-center text-[12pt] font-bold uppercase"
+          className="border-x-2 border-black px-2 py-1 text-center text-[12pt] font-bold leading-normal uppercase"
         >
           Ministerio de Educación Pública
         </td>
@@ -68,7 +68,7 @@ export function EncabezadoInventarioMep({
       <tr>
         <td
           colSpan={colSpan}
-          className="border-x-2 border-black py-0.5 text-center text-[12pt] font-bold uppercase"
+          className="border-x-2 border-black px-2 py-1 text-center text-[12pt] font-bold leading-normal uppercase"
         >
           Departamento de&nbsp;&nbsp;Especialidades Técnicas
         </td>
@@ -76,7 +76,7 @@ export function EncabezadoInventarioMep({
       <tr>
         <td
           colSpan={colSpan}
-          className="border-x-2 border-black py-0.5 text-center text-[12pt] font-bold uppercase"
+          className="border-x-2 border-black px-2 py-1 text-center text-[12pt] font-bold leading-normal uppercase"
         >
           Unidad de Financiamiento y Coordinación Técnica
         </td>
@@ -87,7 +87,7 @@ export function EncabezadoInventarioMep({
       <tr>
         <td
           colSpan={colSpan}
-          className="border-x-2 border-black py-1 text-center text-[14pt] font-bold"
+          className="border-x-2 border-black px-2 py-1 text-center text-[14pt] font-bold leading-normal"
         >
           {titulo}
         </td>
