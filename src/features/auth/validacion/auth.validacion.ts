@@ -58,3 +58,41 @@ export const cambiarContrasenaSchema = z
 
 export type CambiarContrasena = z.output<typeof cambiarContrasenaSchema>;
 export type CambiarContrasenaInput = z.input<typeof cambiarContrasenaSchema>;
+
+export const solicitarRestablecimientoSchema = z.object({
+  correo: z
+    .string({ error: "El correo es obligatorio" })
+    .trim()
+    .min(1, "El correo es obligatorio")
+    .email("Debe ingresar un correo válido")
+    .transform((valor) => valor.toLowerCase()),
+});
+
+export type SolicitarRestablecimiento = z.output<
+  typeof solicitarRestablecimientoSchema
+>;
+export type SolicitarRestablecimientoInput = z.input<
+  typeof solicitarRestablecimientoSchema
+>;
+
+export const restablecerContrasenaSchema = z
+  .object({
+    token: z
+      .string({ error: "El enlace de restablecimiento no es válido" })
+      .trim()
+      .min(1, "El enlace de restablecimiento no es válido"),
+    contrasenaNueva: z
+      .string({ error: "La nueva contraseña es obligatoria" })
+      .min(8, "La contraseña debe tener al menos 8 caracteres")
+      .max(72, "La contraseña no puede superar 72 caracteres"),
+    confirmar: z
+      .string({ error: "Confirme la nueva contraseña" })
+      .min(1, "Confirme la nueva contraseña"),
+  })
+  .refine((datos) => datos.contrasenaNueva === datos.confirmar, {
+    path: ["confirmar"],
+    error: "Las contraseñas no coinciden",
+  });
+
+export type RestablecerContrasena = z.output<typeof restablecerContrasenaSchema>;
+export type RestablecerContrasenaInput = z.input<typeof restablecerContrasenaSchema>;

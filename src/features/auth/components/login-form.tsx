@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, useStore } from "@tanstack/react-form";
 import {
@@ -505,6 +506,15 @@ export function LoginForm() {
           </Button>
         )}
       </form.Subscribe>
+
+      <p className="mt-4 text-center">
+        <Link
+          href="/recuperar-contrasena"
+          className="text-xs font-medium text-[#637a36] underline-offset-4 transition-colors hover:text-[#4f6529] hover:underline dark:text-primary"
+        >
+          Restablecer contraseña
+        </Link>
+      </p>
     </form>
   );
 }

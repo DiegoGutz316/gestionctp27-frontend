@@ -31,6 +31,17 @@ export function cambiarContrasena(datos: CambiarContrasena) {
   });
 }
 
+export function solicitarRestablecimiento(datos: { correo: string }) {
+  return api.post<{ mensaje: string }>("/auth/recuperar-contrasena", datos);
+}
+
+export function restablecerContrasena(datos: {
+  token: string;
+  contrasenaNueva: string;
+}) {
+  return api.post<{ mensaje: string }>("/auth/restablecer-contrasena", datos);
+}
+
 /** Backlog 1.6: matriz de permisos del rol de la sesión actual. */
 export function obtenerPermisos() {
   return api.get<RespuestaPermisos>("/auth/permisos");
