@@ -9,6 +9,7 @@ import {
   ChevronRight,
   ChevronsUpDown,
   CircleUserRound,
+  Globe,
   LayoutDashboard,
   Leaf,
   LogOut,
@@ -761,6 +762,29 @@ export function AppSidebar() {
                 </div>
 
                 <DropdownMenuSeparator className="bg-[#edf0eb] dark:bg-secondary" />
+
+                <DropdownMenuItem
+                  onClick={() => router.push("/")}
+                  className="
+                    cursor-pointer
+                    rounded-xl
+                    px-3
+                    py-2.5
+
+                    text-[#505a51] dark:text-foreground
+
+                    transition-colors
+
+                    hover:bg-[#f1f5ef]! dark:hover:bg-accent!
+                    hover:text-[#405c39]! dark:hover:text-primary!
+                  "
+                >
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#f1f4ef] dark:bg-secondary text-[#677463] dark:text-foreground">
+                    <Globe className="size-4" />
+                  </span>
+
+                  Ir a la landing
+                </DropdownMenuItem>
 
                 <DropdownMenuItem
                   onClick={() => router.push("/dashboard/perfil")}

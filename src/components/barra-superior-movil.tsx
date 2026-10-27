@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CircleUserRound, LogOut } from "lucide-react";
+import { CircleUserRound, Globe, LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -73,6 +73,10 @@ export function BarraSuperiorMovil() {
             ) : null}
           </div>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => router.push("/")}>
+            <Globe />
+            Ir a la landing
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => router.push("/dashboard/perfil")}
           >

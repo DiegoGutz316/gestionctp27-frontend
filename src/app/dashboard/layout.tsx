@@ -1,7 +1,11 @@
+import Link from "next/link"
+import { Globe } from "lucide-react"
+
 import { AppSidebar } from "@/components/App-sidebar"
 import { BarraSuperiorMovil } from "@/components/barra-superior-movil"
 import { NavegacionMovil } from "@/components/navegacion-movil"
 import { SelectorTema } from "@/components/selector-tema"
+import { Button } from "@/components/ui/button"
 import {
   SidebarInset,
   SidebarProvider,
@@ -19,7 +23,16 @@ export default function DashboardLayout({
         <SidebarInset className="flex flex-col overflow-auto">
           <header className="sticky top-0 z-50 hidden h-15 shrink-0 items-center gap-2 border-b bg-background px-3 sm:px-4 md:flex print:hidden">
             <SidebarTrigger className="hidden size-8 md:inline-flex" />
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                nativeButton={false}
+                render={<Link href="/" />}
+              >
+                <Globe data-icon="inline-start" />
+                Ir a la landing
+              </Button>
               <SelectorTema />
             </div>
           </header>
