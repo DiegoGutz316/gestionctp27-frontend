@@ -42,6 +42,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { fieldErrors } from "@/lib/form-errors";
+import { recortarCaracteres } from "@/lib/texto";
 import { zodValidator } from "@/lib/zod-form";
 
 import { useCultivo, useEditarCultivo } from "../hooks/cultivo-hooks";
@@ -49,6 +50,10 @@ import {
   ETIQUETA_TIPO_CULTIVO,
   TIPOS_CULTIVO,
   editarCultivoSchema,
+} from "../models/cultivo.model";
+import type {
+  CambiosDeCultivo,
+  EditarCultivo,
 } from "../models/cultivo.model";
 import { getMensajeDeError } from "../servicios/cultivo.service";
 
@@ -117,18 +122,39 @@ export function CultivoEditar({ id }: { id: number }) {
   );
 }
 
-function Formulario({
-  id,
-  cultivo,
-}: {
-  id: number;
-  cultivo: {
-    nombre: string;
-    tipo: string;
-    descripcion: string | null;
-    activo: boolean;
-  };
-}) {
+type DatosDelCultivo = {
+  nombre: string;
+  tipo: string;
+  descripcion: string | null;
+  activo: boolean;
+};
+
+/**
+ * Deja solo los campos que el usuario cambió.
+ *
+ * Enviar el formulario completo pisaría lo que otra persona haya editado
+ * mientras esta pantalla estaba abierta: el valor viejo del campo que aquí no
+ * se tocó viajaría igual y revertiría su cambio, sin aviso.
+ */
+function loQueCambio(
+  original: DatosDelCultivo,
+  datos: EditarCultivo,
+): CambiosDeCultivo {
+  const cambios: CambiosDeCultivo = {};
+
+  if (datos.nombre !== original.nombre) cambios.nombre = datos.nombre;
+  if (datos.tipo !== original.tipo) cambios.tipo = datos.tipo;
+  if (datos.activo !== original.activo) cambios.activo = datos.activo;
+
+  // La descripción vacía se envía como null, que es lo que la borra: omitir el
+  // campo deja la que ya estaba.
+  const descripcion = datos.descripcion ?? null;
+  if (descripcion !== original.descripcion) cambios.descripcion = descripcion;
+
+  return cambios;
+}
+
+function Formulario({ id, cultivo }: { id: number; cultivo: DatosDelCultivo }) {
   const router = useRouter();
   const editar = useEditarCultivo(id);
 
@@ -153,7 +179,15 @@ function Formulario({
           ...value,
           descripcion: value.descripcion.trim() || undefined,
         });
-        await editar.mutateAsync(datos);
+        const cambios = loQueCambio(cultivo, datos);
+
+        if (Object.keys(cambios).length === 0) {
+          toast.info("No había cambios que guardar.");
+          router.push("/dashboard/agricola/cultivos");
+          return;
+        }
+
+        await editar.mutateAsync(cambios);
         toast.success(`Cultivo "${datos.nombre}" actualizado correctamente.`);
         router.push("/dashboard/agricola/cultivos");
       } catch (error) {
@@ -183,11 +217,14 @@ function Formulario({
                 </FieldLabel>
                 <Input
                   id={field.name}
-                  maxLength={120}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(event) =>
+                    field.handleChange(
+                      recortarCaracteres(event.target.value, 120),
+                    )
+                  }
                 />
                 <FieldError errors={errors} />
               </Field>
@@ -245,11 +282,14 @@ function Formulario({
                 <Textarea
                   id={field.name}
                   rows={3}
-                  maxLength={500}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(event) =>
+                    field.handleChange(
+                      recortarCaracteres(event.target.value, 500),
+                    )
+                  }
                 />
                 <FieldError errors={errors} />
               </Field>

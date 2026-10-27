@@ -19,6 +19,29 @@ export const UNIDAD_TIPO_PRODUCCION: Record<TipoProduccion, string> = {
   CARNE: "kg",
 };
 
+/**
+ * Tipos de producción que admite cada especie. Replica la regla del backend,
+ * que rechaza con 400 cualquier otra combinación.
+ */
+export const TIPOS_PRODUCCION_POR_ESPECIE: Record<
+  EspecieAnimal,
+  readonly TipoProduccion[]
+> = {
+  VACA: ["LECHE", "CARNE"],
+  CABRA: ["LECHE"],
+  GALLINA: ["HUEVOS", "CARNE"],
+  POLLO: ["CARNE"],
+  CHANCHO: ["CARNE"],
+};
+
+/** Tipos permitidos para la especie; vacío si la especie no es conocida. */
+export function tiposProduccionDeEspecie(
+  especie: string | undefined,
+): readonly TipoProduccion[] {
+  if (!especie) return [];
+  return TIPOS_PRODUCCION_POR_ESPECIE[especie as EspecieAnimal] ?? [];
+}
+
 export function etiquetaEspecieProduccion(especie: string): string {
   return ETIQUETA_ESPECIE_ANIMAL[especie as EspecieAnimal] ?? especie;
 }

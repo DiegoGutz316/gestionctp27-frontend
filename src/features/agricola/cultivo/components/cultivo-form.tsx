@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { fieldErrors } from "@/lib/form-errors";
+import { recortarCaracteres } from "@/lib/texto";
 import { zodValidator } from "@/lib/zod-form";
 
 import { useRegistrarCultivo } from "../hooks/cultivo-hooks";
@@ -82,11 +83,14 @@ export function CultivoForm() {
                 <Input
                   id={field.name}
                   placeholder="Ej: Lechuga"
-                  maxLength={120}
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(event) =>
+                    field.handleChange(
+                      recortarCaracteres(event.target.value, 120),
+                    )
+                  }
                 />
                 <FieldError errors={errors} />
               </Field>
@@ -144,12 +148,15 @@ export function CultivoForm() {
                 <Textarea
                   id={field.name}
                   rows={3}
-                  maxLength={500}
                   placeholder="Variedad, ciclo aproximado, cuidados que necesita…"
                   aria-invalid={invalid}
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(event) =>
+                    field.handleChange(
+                      recortarCaracteres(event.target.value, 500),
+                    )
+                  }
                 />
                 <FieldError errors={errors} />
               </Field>
