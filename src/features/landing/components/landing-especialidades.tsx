@@ -1,10 +1,58 @@
-import Image from "next/image";
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
 
 import { ESPECIALIDADES } from "../datos-institucionales";
+import { ICONO_LUCIDE } from "../especialidades/models/especialidad.model";
+import { useEspecialidadesPublicas } from "../especialidades/hooks/hooks";
+import { urlFotoVisible } from "../especialidades/servicios/especialidad.service";
+import type { EspecialidadRespuesta } from "../especialidades/validacion/especialidad.validacion";
 import { BotonEscuchar } from "./boton-escuchar";
 
+type Tarjeta = {
+  id: string | number;
+  nombre: string;
+  descripcion: string;
+  acento: string;
+  foto: string;
+  fotoAlt: string;
+  posicionFoto?: string | null;
+  Icono: (typeof ICONO_LUCIDE)[keyof typeof ICONO_LUCIDE];
+};
+
+function desdeApi(item: EspecialidadRespuesta): Tarjeta {
+  return {
+    id: item.id,
+    nombre: item.nombre,
+    descripcion: item.descripcion,
+    acento: item.acento,
+    foto: urlFotoVisible(item),
+    fotoAlt: item.fotoAlt || item.nombre,
+    posicionFoto: item.posicionFoto,
+    Icono: ICONO_LUCIDE[item.icono],
+  };
+}
+
+function desdeEstaticas(): Tarjeta[] {
+  return ESPECIALIDADES.map((item, indice) => ({
+    id: `estatico-${indice}`,
+    nombre: item.nombre,
+    descripcion: item.descripcion,
+    acento: item.acento,
+    foto: item.foto,
+    fotoAlt: item.fotoAlt,
+    posicionFoto: item.posicionFoto,
+    Icono: item.icono,
+  }));
+}
+
 export function LandingEspecialidades() {
+  const consulta = useEspecialidadesPublicas();
+  const tarjetas =
+    consulta.data && consulta.data.length > 0
+      ? consulta.data.map(desdeApi)
+      : desdeEstaticas();
+
   return (
     <section
       id="especialidades"
@@ -16,26 +64,30 @@ export function LandingEspecialidades() {
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-malva">
             Especialidades
           </span>
-          <h2 id="especialidades-titulo" className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
+          <h2
+            id="especialidades-titulo"
+            className="mt-3 text-3xl font-semibold tracking-tight text-tinta sm:text-4xl"
+          >
             Nuestras especialidades técnicas
           </h2>
         </div>
 
-        {/* Escritorio: 3 tarjetas arriba y 2 más anchas abajo, repartidas en 6 columnas */}
         <ul className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-6">
-          {ESPECIALIDADES.map((especialidad, indice) => (
+          {tarjetas.map((especialidad, indice) => (
             <li
-              key={especialidad.nombre}
+              key={especialidad.id}
               className={indice >= 3 ? "lg:col-span-3" : "lg:col-span-2"}
             >
-              <article id={`especialidad-${indice}`} className="group flex h-full flex-col overflow-hidden rounded-3xl border border-tinta/8 bg-tarjeta shadow-[0_10px_30px_-22px_rgba(37,38,36,0.4)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgba(37,38,36,0.38)]">
+              <article
+                id={`especialidad-${indice}`}
+                className="group flex h-full flex-col overflow-hidden rounded-3xl border border-tinta/8 bg-tarjeta shadow-[0_10px_30px_-22px_rgba(37,38,36,0.4)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgba(37,38,36,0.38)]"
+              >
                 <div className="relative aspect-[16/10] w-full overflow-hidden">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={especialidad.foto}
                     alt={especialidad.fotoAlt}
-                    fill
-                    sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                     style={
                       especialidad.posicionFoto
                         ? { objectPosition: especialidad.posicionFoto }
@@ -50,9 +102,11 @@ export function LandingEspecialidades() {
                     className="absolute bottom-4 left-4 flex size-11 items-center justify-center rounded-2xl bg-tarjeta/90 shadow-sm backdrop-blur"
                     aria-hidden
                   >
-                    <especialidad.icono className="size-5" style={{ color: especialidad.acento }} />
+                    <especialidad.Icono
+                      className="size-5"
+                      style={{ color: especialidad.acento }}
+                    />
                   </div>
-                  {/* Sobre la foto, con el mismo fondo que el icono de la esquina izquierda. */}
                   <BotonEscuchar
                     etiqueta={especialidad.nombre}
                     objetivo={`especialidad-${indice}`}

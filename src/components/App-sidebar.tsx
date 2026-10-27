@@ -14,6 +14,7 @@ import {
   Leaf,
   LogOut,
   Megaphone,
+  PanelTop,
   Settings,
   Sprout,
   Users,
@@ -121,6 +122,13 @@ const navigation = [
         icon: Users,
         modulo: "USUARIOS" as const,
       },
+      {
+        title: "Landing",
+        href: "/dashboard/landing/especialidades",
+        icon: PanelTop,
+        modulo: "REPORTES" as const,
+        nivel: "COMPLETO" as const,
+      },
     ],
   },
 ]
@@ -171,7 +179,9 @@ export function AppSidebar() {
       const items: ItemNavegacion[] = []
 
       for (const item of section.items) {
-        if (puede(item.modulo)) {
+        const nivel =
+          "nivel" in item && item.nivel ? item.nivel : "LECTURA"
+        if (puede(item.modulo, nivel)) {
           items.push(item)
         }
       }
