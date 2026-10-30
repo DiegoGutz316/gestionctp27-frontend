@@ -54,9 +54,14 @@ export function getMensajeDeErrorAuth(error: unknown): string {
   });
 }
 
+/**
+ * Sin mensaje propio para el 401: el backend ya responde «La contraseña actual
+ * no es correcta.» cuando ese es el caso, y el único 401 que llega sin mensaje
+ * es el de la sesión vencida. Ponerlo aquí haría que una sesión caída al
+ * guardar el perfil culpara a la contraseña.
+ */
 export function getMensajeDeErrorPerfil(error: unknown): string {
   return getMensajeDeError(error, {
-    401: "La contraseña actual no es correcta.",
     409: "Ya existe un usuario registrado con ese correo.",
   });
 }

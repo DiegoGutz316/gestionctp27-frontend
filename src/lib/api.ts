@@ -82,6 +82,26 @@ export function reintentarConsulta(fallos: number, error: unknown): boolean {
   return error instanceof TypeError && fallos < 2;
 }
 
+/**
+ * Mensajes que NestJS pone solo, cuando la excepción no trae uno propio.
+ *
+ * No dicen nada que el código de estado no diga ya, y están en inglés, así que
+ * para el usuario sirve más el texto de `mensajes`. Lo que el backend sí
+ * escribe —«El cultivo no existe.», «Su rol no tiene acceso…»— se respeta tal
+ * cual: esos explican el caso concreto.
+ */
+const GENERICOS_DEL_SERVIDOR = new Set([
+  "Validation failed",
+  "Bad Request",
+  "Unauthorized",
+  "Forbidden",
+  "Not Found",
+  "Conflict",
+  "Too Many Requests",
+  "ThrottlerException: Too Many Requests",
+  "Internal server error",
+]);
+
 /** Extrae mensajes de NestJS y conserva una explicación útil por código HTTP. */
 export function getMensajeDeError(
   error: unknown,
@@ -104,7 +124,7 @@ export function getMensajeDeError(
         ? body.message[0]
         : body.message;
 
-    if (mensaje && mensaje !== "Validation failed") return mensaje;
+    if (mensaje && !GENERICOS_DEL_SERVIDOR.has(mensaje)) return mensaje;
   } catch {
     if (error.message && !error.message.startsWith("Error ")) {
       return error.message;
@@ -117,6 +137,7 @@ export function getMensajeDeError(
     403: "No tiene permisos para completar esta operación.",
     404: "El recurso solicitado no existe.",
     409: "La operación entra en conflicto con los datos existentes.",
+    429: "Demasiadas solicitudes seguidas. Espere unos segundos e intente de nuevo.",
   };
 
   return (
