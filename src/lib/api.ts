@@ -137,7 +137,9 @@ export function getMensajeDeError(
     403: "No tiene permisos para completar esta operación.",
     404: "El recurso solicitado no existe.",
     409: "La operación entra en conflicto con los datos existentes.",
-    429: "Demasiadas solicitudes seguidas. Espere unos segundos e intente de nuevo.",
+    // El backend limita a 20 peticiones por minuto, así que la espera es de
+    // hasta un minuto, no de unos segundos.
+    429: "Se hicieron demasiadas solicitudes seguidas. Espere un minuto e intente de nuevo.",
   };
 
   return (
