@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
+import { ApiError } from "@/lib/api";
 import {
   cerrarSesion,
   iniciarSesion,
@@ -24,9 +25,20 @@ import {
   type NivelPermiso,
 } from "../models/permisos.model";
 
+/**
+ * Por qué no hay usuario.
+ *
+ * `sin-sesion` es un 401: la cookie no vale y hay que volver a entrar.
+ * `sin-servidor` es cualquier otra cosa —el backend caído, un 500, un corte de
+ * red—, donde la sesión puede estar perfecta y mandar al login no arregla nada.
+ */
+export type MotivoSinUsuario = "sin-sesion" | "sin-servidor";
+
 type AuthContextValue = {
   usuario: UsuarioSesion | null;
   cargando: boolean;
+  /** Solo tiene valor cuando no hay usuario. */
+  motivoSinUsuario: MotivoSinUsuario | null;
   /**
    * Backlog 1.6: matriz de permisos del rol actual. Mientras carga (o si la
    * consulta falla) queda en NINGUNO, para no mostrar opciones que el backend
@@ -61,6 +73,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [usuario, setUsuario] = useState<UsuarioSesion | null>(null);
   const [permisos, setPermisos] = useState<MatrizPermisos>(matrizVacia);
   const [cargando, setCargando] = useState(!rutaSinSesion(pathname));
+  const [motivoSinUsuario, setMotivoSinUsuario] =
+    useState<MotivoSinUsuario | null>(null);
 
   /**
    * Carga perfil y permisos en paralelo, pero los resuelve por separado.
@@ -79,10 +93,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ]);
 
     if (resultadoPerfil.status === "rejected") {
-      return { usuario: null, permisos: matrizVacia() };
+      const fallo: unknown = resultadoPerfil.reason;
+      // Solo un 401 significa "no hay sesión". Un backend caído o un 500
+      // llegan igual acá, y decirle al usuario que su sesión expiró lo manda a
+      // un login que tampoco va a funcionar.
+      const motivo: MotivoSinUsuario =
+        fallo instanceof ApiError && fallo.status === 401
+          ? "sin-sesion"
+          : "sin-servidor";
+
+      return { usuario: null, permisos: matrizVacia(), motivo };
     }
 
     return {
+      motivo: null,
       usuario: resultadoPerfil.value,
       // Sin permisos se cae a "ninguno": la interfaz oculta las opciones en vez
       // de mostrar acciones que el backend rechazaría igual.
@@ -94,9 +118,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const refrescar = useCallback(async () => {
+    setCargando(true);
     const sesion = await cargarSesion();
     setUsuario(sesion.usuario);
     setPermisos(sesion.permisos);
+    setMotivoSinUsuario(sesion.motivo);
+    setCargando(false);
   }, [cargarSesion]);
 
   useEffect(() => {
@@ -113,6 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!activo) return;
       setUsuario(sesion.usuario);
       setPermisos(sesion.permisos);
+      setMotivoSinUsuario(sesion.motivo);
       setCargando(false);
     })();
 
@@ -124,6 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (datos: LoginDatos) => {
     const respuesta = await iniciarSesion(datos);
     setUsuario(respuesta.usuario);
+    setMotivoSinUsuario(null);
 
     // Los permisos se piden después del login porque dependen de la cookie que
     // acaba de emitir el backend.
@@ -143,6 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setUsuario(null);
       setPermisos(matrizVacia());
+      setMotivoSinUsuario("sin-sesion");
     }
   }, []);
 
@@ -156,13 +186,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       usuario,
       cargando,
+      motivoSinUsuario,
       permisos,
       puede,
       login,
       logout,
       refrescar,
     }),
-    [usuario, cargando, permisos, puede, login, logout, refrescar],
+    [
+      usuario,
+      cargando,
+      motivoSinUsuario,
+      permisos,
+      puede,
+      login,
+      logout,
+      refrescar,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

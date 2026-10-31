@@ -27,7 +27,8 @@ import {
 
 type Props = {
   cargando: boolean;
-  error: boolean;
+  /** Mensaje del fallo, o null si no lo hubo. */
+  error: string | null;
   cultivos: CultivoRespuesta[];
   hayFiltros: boolean;
 };
@@ -76,10 +77,9 @@ export function CultivosTabla({ cargando, error, cultivos, hayFiltros }: Props) 
             <TableRow>
               <TableCell
                 colSpan={5}
-                className="py-16 text-center text-sm text-destructive"
+                className="py-16 text-center text-sm whitespace-normal text-destructive"
               >
-                No se pudieron cargar los cultivos. Verifique la conexión con
-                el servidor.
+                No se pudieron cargar los cultivos. {error}
               </TableCell>
             </TableRow>
           ) : null}
