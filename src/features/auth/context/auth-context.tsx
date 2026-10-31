@@ -117,13 +117,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  /**
+   * Refresco en segundo plano: no toca `cargando`.
+   *
+   * `cargando` es el estado bloqueante de la carga inicial, y `RequerirAuth`
+   * reemplaza la pantalla mientras dure. Prenderlo aquí desmontaría la página
+   * que está abierta: al guardar los datos del perfil, por ejemplo, se perdía
+   * lo que el usuario tuviera escrito en el formulario de contraseña.
+   */
   const refrescar = useCallback(async () => {
-    setCargando(true);
     const sesion = await cargarSesion();
     setUsuario(sesion.usuario);
     setPermisos(sesion.permisos);
     setMotivoSinUsuario(sesion.motivo);
-    setCargando(false);
   }, [cargarSesion]);
 
   useEffect(() => {
