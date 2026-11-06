@@ -15,6 +15,7 @@ import {
   LogOut,
   Megaphone,
   PanelTop,
+  ClipboardCheck,
   Settings,
   Sprout,
   Users,
@@ -157,6 +158,9 @@ export function AppSidebar() {
   const { usuario, logout, puede } = useAuth()
   const { state, setOpenMobile } = useSidebar()
   const colapsado = state === "collapsed"
+  const panelQaUsabilidad =
+    process.env.NEXT_PUBLIC_QA_USABILIDAD_ENABLED === "true" &&
+    usuario?.rol === "ADMINISTRADOR"
 
   useEffect(() => {
     setOpenMobile(false)
@@ -168,7 +172,10 @@ export function AppSidebar() {
 
   const navegacionPermitida = useMemo(() => {
     type ItemNavegacion =
-      (typeof navigation)[number]["items"][number]
+      (typeof navigation)[number]["items"][number] & {
+        icon: typeof LayoutDashboard
+        soloQaAdmin?: boolean
+      }
 
     const secciones: {
       label: string
@@ -194,8 +201,24 @@ export function AppSidebar() {
       }
     }
 
+    // Solo entorno QA + ADMINISTRADOR. No usa la matriz de permisos del colegio.
+    if (panelQaUsabilidad) {
+      secciones.push({
+        label: "QA",
+        items: [
+          {
+            title: "Evaluación de usabilidad",
+            href: "/dashboard/qa/usabilidad",
+            icon: ClipboardCheck,
+            modulo: "PANEL" as const,
+            soloQaAdmin: true,
+          },
+        ],
+      })
+    }
+
     return secciones
-  }, [puede])
+  }, [puede, panelQaUsabilidad])
 
   const [openSections, setOpenSections] =
     useState<Record<string, boolean>>(() =>
