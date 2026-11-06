@@ -92,6 +92,12 @@ export function AvisosGestion() {
                 ? "No se pudo cargar el listado."
                 : `${total} aviso${total === 1 ? "" : "s"}`}
           </p>
+          {!puedeAdministrar ? (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Solo puede consultar avisos. La publicación está reservada a
+              usuarios con permiso completo en Reportes (p. ej. Docentes).
+            </p>
+          ) : null}
         </div>
 
         <MostrarSiPuede modulo="REPORTES" nivel="COMPLETO">

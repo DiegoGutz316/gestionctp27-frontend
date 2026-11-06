@@ -148,8 +148,13 @@ export function useActualizarAsiento(periodoId: number, fondoId: number) {
 export function useEliminarAsiento(periodoId: number, fondoId: number) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (asientoId: number) =>
-      eliminarAsiento(periodoId, fondoId, asientoId),
+    mutationFn: ({
+      asientoId,
+      motivo,
+    }: {
+      asientoId: number;
+      motivo: string;
+    }) => eliminarAsiento(periodoId, fondoId, asientoId, motivo),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: asientosQueryKey(periodoId, fondoId),

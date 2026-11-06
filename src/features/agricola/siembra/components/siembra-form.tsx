@@ -106,9 +106,29 @@ export function SiembraForm() {
                     ))}
                   </SelectContent>
                 </Select>
-                {camas.isError ? <p className="text-sm text-destructive">No se pudieron cargar las camas de cultivo.</p> : null}
+                {camas.isError ? (
+                  <p className="text-sm text-destructive">
+                    No se pudieron cargar las camas de cultivo. Intente de nuevo.
+                  </p>
+                ) : null}
                 {!camas.isLoading && !camas.isError && camasItems.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No hay camas disponibles. Registre una cama o finalice la siembra que la ocupa.</p>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p>
+                      No hay camas disponibles para registrar una nueva
+                      siembra. Revise el estado de las camas del invernadero
+                      antes de continuar.
+                    </p>
+                    <p>
+                      Puede{" "}
+                      <Link
+                        href="/dashboard/agricola/nuevo"
+                        className="underline underline-offset-4"
+                      >
+                        registrar una cama libre
+                      </Link>{" "}
+                      o finalizar una siembra activa para liberar su cama.
+                    </p>
+                  </div>
                 ) : null}
                 <FieldError errors={errors} />
               </Field>

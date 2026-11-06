@@ -255,6 +255,25 @@ export function PeriodoDetalle({ id }: { id: number }) {
                         <BookOpen data-icon="inline-start" />
                         <span className="hidden sm:inline">Ver libro</span>
                       </Button>
+                      {fondo.estado === "SOLICITADO" ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          nativeButton={false}
+                          render={
+                            <Link
+                              href={`/dashboard/libro-caja/periodos/${id}/fondos/${fondo.id}/informe`}
+                              prefetch={false}
+                              aria-label={`Informe económico de ${fondo.departamento.nombreUnidad}`}
+                            />
+                          }
+                        >
+                          <span className="hidden sm:inline">
+                            Informe económico
+                          </span>
+                          <span className="sm:hidden">Informe</span>
+                        </Button>
+                      ) : null}
                       {puedePedir ? (
                         <MostrarSiPuede modulo="LIBRO_CAJA" nivel="COMPLETO">
                           <Button

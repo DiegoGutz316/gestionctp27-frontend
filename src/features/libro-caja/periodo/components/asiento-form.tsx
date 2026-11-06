@@ -16,6 +16,13 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ApiError } from "@/lib/api";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
@@ -42,6 +49,11 @@ function fechaInicial(inicio: string, fin: string): string {
   return inicio;
 }
 
+const TIPOS = [
+  { value: "INGRESO", label: "Ingreso (entra dinero)" },
+  { value: "EGRESO", label: "Egreso (sale dinero)" },
+] as const;
+
 export function AsientoForm({
   libro,
 }: {
@@ -60,8 +72,8 @@ export function AsientoForm({
     fecha: fechaInicial(inicio, fin),
     numeroFactura: "",
     descripcion: "",
-    ingresos: "",
-    egresos: "",
+    tipoMovimiento: "INGRESO",
+    monto: "",
   };
 
   const form = useForm({
@@ -107,7 +119,8 @@ export function AsientoForm({
           Nuevo asiento
         </h2>
         <FieldDescription>
-          Llene ingresos o egresos, no ambos. Tope {VALOR_MAXIMO_FONDO_TEXTO}.
+          Elija si el movimiento es un ingreso o un egreso. Tope{" "}
+          {VALOR_MAXIMO_FONDO_TEXTO}.
         </FieldDescription>
       </div>
 
@@ -188,50 +201,68 @@ export function AsientoForm({
         </form.Field>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <form.Field name="ingresos">
+          <form.Field name="tipoMovimiento">
             {(field) => {
               const errors = fieldErrors(field.state.meta.errors);
               const invalid = errors.length > 0;
               return (
                 <Field data-invalid={invalid}>
-                  <FieldLabel htmlFor={field.name}>Ingresos</FieldLabel>
-                  <Input
-                    id={field.name}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    inputMode="decimal"
-                    placeholder="0.00"
-                    aria-invalid={invalid}
+                  <FieldLabel htmlFor={field.name} required>
+                    Tipo de movimiento
+                  </FieldLabel>
+                  <Select
+                    items={[...TIPOS]}
                     value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
+                    onValueChange={(valor) =>
+                      field.handleChange(
+                        (valor as "INGRESO" | "EGRESO" | null) ?? "INGRESO",
+                      )
+                    }
+                  >
+                    <SelectTrigger
+                      id={field.name}
+                      className="w-full"
+                      aria-invalid={invalid}
+                      onBlur={field.handleBlur}
+                    >
+                      <SelectValue placeholder="Seleccione ingreso o egreso" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIPOS.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FieldError errors={errors} />
                 </Field>
               );
             }}
           </form.Field>
 
-          <form.Field name="egresos">
+          <form.Field name="monto">
             {(field) => {
               const errors = fieldErrors(field.state.meta.errors);
               const invalid = errors.length > 0;
               return (
                 <Field data-invalid={invalid}>
-                  <FieldLabel htmlFor={field.name}>Egresos</FieldLabel>
+                  <FieldLabel htmlFor={field.name} required>
+                    Monto (₡)
+                  </FieldLabel>
                   <Input
                     id={field.name}
-                    type="number"
-                    step="0.01"
-                    min="0"
                     inputMode="decimal"
-                    placeholder="0.00"
+                    placeholder="Ej: 85000 o 1.250,50"
                     aria-invalid={invalid}
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                   />
+                  <FieldDescription>
+                    Use punto o coma para miles o decimales. Ejemplos: 85000,
+                    85.000, 85,000, 1250,50.
+                  </FieldDescription>
                   <FieldError errors={errors} />
                 </Field>
               );

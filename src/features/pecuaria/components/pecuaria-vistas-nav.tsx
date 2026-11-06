@@ -18,6 +18,10 @@ const VISTAS = [
     href: "/dashboard/pecuaria/produccion",
     etiqueta: "Producción",
   },
+  {
+    href: "/dashboard/pecuaria/salud/nuevo",
+    etiqueta: "Salud animal",
+  },
 ] as const;
 
 export function PecuariaVistasNav() {

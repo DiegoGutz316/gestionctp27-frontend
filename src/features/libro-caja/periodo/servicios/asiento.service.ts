@@ -39,9 +39,11 @@ export function eliminarAsiento(
   periodoId: number,
   fondoId: number,
   asientoId: number,
+  motivo: string,
 ) {
   return api.delete<LibroDepartamentoRespuesta>(
     `/libro-caja/periodos/${periodoId}/fondos/${fondoId}/asientos/${asientoId}`,
+    { motivo },
   );
 }
 

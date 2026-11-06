@@ -19,6 +19,13 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { fieldErrors } from "@/lib/form-errors";
 import { zodValidator } from "@/lib/zod-form";
 import {
@@ -33,6 +40,11 @@ import { getMensajeDeError } from "../servicios/asiento.service";
 function montoInicial(valor: number): string {
   return valor > 0 ? String(valor) : "";
 }
+
+const TIPOS = [
+  { value: "INGRESO", label: "Ingreso (entra dinero)" },
+  { value: "EGRESO", label: "Egreso (sale dinero)" },
+] as const;
 
 export function AsientoEditarDialog({
   libro,
@@ -53,8 +65,13 @@ export function AsientoEditarDialog({
     fecha: asiento ? fechaPeriodoIso(asiento.fecha) : inicio,
     numeroFactura: asiento?.numeroFactura ?? "",
     descripcion: asiento?.descripcion ?? "",
-    ingresos: asiento ? montoInicial(asiento.ingresos) : "",
-    egresos: asiento ? montoInicial(asiento.egresos) : "",
+    tipoMovimiento:
+      asiento && asiento.egresos > 0 ? "EGRESO" : "INGRESO",
+    monto: asiento
+      ? montoInicial(
+          asiento.ingresos > 0 ? asiento.ingresos : asiento.egresos,
+        )
+      : "",
   };
 
   const form = useForm({
@@ -182,49 +199,59 @@ export function AsientoEditarDialog({
               }}
             </form.Field>
 
-            <form.Field name="ingresos">
+            <form.Field name="tipoMovimiento">
               {(field) => {
                 const errors = fieldErrors(field.state.meta.errors);
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={`editar-${field.name}`}>
-                      Ingresos
+                    <FieldLabel htmlFor={`editar-${field.name}`} required>
+                      Tipo de movimiento
                     </FieldLabel>
-                    <Input
-                      id={`editar-${field.name}`}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      inputMode="decimal"
-                      aria-invalid={invalid}
+                    <Select
+                      items={[...TIPOS]}
                       value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(event) =>
-                        field.handleChange(event.target.value)
+                      onValueChange={(valor) =>
+                        field.handleChange(
+                          (valor as "INGRESO" | "EGRESO" | null) ?? "INGRESO",
+                        )
                       }
-                    />
+                    >
+                      <SelectTrigger
+                        id={`editar-${field.name}`}
+                        className="w-full"
+                        aria-invalid={invalid}
+                        onBlur={field.handleBlur}
+                      >
+                        <SelectValue placeholder="Seleccione ingreso o egreso" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIPOS.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FieldError errors={errors} />
                   </Field>
                 );
               }}
             </form.Field>
 
-            <form.Field name="egresos">
+            <form.Field name="monto">
               {(field) => {
                 const errors = fieldErrors(field.state.meta.errors);
                 const invalid = errors.length > 0;
                 return (
                   <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={`editar-${field.name}`}>
-                      Egresos
+                    <FieldLabel htmlFor={`editar-${field.name}`} required>
+                      Monto (₡)
                     </FieldLabel>
                     <Input
                       id={`editar-${field.name}`}
-                      type="number"
-                      step="0.01"
-                      min="0"
                       inputMode="decimal"
+                      placeholder="Ej: 85000 o 1.250,50"
                       aria-invalid={invalid}
                       value={field.state.value}
                       onBlur={field.handleBlur}

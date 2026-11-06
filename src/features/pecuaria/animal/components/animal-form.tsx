@@ -230,6 +230,10 @@ export function AnimalForm() {
                         <FieldLabel htmlFor={field.name} required>
                           Categoría (ganado bovino)
                         </FieldLabel>
+                        <p className="mb-2 text-xs text-muted-foreground">
+                          «Ternero/a» cubre terneros y terneras. El sistema
+                          guarda el valor interno TERNERO.
+                        </p>
 
                         <Select
                           items={items}

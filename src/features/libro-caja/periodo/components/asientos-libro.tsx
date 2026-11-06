@@ -157,7 +157,7 @@ export function AsientosLibro({
           }
         >
           <Printer data-icon="inline-start" />
-          Generar informe
+          Informe económico / Excel
         </Button>
       </div>
 
@@ -234,8 +234,17 @@ export function AsientosLibro({
               </TableRow>
             ) : null}
 
-            {datos.asientos.map((asiento) => (
-              <TableRow key={asiento.id} className="hover:bg-muted/20">
+            {datos.asientos.map((asiento) => {
+              const anulado = asiento.estado === "ANULADO";
+              return (
+              <TableRow
+                key={asiento.id}
+                className={
+                  anulado
+                    ? "bg-muted/40 text-muted-foreground hover:bg-muted/40"
+                    : "hover:bg-muted/20"
+                }
+              >
                 <TableCell className="border border-black py-2 text-center tabular-nums">
                   {asiento.numero}
                 </TableCell>
@@ -246,7 +255,19 @@ export function AsientosLibro({
                   {asiento.numeroFactura}
                 </TableCell>
                 <TableCell className="border border-black py-2 whitespace-normal">
-                  {asiento.descripcion}
+                  <div className="flex flex-col gap-1">
+                    <span className={anulado ? "line-through" : undefined}>
+                      {asiento.descripcion}
+                    </span>
+                    {anulado ? (
+                      <span className="text-xs font-medium text-destructive">
+                        ANULADO
+                        {asiento.motivoAnulacion
+                          ? `: ${asiento.motivoAnulacion}`
+                          : ""}
+                      </span>
+                    ) : null}
+                  </div>
                 </TableCell>
                 <TableCell className="border border-black py-2 text-right tabular-nums">
                   {celdaMonto(asiento.ingresos)}
@@ -259,28 +280,33 @@ export function AsientosLibro({
                 </TableCell>
                 {puedeCorregir ? (
                   <TableCell className="print:hidden border border-black py-2 text-center">
-                    <div className="flex justify-center gap-1">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setEditando(asiento)}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => setAnulando(asiento)}
-                      >
-                        Anular
-                      </Button>
-                    </div>
+                    {anulado ? (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    ) : (
+                      <div className="flex justify-center gap-1">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditando(asiento)}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => setAnulando(asiento)}
+                        >
+                          Anular
+                        </Button>
+                      </div>
+                    )}
                   </TableCell>
                 ) : null}
               </TableRow>
-            ))}
+              );
+            })}
           </TableBody>
           <TableFooter>
             <TableRow className="bg-[#deeaf6] hover:bg-[#deeaf6]">

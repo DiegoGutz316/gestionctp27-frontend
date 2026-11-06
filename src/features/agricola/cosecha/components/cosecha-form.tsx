@@ -14,7 +14,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -22,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 import { useSiembras } from "@/features/agricola/siembra/hooks/siembra-hooks";
 import { formatearFecha as formatearFechaSiembra } from "@/features/agricola/siembra/models/siembra.model";
@@ -42,9 +42,9 @@ export function CosechaForm() {
   const router = useRouter();
   const params = useSearchParams();
   const siembraFija = params.get("siembraId") ?? "";
-  // Llegar desde «Finalizar siembra» deja la opción marcada de entrada; desde
-  // el camino normal arranca sin marcar y la decide quien registra.
-  const cerrarPorDefecto = params.get("cerrarCiclo") === "1";
+  // Solo el flujo «Finalizar siembra» pide cerrar el ciclo. El registro
+  // normal de cosecha parcial nunca cierra la siembra por defecto.
+  const pideFinalizarCiclo = params.get("cerrarCiclo") === "1";
 
   const siembras = useSiembras();
   const registrar = useRegistrarCosecha();
@@ -82,7 +82,10 @@ export function CosechaForm() {
       cantidadObtenida: "",
       unidadMedida: "KG" as (typeof UNIDADES_MEDIDA)[number],
       observaciones: "",
-      cerrarCiclo: cerrarPorDefecto,
+      // Siempre false en cosecha parcial. Solo se activa si el usuario
+      // confirma explícitamente al llegar desde «Finalizar siembra».
+      cerrarCiclo: false,
+      confirmarCierre: false,
     },
 
     validators: {
@@ -112,15 +115,24 @@ export function CosechaForm() {
 
     onSubmit: async ({ value }) => {
       try {
+        const debeCerrar =
+          pideFinalizarCiclo && value.confirmarCierre === true;
+        if (pideFinalizarCiclo && !debeCerrar) {
+          toast.error(
+            "Confirme que desea finalizar la siembra, o registre solo la cosecha parcial desde Cosechas.",
+          );
+          return;
+        }
+
         const datos = registrarCosechaSchema.parse(value);
 
         const cosecha = await registrar.mutateAsync({
           ...datos,
-          cerrarCiclo: value.cerrarCiclo,
+          cerrarCiclo: debeCerrar,
         });
 
         toast.success(
-          value.cerrarCiclo
+          debeCerrar
             ? `Cosecha registrada y ciclo finalizado. La cama volvió a estar disponible.`
             : `Cosecha de ${cosecha.siembra.tipoCultivo} registrada: ${formatearCantidadConUnidad(
                 cosecha.cantidadObtenida,
@@ -392,45 +404,57 @@ export function CosechaForm() {
           }}
         </form.Field>
 
-        <form.Field name="cerrarCiclo">
-          {(field) => (
-            <Field orientation="horizontal">
-              <FieldContent>
-                <FieldLabel htmlFor={field.name}>
-                  Finalizar la siembra
-                </FieldLabel>
-
-                <FieldDescription>
-                  Cierra el ciclo de esta siembra: deja de aparecer entre las
-                  activas, no se le podrán registrar más cosechas ni cuidados, y
-                  su cama vuelve a quedar disponible para sembrar otra cosa. El
-                  historial se conserva. Úselo en cultivos que se cosechan una
-                  sola vez, como la cebolla.
-                </FieldDescription>
-              </FieldContent>
-
-              <Switch
-                id={field.name}
-                checked={field.state.value}
-                onCheckedChange={(marcado) => field.handleChange(marcado)}
-              />
-            </Field>
-          )}
-        </form.Field>
+        {pideFinalizarCiclo ? (
+          <form.Field name="confirmarCierre">
+            {(field) => (
+              <Field orientation="horizontal">
+                <FieldContent>
+                  <FieldLabel htmlFor={field.name}>
+                    Confirmo que deseo finalizar esta siembra
+                  </FieldLabel>
+                  <FieldDescription>
+                    Al finalizar, la siembra deja de estar activa: no se podrán
+                    registrar más cosechas ni cuidados, y la cama vuelve a
+                    quedar disponible. Si solo quiere anotar una cosecha
+                    parcial, use «Nueva cosecha» sin finalizar.
+                  </FieldDescription>
+                </FieldContent>
+                <Switch
+                  id={field.name}
+                  checked={field.state.value}
+                  onCheckedChange={(marcado) => field.handleChange(marcado)}
+                />
+              </Field>
+            )}
+          </form.Field>
+        ) : (
+          <FieldDescription>
+            Esta pantalla registra una <strong>cosecha parcial</strong> y
+            mantiene la siembra activa. Para cerrar el cultivo use la opción
+            «Finalizar siembra» desde el detalle de la siembra.
+          </FieldDescription>
+        )}
 
         <form.Subscribe
           selector={(estado) => ({
             guardando: estado.isSubmitting || registrar.isPending,
-            cerrando: estado.values.cerrarCiclo,
+            confirmado: estado.values.confirmarCierre,
           })}
         >
-          {({ guardando, cerrando }) => (
-            <Button type="submit" disabled={guardando || sinSeleccionPosible}>
+          {({ guardando, confirmado }) => (
+            <Button
+              type="submit"
+              disabled={
+                guardando ||
+                sinSeleccionPosible ||
+                (pideFinalizarCiclo && !confirmado)
+              }
+            >
               {guardando
                 ? "Guardando…"
-                : cerrando
-                  ? "Registrar cosecha y finalizar"
-                  : "Registrar cosecha"}
+                : pideFinalizarCiclo
+                  ? "Registrar cosecha y finalizar siembra"
+                  : "Registrar cosecha parcial"}
             </Button>
           )}
         </form.Subscribe>

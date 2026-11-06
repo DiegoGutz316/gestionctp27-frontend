@@ -4,6 +4,7 @@ import {
   VALOR_MAXIMO_FONDO_TEXTO,
 } from "../models/periodo.model";
 import { fondoSchema, periodoSchema } from "./periodo.validacion";
+import { normalizarMontoColones } from "./monto-colones";
 
 const fechaAsientoSchema = z
   .string({ error: "La fecha del asiento es obligatoria" })
@@ -19,13 +20,24 @@ const fechaAsientoSchema = z
 const tieneDosDecimalesComoMucho = (valor: number) =>
   Number(valor.toFixed(2)) === valor;
 
-const montoAsientoSchema = z
-  .string({ error: "El monto debe ser un número válido" })
+const montoPositivoSchema = z
+  .string({ error: "Indique el monto en colones" })
   .trim()
-  .transform((valor) => (valor === "" ? 0 : Number(valor)))
-  .refine((valor) => Number.isFinite(valor), "El monto debe ser un número válido")
-  .refine((valor) => valor >= 0, {
-    error: "El monto no puede ser negativo",
+  .min(1, "Indique el monto en colones")
+  .transform((valor, contexto) => {
+    const numero = normalizarMontoColones(valor);
+    if (numero === null) {
+      contexto.addIssue({
+        code: "custom",
+        message:
+          "Escriba el monto en colones. Ejemplos válidos: 85000, 85.000, 85,000 o 1250,50",
+      });
+      return z.NEVER;
+    }
+    return numero;
+  })
+  .refine((valor) => valor > 0, {
+    error: "El monto debe ser mayor que cero",
   })
   .refine((valor) => valor <= VALOR_MAXIMO_FONDO, {
     error: `El monto no puede superar ${VALOR_MAXIMO_FONDO_TEXTO}`,
@@ -46,27 +58,18 @@ export const crearAsientoSchema = z
       .trim()
       .min(1, "La descripción es obligatoria")
       .max(250, "La descripción no puede superar 250 caracteres"),
-    ingresos: montoAsientoSchema,
-    egresos: montoAsientoSchema,
+    tipoMovimiento: z.enum(["INGRESO", "EGRESO"], {
+      error: "Seleccione si es un ingreso o un egreso",
+    }),
+    monto: montoPositivoSchema,
   })
-  .superRefine((datos, contexto) => {
-    const hayIngreso = datos.ingresos > 0;
-    const hayEgreso = datos.egresos > 0;
-    if (hayIngreso === hayEgreso) {
-      const mensaje =
-        "Indique un ingreso o un egreso, no ambos. El otro queda en 0.";
-      contexto.addIssue({
-        code: "custom",
-        message: mensaje,
-        path: ["ingresos"],
-      });
-      contexto.addIssue({
-        code: "custom",
-        message: mensaje,
-        path: ["egresos"],
-      });
-    }
-  });
+  .transform((datos) => ({
+    fecha: datos.fecha,
+    numeroFactura: datos.numeroFactura,
+    descripcion: datos.descripcion,
+    ingresos: datos.tipoMovimiento === "INGRESO" ? datos.monto : 0,
+    egresos: datos.tipoMovimiento === "EGRESO" ? datos.monto : 0,
+  }));
 
 export type CrearAsiento = z.output<typeof crearAsientoSchema>;
 export type CrearAsientoInput = z.input<typeof crearAsientoSchema>;
@@ -80,6 +83,10 @@ export const asientoSchema = z.object({
   ingresos: z.number(),
   egresos: z.number(),
   saldo: z.number(),
+  estado: z.enum(["VIGENTE", "ANULADO"]).default("VIGENTE"),
+  motivoAnulacion: z.string().nullable().optional(),
+  anuladoEn: z.string().nullable().optional(),
+  anuladoPor: z.string().nullable().optional(),
   creadoEn: z.string(),
   actualizadoEn: z.string(),
 });

@@ -359,6 +359,8 @@ function construirInforme(
   asientos.forEach((asiento, indice) => {
     const fila = primeraAsiento + indice;
     const filaAnterior = indice === 0 ? filaFondo : fila - 1;
+    const anulado =
+      "estado" in asiento && asiento.estado === "ANULADO";
 
     const asientoCelda = hoja.getCell(fila, 1);
     asientoCelda.value = asiento.numero;
@@ -381,27 +383,32 @@ function construirInforme(
     facturaCelda.border = BORDE_FINO;
 
     const descripcionCelda = hoja.getCell(fila, 4);
-    descripcionCelda.value = asiento.descripcion;
+    descripcionCelda.value = anulado
+      ? `ANULADO — ${asiento.descripcion}`
+      : asiento.descripcion;
     descripcionCelda.font = fuente({ color: "FF000000" });
     descripcionCelda.alignment = { horizontal: "left", vertical: "middle" };
     descripcionCelda.border = BORDE_FINO;
 
     const ingresoCelda = hoja.getCell(fila, 5);
-    if (asiento.ingresos > 0) ingresoCelda.value = asiento.ingresos;
+    if (!anulado && asiento.ingresos > 0) ingresoCelda.value = asiento.ingresos;
     ingresoCelda.numFmt = COLONES;
     ingresoCelda.font = fuente({ color: "FF000000" });
     ingresoCelda.alignment = { vertical: "middle" };
     ingresoCelda.border = BORDE_FINO;
 
     const egresoCelda = hoja.getCell(fila, 6);
-    if (asiento.egresos > 0) egresoCelda.value = asiento.egresos;
+    if (!anulado && asiento.egresos > 0) egresoCelda.value = asiento.egresos;
     egresoCelda.numFmt = COLONES;
     egresoCelda.font = fuente({ color: "FF000000" });
     egresoCelda.alignment = { vertical: "middle" };
     egresoCelda.border = BORDE_FINO;
 
     const saldoCelda = hoja.getCell(fila, 7);
-    saldoCelda.value = { formula: `+G${filaAnterior}+E${fila}-F${fila}` };
+    // Los anulados no mueven el saldo: arrastran el de la fila anterior.
+    saldoCelda.value = anulado
+      ? { formula: `G${filaAnterior}` }
+      : { formula: `+G${filaAnterior}+E${fila}-F${fila}` };
     saldoCelda.numFmt = COLONES;
     saldoCelda.font = fuente();
     saldoCelda.alignment = { vertical: "middle" };

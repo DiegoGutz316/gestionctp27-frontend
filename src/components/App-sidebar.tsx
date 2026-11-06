@@ -102,10 +102,10 @@ const navigation = [
   },
 
   {
-    label: "Análisis",
+    label: "Comunicación",
     items: [
       {
-        title: "Avisos",
+        title: "Avisos institucionales",
         href: "/dashboard/comunicacion/avisos",
         icon: Megaphone,
         modulo: "REPORTES" as const,
