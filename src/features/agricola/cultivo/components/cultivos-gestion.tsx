@@ -30,6 +30,7 @@ import {
   type EtiquetaFiltro,
 } from "@/features/agricola/components/barra-filtros-agricolas";
 
+import { getMensajeDeError } from "../servicios/cultivo.service";
 import { useCultivos } from "../hooks/cultivo-hooks";
 import {
   ETIQUETA_TIPO_CULTIVO,
@@ -166,7 +167,7 @@ export function CultivosGestion() {
 
       <CultivosTabla
         cargando={consulta.isLoading}
-        error={consulta.isError}
+        error={consulta.isError ? getMensajeDeError(consulta.error) : null}
         cultivos={cultivos}
         hayFiltros={hayFiltros}
       />
